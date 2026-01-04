@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { Camera, Upload, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { compressImage } from '@/lib/utils';
 
 interface PhotoUploadProps {
@@ -23,14 +24,11 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
     setError(null);
 
     try {
-      // Comprimir imagen
       const compressedBlob = await compressImage(file);
       
-      // Crear FormData
       const formData = new FormData();
       formData.append('photo', compressedBlob, 'photo.jpg');
 
-      // Subir
       const response = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -50,7 +48,6 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
       setError(err instanceof Error ? err.message : 'Error al subir la foto');
     } finally {
       setIsUploading(false);
-      // Reset input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -88,18 +85,18 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
       />
 
       {isRetake ? (
-        <button
+        <Button
           onClick={triggerFileInput}
-          className="flex items-center gap-2 px-5 py-2.5 
-                   bg-gradient-to-r from-violet-500 to-purple-600
-                   hover:from-violet-600 hover:to-purple-700
-                   rounded-xl shadow-md
-                   text-white font-semibold text-sm
-                   transition-all duration-300 hover:scale-105 active:scale-95"
+          size="lg"
+          className="!rounded-full !px-3 !py-5 !text-base !font-bold !gap-3
+                     bg-gradient-to-r from-violet-500 to-purple-600 
+                     hover:from-violet-600 hover:to-purple-700
+                     !text-white shadow-xl shadow-purple-500/40 
+                     hover:scale-105 active:scale-95 transition-all"
         >
-          <Camera className="w-4 h-4" />
-          Retomar Foto
-        </button>
+          <Camera className="w-5 h-5" />
+          Retomar
+        </Button>
       ) : (
         <button
           onClick={triggerFileInput}
@@ -115,19 +112,19 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
             Tomar Foto
           </span>
           
-          {/* Pulse animation */}
           <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-20" />
         </button>
       )}
 
       {!isRetake && (
-        <button
+        <Button
+          variant="ghost"
           onClick={triggerFileInput}
-          className="mt-6 flex items-center gap-2 text-white/60 hover:text-white/80 transition-colors"
+          className="mt-6 text-white/60 hover:text-white/80 hover:bg-transparent"
         >
           <Upload className="w-4 h-4" />
-          <span className="text-sm">o subir desde galería</span>
-        </button>
+          o subir desde galería
+        </Button>
       )}
 
       {error && (
@@ -138,4 +135,3 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
     </div>
   );
 }
-

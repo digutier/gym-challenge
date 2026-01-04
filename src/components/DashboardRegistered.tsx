@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckCircle, Trophy } from 'lucide-react';
+import { CheckCircle, Trophy, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import PhotoUpload from './PhotoUpload';
 import WeekProgress from './WeekProgress';
 import GroupRanking from './GroupRanking';
@@ -21,13 +22,15 @@ interface DashboardRegisteredProps {
   };
   token: string;
   onPhotoRetake: () => void;
+  onLogout: () => void;
 }
 
 export default function DashboardRegistered({ 
   user, 
   entry,
   token,
-  onPhotoRetake 
+  onPhotoRetake,
+  onLogout
 }: DashboardRegisteredProps) {
   const [weekEntries, setWeekEntries] = useState<WeekEntry[]>([]);
   const [ranking, setRanking] = useState<UserStats[]>([]);
@@ -69,27 +72,40 @@ export default function DashboardRegistered({
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col items-center px-4 py-6">
       {/* Container principal */}
-      <div className="w-full max-w-md flex flex-col gap-5">
+      <div className="w-full max-w-md flex flex-col gap-2">
         {/* Header */}
         <header className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-4xl">{user.avatar}</span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onLogout}
+              className="rounded-full bg-white/10 hover:bg-white/20 !w-8 !h-8"
+            >
+              <LogOut className="w-4 h-4 text-white/70" />
+            </Button>
+            <span className="text-3xl">{user.avatar}</span>
             <div className="flex flex-col">
-              <p className="text-white/60 text-sm">¡Bien hecho,</p>
-              <h1 className="text-white font-bold text-xl">{user.name}!</h1>
+              <p className="text-white/60 text-xs">¡Bien hecho,</p>
+              <h1 className="text-white font-bold text-lg">{user.name}!</h1>
             </div>
           </div>
           
-          <a 
-            href="/public-dashboard"
-            className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="rounded-full bg-white/10 hover:bg-white/20 text-white !mr-2 !px-2"
           >
-            <Trophy className="w-5 h-5 text-amber-300" />
-          </a>
+            <a href="/public-dashboard" className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-amber-300" />
+              <span className="text-xs">Ranking Mensual</span>
+            </a>
+          </Button>
         </header>
 
         {/* Card de foto del día */}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-xl flex flex-col">
+        <div className="overflow-hidden shadow-xl">
           {/* Imagen con aspect ratio */}
           <div className="relative aspect-[4/3] bg-gray-100">
             <img
@@ -98,25 +114,28 @@ export default function DashboardRegistered({
               className="w-full h-full object-cover"
             />
             
+            {/* Tag de fecha */}
+            <div className="absolute top-1 left-0.5 bg-black/60 backdrop-blur-md text-white 
+                          !px-4 !py-2 rounded-2xl font-semibold text-sm shadow-xl capitalize">
+              {formatDate(entry.date)}
+            </div>
+            
             {/* Badge de éxito */}
-            <div className="absolute top-3 right-3 flex items-center gap-1.5 
-                          bg-emerald-500 text-white px-2.5 py-1 rounded-full
+            <div className="absolute top-1 right-0.5 flex items-center gap-1.5 
+                          bg-emerald-500 text-white !px-1.5 !py-1 rounded-full
                           font-semibold text-xs shadow-lg backdrop-blur-sm">
               <CheckCircle className="w-3.5 h-3.5" />
               {isToday ? '¡Hoy!' : 'Registrado'}
             </div>
-          </div>
-
-          {/* Info */}
-          <div className="p-4 bg-gradient-to-b from-white to-gray-50 flex flex-col items-center gap-3">
-            <p className="text-gray-600 text-sm font-medium">
-              {formatDate(entry.date)}
-            </p>
-            <PhotoUpload 
-              token={token} 
-              onUploadComplete={onPhotoRetake}
-              isRetake
-            />
+            
+            {/* Botón retomar foto */}
+            <div className="absolute bottom-2 right-2">
+              <PhotoUpload 
+                token={token} 
+                onUploadComplete={onPhotoRetake}
+                isRetake
+              />
+            </div>
           </div>
         </div>
 

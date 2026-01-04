@@ -1,5 +1,7 @@
 'use client';
 
+import { LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import PhotoUpload from './PhotoUpload';
 
 interface DashboardNotRegisteredProps {
@@ -10,23 +12,33 @@ interface DashboardNotRegisteredProps {
   };
   token: string;
   onUploadComplete: () => void;
+  onLogout: () => void;
 }
 
 export default function DashboardNotRegistered({ 
   user, 
   token,
-  onUploadComplete 
+  onUploadComplete,
+  onLogout
 }: DashboardNotRegisteredProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col items-center px-4 py-6">
       {/* Container principal */}
       <div className="w-full max-w-md flex flex-col flex-1">
         {/* Header */}
-        <header className="flex items-center gap-3">
-          <span className="text-4xl">{user.avatar}</span>
+        <header className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onLogout}
+            className="rounded-full bg-white/10 hover:bg-white/20 !w-8 !h-8"
+          >
+            <LogOut className="w-4 h-4 text-white/70" />
+          </Button>
+          <span className="text-3xl">{user.avatar}</span>
           <div className="flex flex-col">
-            <p className="text-white/60 text-sm">¡Hola,</p>
-            <h1 className="text-white font-bold text-xl">{user.name}!</h1>
+            <p className="text-white/60 text-xs">¡Hola,</p>
+            <h1 className="text-white font-bold text-lg">{user.name}!</h1>
           </div>
         </header>
 

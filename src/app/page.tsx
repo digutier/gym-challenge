@@ -13,17 +13,36 @@ export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [userData, setUserData] = useState<CheckTodayResponse | null>(null);
 
-  // Verificar estado inicial
   useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-    
-    if (!storedToken) {
-      setAppState('login');
-      return;
-    }
+    const checkStatus = async () => {
+      const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      
+      if (!storedToken) {
+        setAppState('login');
+        return;
+      }
 
-    setToken(storedToken);
-    checkTodayStatus(storedToken);
+      setToken(storedToken);
+      
+      try {
+        const response = await fetch(`/api/check-today?token=${storedToken}`);
+        
+        if (!response.ok) {
+          localStorage.removeItem(TOKEN_STORAGE_KEY);
+          setAppState('login');
+          return;
+        }
+
+        const data: CheckTodayResponse = await response.json();
+        setUserData(data);
+        setAppState(data.alreadyRegistered ? 'registered' : 'not-registered');
+      } catch (error) {
+        console.error('Error checking status:', error);
+        setAppState('login');
+      }
+    };
+
+    checkStatus();
   }, []);
 
   const checkTodayStatus = async (userToken: string) => {
@@ -33,7 +52,6 @@ export default function Home() {
       const response = await fetch(`/api/check-today?token=${userToken}`);
       
       if (!response.ok) {
-        // Token inválido, mostrar login
         localStorage.removeItem(TOKEN_STORAGE_KEY);
         setAppState('login');
         return;
@@ -59,7 +77,13 @@ export default function Home() {
     }
   };
 
-  // Loading state
+  const handleLogout = () => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    setToken(null);
+    setUserData(null);
+    setAppState('login');
+  };
+
   if (appState === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 
@@ -74,23 +98,21 @@ export default function Home() {
     );
   }
 
-  // Login state
   if (appState === 'login') {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
-  // Not registered state
   if (appState === 'not-registered' && userData && token) {
     return (
       <DashboardNotRegistered
         user={userData.user}
         token={token}
         onUploadComplete={handleUploadComplete}
+        onLogout={handleLogout}
       />
     );
   }
 
-  // Registered state
   if (appState === 'registered' && userData?.entry && token) {
     return (
       <DashboardRegistered
@@ -98,10 +120,10 @@ export default function Home() {
         entry={userData.entry}
         token={token}
         onPhotoRetake={handleUploadComplete}
+        onLogout={handleLogout}
       />
     );
   }
 
-  // Fallback
   return null;
 }

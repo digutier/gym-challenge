@@ -29,6 +29,7 @@ export interface UserStats {
   avatar: string;
   daysThisWeek: number;
   totalDays: number;
+  monthlyDays?: number; // Total mensual con cap semanal aplicado
 }
 
 export interface CheckTodayResponse {

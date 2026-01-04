@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Loader2, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import { UserStats } from '@/types';
-import { formatDate, getTodayDate, getWeekDates } from '@/lib/utils';
+import { formatDate, getTodayDate, getWeekDates, capDays, WEEKLY_GOAL } from '@/lib/utils';
 
 export default function PublicDashboard() {
   const router = useRouter();
@@ -19,7 +20,11 @@ export default function PublicDashboard() {
         if (!response.ok) throw new Error('Error al cargar datos');
         
         const data = await response.json();
-        setUsers(data.users);
+        // Ordenar por días capeados (máximo WEEKLY_GOAL por semana)
+        const sortedUsers = [...data.users].sort((a: UserStats, b: UserStats) => 
+          capDays(b.daysThisWeek) - capDays(a.daysThisWeek)
+        );
+        setUsers(sortedUsers);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
@@ -77,12 +82,13 @@ export default function PublicDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900
                     flex flex-col items-center justify-center p-6">
         <p className="text-red-400 text-center">{error}</p>
-        <button 
+        <Button 
+          variant="secondary"
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-white/10 rounded-lg text-white"
+          className="mt-4"
         >
           Reintentar
-        </button>
+        </Button>
       </div>
     );
   }
@@ -91,12 +97,14 @@ export default function PublicDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <header className="p-6 flex items-center gap-4">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => router.push('/')}
-          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+          className="rounded-full bg-white/10 hover:bg-white/20"
         >
           <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
+        </Button>
         <div className="flex-1">
           <h1 className="text-white font-bold text-xl flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
@@ -108,7 +116,7 @@ export default function PublicDashboard() {
         </div>
       </header>
 
-      {/* Podium para top 3 */}
+      {/* Podium para top 3 (con días capeados) */}
       <div className="px-6 mb-8">
         <div className="flex items-end justify-center gap-2">
           {/* Segundo lugar */}
@@ -117,7 +125,7 @@ export default function PublicDashboard() {
               <span className="text-4xl mb-2">{users[1].avatar}</span>
               <div className={`w-24 h-20 ${getRankStyle(1).bg} rounded-t-xl flex flex-col items-center justify-center`}>
                 <span className="text-2xl">🥈</span>
-                <span className="text-white font-bold">{users[1].daysThisWeek}</span>
+                <span className="text-white font-bold">{capDays(users[1].daysThisWeek)}/{WEEKLY_GOAL}</span>
               </div>
               <p className="text-white/80 text-sm mt-2 font-medium truncate max-w-24 text-center">
                 {users[1].name}
@@ -131,7 +139,7 @@ export default function PublicDashboard() {
               <span className="text-5xl mb-2 animate-bounce">{users[0].avatar}</span>
               <div className={`w-28 h-28 ${getRankStyle(0).bg} rounded-t-xl flex flex-col items-center justify-center shadow-lg shadow-amber-500/30`}>
                 <span className="text-3xl">🏆</span>
-                <span className="text-white font-black text-2xl">{users[0].daysThisWeek}</span>
+                <span className="text-white font-black text-2xl">{capDays(users[0].daysThisWeek)}/{WEEKLY_GOAL}</span>
               </div>
               <p className="text-white font-bold mt-2 truncate max-w-28 text-center">
                 {users[0].name}
@@ -145,7 +153,7 @@ export default function PublicDashboard() {
               <span className="text-4xl mb-2">{users[2].avatar}</span>
               <div className={`w-24 h-16 ${getRankStyle(2).bg} rounded-t-xl flex flex-col items-center justify-center`}>
                 <span className="text-2xl">🥉</span>
-                <span className="text-white font-bold">{users[2].daysThisWeek}</span>
+                <span className="text-white font-bold">{capDays(users[2].daysThisWeek)}/{WEEKLY_GOAL}</span>
               </div>
               <p className="text-white/80 text-sm mt-2 font-medium truncate max-w-24 text-center">
                 {users[2].name}
@@ -179,14 +187,16 @@ export default function PublicDashboard() {
                   <span className="text-3xl">{user.avatar}</span>
                   <div>
                     <p className="text-white font-semibold">{user.name}</p>
-                    <p className="text-white/40 text-xs">{user.totalDays} días totales</p>
+                    <p className="text-white/40 text-xs">{user.monthlyDays ?? user.totalDays} días este mes</p>
                   </div>
                 </div>
 
-                {/* Stats */}
+                {/* Stats (con cap) */}
                 <div className="text-right">
-                  <p className="text-white font-black text-2xl">{user.daysThisWeek}</p>
-                  <p className="text-white/40 text-xs">días</p>
+                  <p className={`font-black text-2xl ${capDays(user.daysThisWeek) >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-white'}`}>
+                    {capDays(user.daysThisWeek)}
+                  </p>
+                  <p className="text-white/40 text-xs">/ {WEEKLY_GOAL}</p>
                 </div>
               </div>
             );

@@ -1,4 +1,70 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+// Función de shadcn para combinar clases
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// Meta semanal de días al gym
+export const WEEKLY_GOAL = 4;
+
+/**
+ * Aplica el cap de días a un número (máximo WEEKLY_GOAL)
+ */
+export function capDays(days: number): number {
+  return Math.min(days, WEEKLY_GOAL);
+}
+
+/**
+ * Obtiene el número de semana ISO de una fecha
+ */
+export function getISOWeek(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${d.getFullYear()}-W${weekNo.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Calcula el total de días con cap semanal aplicado
+ * Agrupa las fechas por semana y aplica el cap de WEEKLY_GOAL a cada semana
+ */
+export function calculateCappedTotal(dates: string[]): number {
+  const weekCounts = new Map<string, number>();
+  
+  dates.forEach(dateStr => {
+    const date = new Date(dateStr + 'T12:00:00');
+    const weekKey = getISOWeek(date);
+    const current = weekCounts.get(weekKey) || 0;
+    weekCounts.set(weekKey, current + 1);
+  });
+  
+  let total = 0;
+  weekCounts.forEach(count => {
+    total += capDays(count);
+  });
+  
+  return total;
+}
+
+/**
+ * Calcula el total mensual con cap semanal aplicado
+ */
+export function calculateCappedMonthlyTotal(dates: string[], year: number, month: number): number {
+  const monthDates = dates.filter(dateStr => {
+    const date = new Date(dateStr + 'T12:00:00');
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+  
+  return calculateCappedTotal(monthDates);
+}
+
+// ========================================
 // Funciones auxiliares para Gym Challenge
+// ========================================
 
 /**
  * Obtiene la fecha actual en formato YYYY-MM-DD (timezone local)
@@ -14,7 +80,7 @@ export function getTodayDate(): string {
 export function getWeekStart(): Date {
   const now = new Date();
   const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para lunes
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
   const monday = new Date(now);
   monday.setDate(diff);
   monday.setHours(0, 0, 0, 0);
@@ -71,7 +137,6 @@ export function formatDate(dateStr: string): string {
 
 /**
  * Comprime una imagen antes de subirla
- * Retorna un Blob comprimido
  */
 export async function compressImage(file: File, maxWidth = 1080): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -80,7 +145,6 @@ export async function compressImage(file: File, maxWidth = 1080): Promise<Blob> 
     const img = new Image();
     
     img.onload = () => {
-      // Calcular dimensiones manteniendo aspect ratio
       let width = img.width;
       let height = img.height;
       
@@ -92,10 +156,8 @@ export async function compressImage(file: File, maxWidth = 1080): Promise<Blob> 
       canvas.width = width;
       canvas.height = height;
       
-      // Dibujar imagen redimensionada
       ctx?.drawImage(img, 0, 0, width, height);
       
-      // Convertir a blob con compresión JPEG
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -126,4 +188,3 @@ export function isValidToken(token: string): boolean {
   ];
   return validTokens.includes(token);
 }
-
