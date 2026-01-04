@@ -18,9 +18,9 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/10">
-      <h3 className="text-white/80 text-sm font-semibold mb-3 uppercase tracking-wider">
-        Ranking del Grupo
+    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-lg">
+      <h3 className="text-white/90 text-xs font-bold mb-3 uppercase tracking-widest">
+        🏆 Ranking
       </h3>
       
       <div className="space-y-2">
@@ -30,41 +30,41 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
           return (
             <div
               key={user.id}
-              className={`flex items-center gap-3 p-3 rounded-xl transition-all
+              className={`flex items-center gap-2.5 p-2.5 rounded-xl transition-all
                 ${isCurrentUser 
-                  ? 'bg-white/20 ring-2 ring-amber-400/50' 
-                  : 'bg-white/5 hover:bg-white/10'
+                  ? 'bg-amber-400/20 ring-1 ring-amber-400/40' 
+                  : 'bg-white/5'
                 }
               `}
             >
               {/* Posición */}
-              <span className="text-2xl w-8 text-center">
+              <span className="text-xl w-7 text-center">
                 {getRankEmoji(index)}
               </span>
               
               {/* Avatar */}
-              <span className="text-3xl">
+              <span className="text-2xl">
                 {user.avatar}
               </span>
               
               {/* Nombre */}
-              <div className="flex-1">
-                <p className={`font-semibold ${isCurrentUser ? 'text-amber-200' : 'text-white'}`}>
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold text-sm truncate ${isCurrentUser ? 'text-amber-200' : 'text-white'}`}>
                   {user.name}
-                  {isCurrentUser && <span className="text-xs ml-2 opacity-70">(tú)</span>}
+                  {isCurrentUser && <span className="text-[10px] ml-1 opacity-60">(tú)</span>}
                 </p>
-                <p className="text-white/50 text-xs">
-                  {user.totalDays} días totales
+                <p className="text-white/40 text-[10px]">
+                  {user.totalDays} total
                 </p>
               </div>
               
               {/* Días esta semana */}
-              <div className="text-right">
-                <p className="text-2xl font-black text-white">
+              <div className="text-right flex-shrink-0">
+                <p className="text-xl font-black text-white leading-none">
                   {user.daysThisWeek}
                 </p>
-                <p className="text-white/50 text-xs">
-                  esta semana
+                <p className="text-white/40 text-[10px]">
+                  semana
                 </p>
               </div>
             </div>

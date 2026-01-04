@@ -90,13 +90,14 @@ export default function PhotoUpload({ token, onUploadComplete, isRetake = false 
       {isRetake ? (
         <button
           onClick={triggerFileInput}
-          className="flex items-center gap-2 px-6 py-3 
-                   bg-white/20 hover:bg-white/30 
-                   border border-white/30 rounded-2xl
-                   text-white font-semibold
+          className="flex items-center gap-2 px-5 py-2.5 
+                   bg-gradient-to-r from-violet-500 to-purple-600
+                   hover:from-violet-600 hover:to-purple-700
+                   rounded-xl shadow-md
+                   text-white font-semibold text-sm
                    transition-all duration-300 hover:scale-105 active:scale-95"
         >
-          <Camera className="w-5 h-5" />
+          <Camera className="w-4 h-4" />
           Retomar Foto
         </button>
       ) : (
