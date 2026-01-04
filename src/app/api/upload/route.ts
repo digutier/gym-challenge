@@ -44,7 +44,21 @@ export async function POST(request: NextRequest) {
     }
 
     const today = getTodayDate();
-    const fileName = `${user.id}/${today}.jpg`;
+    const timestamp = Date.now();
+    // Usar timestamp en el nombre para evitar caché de CDN
+    const fileName = `${user.id}/${today}-${timestamp}.jpg`;
+
+    // Borrar archivos anteriores del mismo día (si existen)
+    const { data: existingFiles } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .list(user.id, {
+        search: today,
+      });
+    
+    if (existingFiles && existingFiles.length > 0) {
+      const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`);
+      await supabase.storage.from(STORAGE_BUCKET).remove(filesToDelete);
+    }
 
     // Subir foto a Supabase Storage
     const arrayBuffer = await file.arrayBuffer();
@@ -52,7 +66,7 @@ export async function POST(request: NextRequest) {
       .from(STORAGE_BUCKET)
       .upload(fileName, arrayBuffer, {
         contentType: 'image/jpeg',
-        upsert: true, // Permitir reemplazo si ya existe
+        cacheControl: '0', // Desactivar caché
       });
 
     if (uploadError) {

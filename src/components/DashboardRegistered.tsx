@@ -7,7 +7,7 @@ import PhotoUpload from './PhotoUpload';
 import WeekProgress from './WeekProgress';
 import GroupRanking from './GroupRanking';
 import { WeekEntry, UserStats } from '@/types';
-import { formatDate, getTodayDate } from '@/lib/utils';
+import { formatDate, getTodayDate, getCurrentMonthName } from '@/lib/utils';
 
 interface DashboardRegisteredProps {
   user: {
@@ -72,7 +72,7 @@ export default function DashboardRegistered({
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col items-center px-4 py-6">
       {/* Container principal */}
-      <div className="w-full max-w-md flex flex-col gap-2">
+      <div className="w-full max-w-md flex flex-col gap-4">
         {/* Header */}
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export default function DashboardRegistered({
           >
             <a href="/public-dashboard" className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-amber-300" />
-              <span className="text-xs">Ranking Mensual</span>
+              <span className="text-xs">Ranking {getCurrentMonthName()}</span>
             </a>
           </Button>
         </header>
@@ -107,7 +107,7 @@ export default function DashboardRegistered({
         {/* Card de foto del día */}
         <div className="overflow-hidden shadow-xl">
           {/* Imagen con aspect ratio */}
-          <div className="relative aspect-[4/3] bg-gray-100">
+          <div className="relative aspect-[4/5] bg-gray-100">
             <img
               src={photoUrl}
               alt="Foto del gym"

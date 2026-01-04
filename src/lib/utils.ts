@@ -62,6 +62,17 @@ export function calculateCappedMonthlyTotal(dates: string[], year: number, month
   return calculateCappedTotal(monthDates);
 }
 
+/**
+ * Obtiene el nombre del mes actual en español con primera letra mayúscula
+ */
+export function getCurrentMonthName(): string {
+  const months = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  return months[new Date().getMonth()];
+}
+
 // ========================================
 // Funciones auxiliares para Gym Challenge
 // ========================================

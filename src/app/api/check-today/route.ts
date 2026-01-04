@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Verificar si ya registró hoy
     const { data: entry, error: entryError } = await supabase
       .from('gym_entries')
-      .select('date, photo_url, created_at')
+      .select('date, photo_url, created_at, updated_at')
       .eq('user_id', user.id)
       .eq('date', today)
       .single();
@@ -53,7 +53,8 @@ export async function GET(request: NextRequest) {
       entry: entry ? {
         date: entry.date,
         photo_url: entry.photo_url,
-        timestamp: entry.created_at,
+        // Usar updated_at para cache busting (cambia al retomar foto)
+        timestamp: entry.updated_at || entry.created_at,
       } : undefined,
       user: {
         id: user.id,
