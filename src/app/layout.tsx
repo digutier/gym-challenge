@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const outfit = Outfit({ 
   subsets: ['latin'],
@@ -48,8 +49,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={`${outfit.variable} font-sans antialiased`}>
-        <ServiceWorkerRegister />
-        {children}
+        <AuthProvider>
+          <ServiceWorkerRegister />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -68,4 +68,3 @@ export type AppState =
   | 'not-registered'
   | 'registered'
   | 'uploading';
-

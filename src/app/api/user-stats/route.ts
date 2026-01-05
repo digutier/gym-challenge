@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getWeekDates, getWeekStart, getWeekEnd } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    let userId = searchParams.get('userId');
 
+    // Si no se proporciona userId, usar el usuario autenticado
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId requerido' },
-        { status: 400 }
-      );
+      const supabase = await createServerSupabaseClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        return NextResponse.json(
+          { error: 'No autenticado' },
+          { status: 401 }
+        );
+      }
+      userId = session.user.id;
     }
 
     const supabase = getServiceSupabase();
@@ -67,4 +75,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

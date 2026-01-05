@@ -10,14 +10,12 @@ interface DashboardNotRegisteredProps {
     name: string;
     avatar: string;
   };
-  token: string;
   onUploadComplete: () => void;
   onLogout: () => void;
 }
 
 export default function DashboardNotRegistered({ 
   user, 
-  token,
   onUploadComplete,
   onLogout
 }: DashboardNotRegisteredProps) {
@@ -59,7 +57,6 @@ export default function DashboardNotRegistered({
 
           {/* Botón de foto */}
           <PhotoUpload 
-            token={token} 
             onUploadComplete={onUploadComplete}
           />
         </main>

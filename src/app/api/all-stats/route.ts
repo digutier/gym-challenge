@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getWeekStart, getWeekEnd, capDays, calculateCappedTotal, calculateCappedMonthlyTotal } from '@/lib/utils';
+import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal } from '@/lib/utils';
 
 export async function GET() {
   try {
@@ -12,9 +12,9 @@ export async function GET() {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    // Obtener todos los usuarios
+    // Obtener todos los usuarios de la tabla profiles
     const { data: users, error: usersError } = await supabase
-      .from('users')
+      .from('profiles')
       .select('id, name, avatar');
 
     if (usersError) {
@@ -76,8 +76,8 @@ export async function GET() {
       
       return {
         id: user.id,
-        name: user.name,
-        avatar: user.avatar,
+        name: user.name || 'Usuario',
+        avatar: user.avatar || '🧑',
         // Días esta semana (raw, el cap se aplica en frontend)
         daysThisWeek: weekDates.length,
         // Total con cap semanal aplicado
@@ -87,8 +87,8 @@ export async function GET() {
       };
     }) || [];
 
-    // Ordenar por días de esta semana capeados (descendente)
-    usersWithStats.sort((a, b) => capDays(b.daysThisWeek) - capDays(a.daysThisWeek));
+    // Ordenar por días mensuales (descendente) para ranking mensual
+    usersWithStats.sort((a, b) => b.monthlyDays - a.monthlyDays);
 
     return NextResponse.json({
       users: usersWithStats,
@@ -101,4 +101,3 @@ export async function GET() {
     );
   }
 }
-

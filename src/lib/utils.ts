@@ -63,14 +63,53 @@ export function calculateCappedMonthlyTotal(dates: string[], year: number, month
 }
 
 /**
- * Obtiene el nombre del mes actual en español con primera letra mayúscula
+ * Obtiene la fecha/hora actual en zona horaria de Chile (America/Santiago)
+ */
+export function getChileDate(): Date {
+  const now = new Date();
+  // Convertir a hora de Chile usando Intl
+  const chileTime = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+
+  const year = parseInt(chileTime.find(p => p.type === 'year')!.value);
+  const month = parseInt(chileTime.find(p => p.type === 'month')!.value) - 1; // Month is 0-indexed
+  const day = parseInt(chileTime.find(p => p.type === 'day')!.value);
+  const hour = parseInt(chileTime.find(p => p.type === 'hour')!.value);
+  const minute = parseInt(chileTime.find(p => p.type === 'minute')!.value);
+  const second = parseInt(chileTime.find(p => p.type === 'second')!.value);
+
+  return new Date(year, month, day, hour, minute, second);
+}
+
+/**
+ * Obtiene la fecha actual en formato YYYY-MM-DD en hora de Chile
+ */
+export function getTodayDate(): string {
+  const chileDate = new Date().toLocaleString('es-CL', { timeZone: 'America/Santiago' });
+  console.log('chileDate es:');
+  console.log(chileDate);
+  const dateParts = (chileDate.split(',')[0]).split('-');
+  return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+}
+
+/**
+ * Obtiene el nombre del mes actual en español con primera letra mayúscula (hora de Chile)
  */
 export function getCurrentMonthName(): string {
   const months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
-  return months[new Date().getMonth()];
+  const chileDate = getChileDate();
+  return months[chileDate.getMonth()];
 }
 
 // ========================================
@@ -78,28 +117,20 @@ export function getCurrentMonthName(): string {
 // ========================================
 
 /**
- * Obtiene la fecha actual en formato YYYY-MM-DD (timezone local)
- */
-export function getTodayDate(): string {
-  const now = new Date();
-  return now.toISOString().split('T')[0];
-}
-
-/**
- * Obtiene el inicio de la semana actual (lunes)
+ * Obtiene el inicio de la semana actual (lunes) en hora de Chile
  */
 export function getWeekStart(): Date {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(now);
+  const chileDate = getChileDate();
+  const day = chileDate.getDay();
+  const diff = chileDate.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(chileDate);
   monday.setDate(diff);
   monday.setHours(0, 0, 0, 0);
   return monday;
 }
 
 /**
- * Obtiene el fin de la semana actual (domingo)
+ * Obtiene el fin de la semana actual (domingo) en hora de Chile
  */
 export function getWeekEnd(): Date {
   const monday = getWeekStart();

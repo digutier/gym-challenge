@@ -20,7 +20,6 @@ interface DashboardRegisteredProps {
     photo_url: string;
     timestamp: string;
   };
-  token: string;
   onPhotoRetake: () => void;
   onLogout: () => void;
 }
@@ -28,7 +27,6 @@ interface DashboardRegisteredProps {
 export default function DashboardRegistered({ 
   user, 
   entry,
-  token,
   onPhotoRetake,
   onLogout
 }: DashboardRegisteredProps) {
@@ -131,7 +129,6 @@ export default function DashboardRegistered({
             {/* Botón retomar foto */}
             <div className="absolute bottom-2 right-2">
               <PhotoUpload 
-                token={token} 
                 onUploadComplete={onPhotoRetake}
                 isRetake
               />

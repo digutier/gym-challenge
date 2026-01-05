@@ -1,129 +1,151 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
-import LoginScreen from '@/components/LoginScreen';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthScreen from '@/components/AuthScreen';
 import DashboardRegistered from '@/components/DashboardRegistered';
 import DashboardNotRegistered from '@/components/DashboardNotRegistered';
-import { TOKEN_STORAGE_KEY } from '@/lib/constants';
-import { AppState, CheckTodayResponse } from '@/types';
+import { supabase } from '@/lib/supabase';
+import { getTodayDate } from '@/lib/utils';
+
+type TodayEntry = {
+  date: string;
+  photo_url: string;
+  created_at: string;
+  updated_at: string;
+} | null;
 
 export default function Home() {
-  const [appState, setAppState] = useState<AppState>('loading');
-  const [token, setToken] = useState<string | null>(null);
-  const [userData, setUserData] = useState<CheckTodayResponse | null>(null);
+  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const [todayEntry, setTodayEntry] = useState<TodayEntry>(null);
+  const [checkingToday, setCheckingToday] = useState(true);
+
+  const checkTodayEntry = useCallback(async () => {
+    if (!user) return;
+    
+    setCheckingToday(true);
+    try {
+      const today = getTodayDate();
+      const { data, error } = await supabase
+        .from('gym_entries')
+        .select('date, photo_url, created_at, updated_at')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .maybeSingle();
+      
+      if (error) throw error;
+      setTodayEntry(data);
+    } catch (error) {
+      console.error('Error checking today entry:', error);
+    } finally {
+      setCheckingToday(false);
+    }
+  }, [user]);
 
   useEffect(() => {
-    const checkStatus = async () => {
-      const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-      
-      if (!storedToken) {
-        setAppState('login');
-        return;
-      }
-
-      setToken(storedToken);
-      
-      try {
-        const response = await fetch(`/api/check-today?token=${storedToken}`);
-        
-        if (!response.ok) {
-          localStorage.removeItem(TOKEN_STORAGE_KEY);
-          setAppState('login');
-          return;
-        }
-
-        const data: CheckTodayResponse = await response.json();
-        setUserData(data);
-        setAppState(data.alreadyRegistered ? 'registered' : 'not-registered');
-      } catch (error) {
-        console.error('Error checking status:', error);
-        setAppState('login');
-      }
-    };
-
-    checkStatus();
-  }, []);
-
-  const checkTodayStatus = async (userToken: string) => {
-    setAppState('loading');
-    
-    try {
-      const response = await fetch(`/api/check-today?token=${userToken}`);
-      
-      if (!response.ok) {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-        setAppState('login');
-        return;
-      }
-
-      const data: CheckTodayResponse = await response.json();
-      setUserData(data);
-      setAppState(data.alreadyRegistered ? 'registered' : 'not-registered');
-    } catch (error) {
-      console.error('Error checking status:', error);
-      setAppState('login');
+    if (user) {
+      checkTodayEntry();
+    } else {
+      setCheckingToday(false);
     }
-  };
-
-  const handleLogin = (newToken: string) => {
-    setToken(newToken);
-    checkTodayStatus(newToken);
-  };
+  }, [user, checkTodayEntry]);
 
   const handleUploadComplete = () => {
-    if (token) {
-      checkTodayStatus(token);
-    }
+    checkTodayEntry();
   };
 
   const handleLogout = () => {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-    setToken(null);
-    setUserData(null);
-    setAppState('login');
+    signOut();
   };
 
-  if (appState === 'loading') {
+  // Loading state
+  if (authLoading || (user && checkingToday)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 
                     flex flex-col items-center justify-center">
         <div className="relative">
-          <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
-            <Loader2 className="w-10 h-10 text-white animate-spin" />
+          <div className="!w-20 !h-20 !rounded-full bg-white/20 flex items-center justify-center">
+            <Loader2 className="!w-10 !h-10 !text-white animate-spin" />
           </div>
         </div>
-        <p className="text-white/80 mt-4 font-medium">Cargando...</p>
+        <p className="!text-white/80 !mt-4 !font-medium">Cargando...</p>
       </div>
     );
   }
 
-  if (appState === 'login') {
-    return <LoginScreen onLogin={handleLogin} />;
+  // Si no hay usuario, mostrar login
+  if (!user) {
+    return <AuthScreen />;
   }
 
-  if (appState === 'not-registered' && userData && token) {
-    return (
-      <DashboardNotRegistered
-        user={userData.user}
-        token={token}
-        onUploadComplete={handleUploadComplete}
-        onLogout={handleLogout}
-      />
-    );
+  // Si no hay profile aún, mostrar loading solo si aún está cargando auth
+  // Si auth ya terminó pero no hay profile, usar datos básicos
+  if (!profile && !authLoading) {
+    const userData = {
+      id: user.id,
+      name: user.email?.split('@')[0] || 'Usuario',
+      avatar: user.user_metadata?.avatar || '🧑',
+    };
+    
+    if (todayEntry) {
+      return (
+        <DashboardRegistered
+          user={userData}
+          entry={{
+            date: todayEntry.date,
+            photo_url: todayEntry.photo_url,
+            timestamp: todayEntry.updated_at || todayEntry.created_at,
+          }}
+          onPhotoRetake={handleUploadComplete}
+          onLogout={handleLogout}
+        />
+      );
+    } else {
+      return (
+        <DashboardNotRegistered
+          user={userData}
+          onUploadComplete={handleUploadComplete}
+          onLogout={handleLogout}
+        />
+      );
+    }
   }
 
-  if (appState === 'registered' && userData?.entry && token) {
+  // Si aún no hay profile después de todo, no debería llegar aquí pero por seguridad
+  if (!profile) {
+    return <AuthScreen />;
+  }
+
+  // Preparar datos del usuario para los componentes
+  const userData = {
+    id: user.id,
+    name: profile.name,
+    avatar: profile.avatar || '🧑',
+  };
+
+  // Si hay entrada de hoy, mostrar DashboardRegistered
+  if (todayEntry) {
     return (
       <DashboardRegistered
-        user={userData.user}
-        entry={userData.entry}
-        token={token}
+        user={userData}
+        entry={{
+          date: todayEntry.date,
+          photo_url: todayEntry.photo_url,
+          timestamp: todayEntry.updated_at || todayEntry.created_at,
+        }}
         onPhotoRetake={handleUploadComplete}
         onLogout={handleLogout}
       />
     );
   }
 
-  return null;
+  // Si no hay entrada de hoy, mostrar DashboardNotRegistered
+  return (
+    <DashboardNotRegistered
+      user={userData}
+      onUploadComplete={handleUploadComplete}
+      onLogout={handleLogout}
+    />
+  );
 }
