@@ -33,6 +33,7 @@ export default function DashboardRegistered({
   const [weekEntries, setWeekEntries] = useState<WeekEntry[]>([]);
   const [ranking, setRanking] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isHorizontal, setIsHorizontal] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -66,6 +67,13 @@ export default function DashboardRegistered({
   const isToday = entry.date === today;
   // Añadimos timestamp para invalidar cache del navegador
   const photoUrl = `${entry.photo_url}?t=${new Date(entry.timestamp).getTime()}`;
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    // Si el aspect ratio es mayor que 1, es horizontal
+    setIsHorizontal(aspectRatio > 1);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col items-center px-4 py-6">
@@ -105,11 +113,12 @@ export default function DashboardRegistered({
         {/* Card de foto del día */}
         <div className="overflow-hidden shadow-xl">
           {/* Imagen con aspect ratio */}
-          <div className="relative aspect-[4/5] bg-gray-100">
+          <div className={`relative aspect-[4/5] ${isHorizontal ? 'bg-black' : 'bg-gray-100'}`}>
             <img
               src={photoUrl}
               alt="Foto del gym"
-              className="w-full h-full object-cover"
+              onLoad={handleImageLoad}
+              className={`w-full h-full ${isHorizontal ? 'object-contain' : 'object-cover'}`}
             />
             
             {/* Tag de fecha */}

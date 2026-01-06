@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal } from '@/lib/utils';
+import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal, getTodayDate } from '@/lib/utils';
 
 export async function GET() {
   try {
@@ -53,6 +53,24 @@ export async function GET() {
       );
     }
 
+    // Obtener las fotos de hoy para todos los usuarios
+    const today = getTodayDate();
+    const { data: todayEntries, error: todayError } = await supabase
+      .from('gym_entries')
+      .select('user_id, photo_url')
+      .eq('date', today);
+
+    if (todayError) {
+      console.error('Error obteniendo fotos de hoy:', todayError);
+      // No es crítico, continuamos sin las fotos
+    }
+
+    // Crear mapa de fotos de hoy por usuario
+    const userTodayPhotos = new Map<string, string>();
+    todayEntries?.forEach(entry => {
+      userTodayPhotos.set(entry.user_id, entry.photo_url);
+    });
+
     // Agrupar fechas por usuario
     const userWeekDates = new Map<string, string[]>();
     const userAllDates = new Map<string, string[]>();
@@ -73,6 +91,7 @@ export async function GET() {
     const usersWithStats = users?.map(user => {
       const weekDates = userWeekDates.get(user.id) || [];
       const allDates = userAllDates.get(user.id) || [];
+      const todayPhotoUrl = userTodayPhotos.get(user.id);
       
       return {
         id: user.id,
@@ -84,6 +103,8 @@ export async function GET() {
         totalDays: calculateCappedTotal(allDates),
         // Total mensual con cap semanal aplicado
         monthlyDays: calculateCappedMonthlyTotal(allDates, currentYear, currentMonth),
+        // URL de la foto de hoy (si existe)
+        todayPhotoUrl: todayPhotoUrl || undefined,
       };
     }) || [];
 

@@ -30,6 +30,7 @@ export interface UserStats {
   daysThisWeek: number;
   totalDays: number;
   monthlyDays?: number; // Total mensual con cap semanal aplicado
+  todayPhotoUrl?: string; // URL de la foto de hoy (si existe)
 }
 
 export interface CheckTodayResponse {
