@@ -1,81 +1,132 @@
-const CACHE_NAME = 'gym-challenge-v1';
+// ⚠️ IMPORTANTE: Cambia CACHE_VERSION en cada deploy para forzar actualizaciones
+const CACHE_VERSION = 'v1.0.0';
+const CACHE_NAME = `gym-challenge-${CACHE_VERSION}`;
+
+// Archivos esenciales a cachear
 const urlsToCache = [
   '/',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
+  '/apple-touch-icon.png',
 ];
 
-// Instalar Service Worker
+// Instalación del Service Worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache abierto');
-        return cache.addAll(urlsToCache);
-      })
-  );
-  // Activar inmediatamente
+  console.log('[SW] Instalando nueva versión:', CACHE_VERSION);
+  
+  // Fuerza que el nuevo SW se active inmediatamente
   self.skipWaiting();
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Cacheando archivos esenciales');
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-// Activar Service Worker
+// Activación del Service Worker
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activando nueva versión:', CACHE_VERSION);
+  
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Eliminando cache antiguo:', cacheName);
+          // Elimina caches de versiones antiguas
+          if (cacheName !== CACHE_NAME && cacheName.startsWith('gym-challenge-')) {
+            console.log('[SW] Eliminando cache antiguo:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      // Toma control de todas las páginas inmediatamente
+      console.log('[SW] Tomando control de clientes');
+      return self.clients.claim();
     })
   );
-  // Tomar control inmediatamente
-  self.clients.claim();
 });
 
-// Interceptar peticiones
+// Estrategia de fetch: Network First para HTML/API, Cache First para assets
 self.addEventListener('fetch', (event) => {
-  // Solo cachear peticiones GET
-  if (event.request.method !== 'GET') {
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Solo manejar peticiones GET
+  if (request.method !== 'GET') {
     return;
   }
-
-  // No cachear API requests
-  if (event.request.url.includes('/api/')) {
+  
+  // No cachear API requests - siempre ir a la red
+  if (url.pathname.startsWith('/api/')) {
     return;
   }
-
+  
+  // Para navegación y HTML: Network First
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Actualiza el cache con la respuesta fresca
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Si falla la red, intenta el cache
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+  
+  // Para assets estáticos: Cache First con Network Fallback
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Retornar cache si existe
-        if (response) {
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Actualiza el cache en segundo plano (stale-while-revalidate)
+        fetch(request).then((response) => {
+          if (response && response.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, response);
+            });
+          }
+        }).catch(() => {});
+        
+        return cachedResponse;
+      }
+      
+      // Si no está en cache, fetch y cachear
+      return fetch(request).then((response) => {
+        if (!response || response.status !== 200) {
           return response;
         }
-
-        // Si no está en cache, hacer fetch
-        return fetch(event.request).then((response) => {
-          // No cachear respuestas no válidas
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clonar respuesta para cache
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
+        
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
         });
-      })
+        
+        return response;
+      });
+    })
   );
+});
+
+// Escucha mensajes del cliente para forzar actualización
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Recibido SKIP_WAITING, activando inmediatamente');
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
+  }
 });
 
 // Manejar notificaciones push (para futuro)
@@ -110,4 +161,3 @@ self.addEventListener('notificationclick', (event) => {
     );
   }
 });
-
