@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthScreen from '@/components/AuthScreen';
-import DashboardRegistered from '@/components/DashboardRegistered';
-import DashboardNotRegistered from '@/components/DashboardNotRegistered';
+import Dashboard from '@/components/Dashboard';
 import { supabase } from '@/lib/supabase';
 import { getTodayDate } from '@/lib/utils';
 
@@ -51,7 +50,7 @@ export default function Home() {
     }
   }, [user, checkTodayEntry]);
 
-  const handleUploadComplete = () => {
+  const handlePhotoUpload = () => {
     checkTodayEntry();
   };
 
@@ -79,72 +78,25 @@ export default function Home() {
     return <AuthScreen />;
   }
 
-  // Si no hay profile aún, mostrar loading solo si aún está cargando auth
-  // Si auth ya terminó pero no hay profile, usar datos básicos
-  if (!profile && !authLoading) {
-    const userData = {
-      id: user.id,
-      name: user.email?.split('@')[0] || 'Usuario',
-      avatar: user.user_metadata?.avatar || '🧑',
-    };
-    
-    if (todayEntry) {
-      return (
-        <DashboardRegistered
-          user={userData}
-          entry={{
-            date: todayEntry.date,
-            photo_url: todayEntry.photo_url,
-            timestamp: todayEntry.updated_at || todayEntry.created_at,
-          }}
-          onPhotoRetake={handleUploadComplete}
-          onLogout={handleLogout}
-        />
-      );
-    } else {
-      return (
-        <DashboardNotRegistered
-          user={userData}
-          onUploadComplete={handleUploadComplete}
-          onLogout={handleLogout}
-        />
-      );
-    }
-  }
-
-  // Si aún no hay profile después de todo, no debería llegar aquí pero por seguridad
-  if (!profile) {
-    return <AuthScreen />;
-  }
-
-  // Preparar datos del usuario para los componentes
+  // Preparar datos del usuario
   const userData = {
     id: user.id,
-    name: profile.name,
-    avatar: profile.avatar || '🧑',
+    name: profile?.name || user.email?.split('@')[0] || 'Usuario',
+    avatar: profile?.avatar || user.user_metadata?.avatar || '🧑',
   };
 
-  // Si hay entrada de hoy, mostrar DashboardRegistered
-  if (todayEntry) {
-    return (
-      <DashboardRegistered
-        user={userData}
-        entry={{
-          date: todayEntry.date,
-          photo_url: todayEntry.photo_url,
-          timestamp: todayEntry.updated_at || todayEntry.created_at,
-        }}
-        onPhotoRetake={handleUploadComplete}
-        onLogout={handleLogout}
-      />
-    );
-  }
+  // Preparar entry si existe
+  const entryData = todayEntry ? {
+    date: todayEntry.date,
+    photo_url: todayEntry.photo_url,
+    timestamp: todayEntry.updated_at || todayEntry.created_at,
+  } : null;
 
-  // Si no hay entrada de hoy, mostrar DashboardNotRegistered
   return (
-    <DashboardNotRegistered
+    <Dashboard
       user={userData}
-      onUploadComplete={handleUploadComplete}
+      entry={entryData}
+      onPhotoUpload={handlePhotoUpload}
       onLogout={handleLogout}
     />
   );

@@ -9,27 +9,27 @@ import GroupRanking from './GroupRanking';
 import { WeekEntry, UserStats } from '@/types';
 import { formatDate, getTodayDate, getCurrentMonthName } from '@/lib/utils';
 
-interface DashboardRegisteredProps {
+interface DashboardProps {
   user: {
     id: string;
     name: string;
     avatar: string;
   };
-  entry: {
+  entry?: {
     date: string;
     photo_url: string;
     timestamp: string;
-  };
-  onPhotoRetake: () => void;
+  } | null;
+  onPhotoUpload: () => void;
   onLogout: () => void;
 }
 
-export default function DashboardRegistered({ 
+export default function Dashboard({ 
   user, 
   entry,
-  onPhotoRetake,
+  onPhotoUpload,
   onLogout
-}: DashboardRegisteredProps) {
+}: DashboardProps) {
   const [weekEntries, setWeekEntries] = useState<WeekEntry[]>([]);
   const [ranking, setRanking] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,9 +64,10 @@ export default function DashboardRegistered({
   }, [user.id]);
 
   const today = getTodayDate();
-  const isToday = entry.date === today;
+  const hasEntryToday = entry && entry.date === today;
+  
   // Añadimos timestamp para invalidar cache del navegador
-  const photoUrl = `${entry.photo_url}?t=${new Date(entry.timestamp).getTime()}`;
+  const photoUrl = entry ? `${entry.photo_url}?t=${new Date(entry.timestamp).getTime()}` : '';
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -92,7 +93,9 @@ export default function DashboardRegistered({
             </Button>
             <span className="text-3xl">{user.avatar}</span>
             <div className="flex flex-col">
-              <p className="text-white/60 text-xs">¡Bien hecho,</p>
+              <p className="text-white/60 text-xs">
+                {hasEntryToday ? '¡Bien hecho,' : '¡Hola,'}
+              </p>
               <h1 className="text-white font-bold text-lg">{user.name}!</h1>
             </div>
           </div>
@@ -110,44 +113,65 @@ export default function DashboardRegistered({
           </Button>
         </header>
 
-        {/* Card de foto del día */}
-        <div className="overflow-hidden shadow-xl">
-          {/* Imagen con aspect ratio */}
-          <div className={`relative aspect-[4/5] ${isHorizontal ? 'bg-black' : 'bg-gray-100'}`}>
-            <img
-              src={photoUrl}
-              alt="Foto del gym"
-              onLoad={handleImageLoad}
-              className={`w-full h-full ${isHorizontal ? 'object-contain' : 'object-cover'}`}
-            />
-            
-            {/* Tag de fecha */}
-            <div className="absolute top-1 left-0.5 bg-black/60 backdrop-blur-md text-white 
-                          !px-4 !py-2 rounded-2xl font-semibold text-sm shadow-xl capitalize">
-              {formatDate(entry.date)}
-            </div>
-            
-            {/* Badge de éxito */}
-            <div className="absolute top-1 right-0.5 flex items-center gap-1.5 
-                          bg-emerald-500 text-white !px-1.5 !py-1 rounded-full
-                          font-semibold text-xs shadow-lg backdrop-blur-sm">
-              <CheckCircle className="w-3.5 h-3.5" />
-              {isToday ? '¡Hoy!' : 'Registrado'}
-            </div>
-            
-            {/* Botón retomar foto */}
-            <div className="absolute bottom-2 right-2">
-              <PhotoUpload 
-                onUploadComplete={onPhotoRetake}
-                isRetake
+        {/* Sección de foto */}
+        {hasEntryToday && entry ? (
+          // Si tiene foto de hoy, mostrar la foto
+          <div className="overflow-hidden shadow-xl rounded-2xl">
+            <div className={`relative aspect-[4/5] ${isHorizontal ? 'bg-black' : 'bg-gray-100'}`}>
+              <img
+                src={photoUrl}
+                alt="Foto del gym"
+                onLoad={handleImageLoad}
+                className={`w-full h-full ${isHorizontal ? 'object-contain' : 'object-cover'}`}
               />
+              
+              {/* Tag de fecha */}
+              <div className="absolute top-1 left-0.5 bg-black/60 backdrop-blur-md text-white 
+                            !px-4 !py-2 rounded-2xl font-semibold text-sm shadow-xl capitalize">
+                {formatDate(entry.date)}
+              </div>
+              
+              {/* Badge de éxito */}
+              <div className="absolute top-1 right-0.5 flex items-center gap-1.5 
+                            bg-emerald-500 text-white !px-1.5 !py-1 rounded-full
+                            font-semibold text-xs shadow-lg backdrop-blur-sm">
+                <CheckCircle className="w-3.5 h-3.5" />
+                ¡Hoy!
+              </div>
+              
+              {/* Botón retomar foto */}
+              <div className="absolute bottom-2 right-2">
+                <PhotoUpload 
+                  onUploadComplete={onPhotoUpload}
+                  isRetake
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          // Si no tiene foto de hoy, mostrar área para subir foto
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-lg">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <p className="text-5xl">📸</p>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-white text-lg font-bold">
+                  ¿Fuiste al gym hoy?
+                </h2>
+                <p className="text-purple-200/70 text-sm">
+                  Toma una foto para registrar tu día
+                </p>
+              </div>
+              
+              <div className="mt-2">
+                <PhotoUpload onUploadComplete={onPhotoUpload} />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Progreso semanal */}
         {!loading && weekEntries.length > 0 && (
-          <WeekProgress entries={weekEntries} />
+          <WeekProgress entries={weekEntries} currentUserId={user.id} />
         )}
 
         {/* Ranking del grupo */}
