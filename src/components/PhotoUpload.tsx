@@ -113,17 +113,6 @@ export default function PhotoUpload({ onUploadComplete, isRetake = false }: Phot
         </button>
       )}
 
-      {!isRetake && (
-        <Button
-          variant="ghost"
-          onClick={triggerFileInput}
-          className="!mt-6 !text-white/60 hover:!text-white/80 hover:!bg-transparent"
-        >
-          <Upload className="!w-4 !h-4" />
-          o subir desde galería
-        </Button>
-      )}
-
       {error && (
         <div className="!mt-4 !px-4 !py-2 !bg-red-500/20 !border !border-red-500/40 !rounded-xl">
           <p className="!text-red-200 !text-sm">{error}</p>
