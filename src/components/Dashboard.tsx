@@ -77,26 +77,26 @@ export default function Dashboard({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col items-center px-4 py-6">
+    <div className="!min-h-screen !bg-gradient-to-br !from-violet-600 !via-purple-600 !to-fuchsia-600 !flex !flex-col !items-center !px-4 !pt-3 !pb-8">
       {/* Container principal */}
-      <div className="w-full max-w-md flex flex-col gap-4">
+      <div className="!w-full !max-w-md !flex !flex-col !gap-4">
         {/* Header */}
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <header className="!flex !items-center !justify-between !mb-2">
+          <div className="!flex !items-center !gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={onLogout}
-              className="rounded-full bg-white/10 hover:bg-white/20 !w-8 !h-8"
+              className="!rounded-full !bg-white/10 hover:!bg-white/20 !w-8 !h-8"
             >
-              <LogOut className="w-4 h-4 text-white/70" />
+              <LogOut className="!w-4 !h-4 !text-white/70" />
             </Button>
-            <span className="text-3xl">{user.avatar}</span>
-            <div className="flex flex-col">
-              <p className="text-white/60 text-xs">
+            <span className="!text-3xl">{user.avatar}</span>
+            <div className="!flex !flex-col">
+              <p className="!text-white/60 !text-xs">
                 {hasEntryToday ? '¡Bien hecho,' : '¡Hola,'}
               </p>
-              <h1 className="text-white font-bold text-lg">{user.name}!</h1>
+              <h1 className="!text-white !font-bold !text-lg">{user.name}!</h1>
             </div>
           </div>
           
@@ -104,11 +104,11 @@ export default function Dashboard({
             variant="ghost"
             size="sm"
             asChild
-            className="rounded-full bg-white/10 hover:bg-white/20 text-white !mr-2 !px-2"
+            className="!rounded-full !bg-white/10 hover:!bg-white/20 !text-white !mr-2 !px-2"
           >
-            <a href="/public-dashboard" className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-300" />
-              <span className="text-xs">Ranking {getCurrentMonthName()}</span>
+            <a href="/public-dashboard" className="!flex !items-center !gap-2">
+              <Trophy className="!w-4 !h-4 !text-amber-300" />
+              <span className="!text-xs">Ranking {getCurrentMonthName()}</span>
             </a>
           </Button>
         </header>
@@ -116,31 +116,28 @@ export default function Dashboard({
         {/* Sección de foto */}
         {hasEntryToday && entry ? (
           // Si tiene foto de hoy, mostrar la foto
-          <div className="overflow-hidden shadow-xl rounded-2xl">
-            <div className={`relative aspect-[4/5] ${isHorizontal ? 'bg-black' : 'bg-gray-100'}`}>
+          <div className="!overflow-hidden !shadow-xl !rounded-2xl">
+            <div className={`!relative !aspect-[4/5] ${isHorizontal ? '!bg-black' : '!bg-gray-100'}`}>
               <img
                 src={photoUrl}
                 alt="Foto del gym"
                 onLoad={handleImageLoad}
-                className={`w-full h-full ${isHorizontal ? 'object-contain' : 'object-cover'}`}
+                className={`!w-full !h-full ${isHorizontal ? '!object-contain' : '!object-cover'}`}
               />
               
               {/* Tag de fecha */}
-              <div className="absolute top-1 left-0.5 bg-black/60 backdrop-blur-md text-white 
-                            !px-4 !py-2 rounded-2xl font-semibold text-sm shadow-xl capitalize">
+              <div className="!absolute !top-1 !left-0.5 !bg-black/60 !backdrop-blur-md !text-white !px-4 !py-2 !rounded-2xl !font-semibold !text-sm !shadow-xl !capitalize">
                 {formatDate(entry.date)}
               </div>
               
               {/* Badge de éxito */}
-              <div className="absolute top-1 right-0.5 flex items-center gap-1.5 
-                            bg-emerald-500 text-white !px-1.5 !py-1 rounded-full
-                            font-semibold text-xs shadow-lg backdrop-blur-sm">
-                <CheckCircle className="w-3.5 h-3.5" />
+              <div className="!absolute !top-1 !right-0.5 !flex !items-center !gap-1.5 !bg-emerald-500 !text-white !px-1.5 !py-1 !rounded-full !font-semibold !text-xs !shadow-lg !backdrop-blur-sm">
+                <CheckCircle className="!w-3.5 !h-3.5" />
                 ¡Hoy!
               </div>
               
               {/* Botón retomar foto */}
-              <div className="absolute bottom-2 right-2">
+              <div className="!absolute !bottom-2 !right-2">
                 <PhotoUpload 
                   onUploadComplete={onPhotoUpload}
                   isRetake
@@ -150,19 +147,19 @@ export default function Dashboard({
           </div>
         ) : (
           // Si no tiene foto de hoy, mostrar área para subir foto
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-lg">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <p className="text-5xl">📸</p>
-              <div className="flex flex-col gap-1">
-                <h2 className="text-white text-lg font-bold">
+          <div className="!bg-white/10 !backdrop-blur-md !rounded-2xl !p-6 !pb-10 !border !border-white/10 !shadow-lg !mb-2">
+            <div className="!flex !flex-col !items-center !gap-4 !text-center">
+              <p className="!text-5xl">📸</p>
+              <div className="!flex !flex-col !gap-1">
+                <h2 className="!text-white !text-lg !font-bold">
                   ¿Fuiste al gym hoy?
                 </h2>
-                <p className="text-purple-200/70 text-sm">
+                <p className="!text-purple-200/70 !text-sm">
                   Toma una foto para registrar tu día
                 </p>
               </div>
               
-              <div className="mt-2">
+              <div className="!mt-2 !mb-4">
                 <PhotoUpload onUploadComplete={onPhotoUpload} />
               </div>
             </div>
@@ -181,9 +178,9 @@ export default function Dashboard({
 
         {/* Loading skeleton */}
         {loading && (
-          <div className="flex flex-col gap-4">
-            <div className="bg-white/10 rounded-2xl h-32 animate-pulse" />
-            <div className="bg-white/10 rounded-2xl h-48 animate-pulse" />
+          <div className="!flex !flex-col !gap-4">
+            <div className="!bg-white/10 !rounded-2xl !h-32 !animate-pulse" />
+            <div className="!bg-white/10 !rounded-2xl !h-48 !animate-pulse" />
           </div>
         )}
       </div>
