@@ -180,7 +180,10 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
 
           {/* Barra de progreso */}
           <div className="absolute top-2 left-4 right-4 h-0.5 bg-white/20 rounded-full z-10">
-            <div className="h-full bg-white rounded-full animate-[storyProgress_5s_linear_forwards]" />
+            <div 
+              className="h-full bg-white rounded-full"
+              style={{ animation: 'storyProgress 5s linear forwards' }}
+            />
           </div>
 
           {/* Imagen */}
@@ -197,13 +200,6 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
           </p>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes storyProgress {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </div>
   );
 }
