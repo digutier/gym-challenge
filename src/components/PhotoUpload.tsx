@@ -1,12 +1,12 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Camera, Upload, Loader2 } from 'lucide-react';
+import { Camera, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { compressImage } from '@/lib/utils';
 
 interface PhotoUploadProps {
-  onUploadComplete: () => void;
+  onUploadComplete: (entryData?: { date: string; photo_url: string; timestamp: string }) => void;
   isRetake?: boolean;
 }
 
@@ -39,7 +39,17 @@ export default function PhotoUpload({ onUploadComplete, isRetake = false }: Phot
         throw new Error(data.error || 'Error al subir foto');
       }
 
-      onUploadComplete();
+      const result = await response.json();
+      // Pasar los datos del entry si están disponibles
+      if (result.entry) {
+        onUploadComplete({
+          date: result.entry.date,
+          photo_url: result.entry.photo_url,
+          timestamp: result.entry.updated_at || result.entry.created_at,
+        });
+      } else {
+        onUploadComplete();
+      }
     } catch (err) {
       console.error('Error uploading:', err);
       setError(err instanceof Error ? err.message : 'Error al subir la foto');

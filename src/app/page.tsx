@@ -50,10 +50,21 @@ export default function Home() {
     }
   }, [user, checkTodayEntry]);
 
-  const handlePhotoUpload = async () => {
-    // Delay para dar tiempo a que la base de datos se actualice
-    await new Promise(resolve => setTimeout(resolve, 500));
-    await checkTodayEntry();
+  const handlePhotoUpload = async (entryData?: { date: string; photo_url: string; timestamp: string }) => {
+    if (entryData) {
+      // Si tenemos los datos directamente de la API, usarlos inmediatamente
+      setTodayEntry({
+        date: entryData.date,
+        photo_url: entryData.photo_url,
+        created_at: entryData.timestamp,
+        updated_at: entryData.timestamp,
+      });
+    } else {
+      // Si no tenemos datos, hacer query con un pequeño delay
+      // La API debería retornar los datos, pero por si acaso hacemos esto como fallback
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await checkTodayEntry();
+    }
   };
 
   const handleLogout = () => {
