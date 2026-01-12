@@ -7,7 +7,7 @@ import PhotoUpload from './PhotoUpload';
 import WeekProgress from './WeekProgress';
 import GroupRanking from './GroupRanking';
 import { WeekEntry, UserStats } from '@/types';
-import { formatDate, getTodayDate, getCurrentMonthName } from '@/lib/utils';
+import { formatDate, getTodayDate, getCurrentMonthName, getWeekStart } from '@/lib/utils';
 
 interface DashboardProps {
   user: {
@@ -34,14 +34,21 @@ export default function Dashboard({
   const [ranking, setRanking] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [isHorizontal, setIsHorizontal] = useState(false);
+  const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(getWeekStart());
 
   useEffect(() => {
     const fetchStats = async () => {
+      setLoading(true);
       try {
+        const weekStartStr = selectedWeekStart.toISOString().split('T')[0];
+        const weekEndDate = new Date(selectedWeekStart);
+        weekEndDate.setDate(selectedWeekStart.getDate() + 6);
+        const weekEndStr = weekEndDate.toISOString().split('T')[0];
+
         // Fetch en paralelo
         const [userStatsRes, allStatsRes] = await Promise.all([
-          fetch(`/api/user-stats?userId=${user.id}`),
-          fetch('/api/all-stats'),
+          fetch(`/api/user-stats?userId=${user.id}&weekStart=${weekStartStr}&weekEnd=${weekEndStr}`),
+          fetch(`/api/all-stats?weekStart=${weekStartStr}&weekEnd=${weekEndStr}`),
         ]);
 
         if (userStatsRes.ok) {
@@ -61,7 +68,11 @@ export default function Dashboard({
     };
 
     fetchStats();
-  }, [user.id]);
+  }, [user.id, selectedWeekStart]);
+
+  const handleWeekChange = (weekStart: Date) => {
+    setSelectedWeekStart(weekStart);
+  };
 
   const today = getTodayDate();
   const hasEntryToday = entry && entry.date === today;
@@ -168,7 +179,12 @@ export default function Dashboard({
 
         {/* Progreso semanal */}
         {!loading && weekEntries.length > 0 && (
-          <WeekProgress entries={weekEntries} currentUserId={user.id} />
+          <WeekProgress 
+            entries={weekEntries} 
+            currentUserId={user.id}
+            weekStart={selectedWeekStart}
+            onWeekChange={handleWeekChange}
+          />
         )}
 
         {/* Ranking del grupo */}

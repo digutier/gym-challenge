@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getWeekDates, getWeekStart, getWeekEnd } from '@/lib/utils';
+import { getWeekDates, getWeekStart, getWeekEnd, getWeekDatesForDate, getWeekStartForDate, getWeekEndForDate } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     let userId = searchParams.get('userId');
+    const weekStartParam = searchParams.get('weekStart');
+    const weekEndParam = searchParams.get('weekEnd');
 
     // Si no se proporciona userId, usar el usuario autenticado
     if (!userId) {
@@ -24,17 +26,31 @@ export async function GET(request: NextRequest) {
 
     const supabase = getServiceSupabase();
     
-    const weekStart = getWeekStart().toISOString().split('T')[0];
-    const weekEnd = getWeekEnd().toISOString().split('T')[0];
-    const weekDates = getWeekDates();
+    // Si se proporcionan parámetros de semana, usarlos; sino usar semana actual
+    let weekStart: Date;
+    let weekEnd: Date;
+    let weekDates: string[];
+    
+    if (weekStartParam && weekEndParam) {
+      weekStart = new Date(weekStartParam + 'T12:00:00');
+      weekEnd = new Date(weekEndParam + 'T12:00:00');
+      weekDates = getWeekDatesForDate(weekStart);
+    } else {
+      weekStart = getWeekStart();
+      weekEnd = getWeekEnd();
+      weekDates = getWeekDates();
+    }
+    
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+    const weekEndStr = weekEnd.toISOString().split('T')[0];
 
     // Obtener entradas de esta semana
     const { data: entries, error: entriesError } = await supabase
       .from('gym_entries')
       .select('date, photo_url')
       .eq('user_id', userId)
-      .gte('date', weekStart)
-      .lte('date', weekEnd);
+      .gte('date', weekStartStr)
+      .lte('date', weekEndStr);
 
     if (entriesError) {
       console.error('Error obteniendo entries:', entriesError);

@@ -50,8 +50,10 @@ export default function Home() {
     }
   }, [user, checkTodayEntry]);
 
-  const handlePhotoUpload = () => {
-    checkTodayEntry();
+  const handlePhotoUpload = async () => {
+    // Delay para dar tiempo a que la base de datos se actualice
+    await new Promise(resolve => setTimeout(resolve, 500));
+    await checkTodayEntry();
   };
 
   const handleLogout = () => {

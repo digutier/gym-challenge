@@ -1,13 +1,31 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal, getTodayDate } from '@/lib/utils';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = getServiceSupabase();
     
-    const weekStart = getWeekStart().toISOString().split('T')[0];
-    const weekEnd = getWeekEnd().toISOString().split('T')[0];
+    const { searchParams } = new URL(request.url);
+    const weekStartParam = searchParams.get('weekStart');
+    const weekEndParam = searchParams.get('weekEnd');
+    
+    // Si se proporcionan parámetros de semana, usarlos; sino usar semana actual
+    let weekStart: Date;
+    let weekEnd: Date;
+    let isCurrentWeek = false;
+    
+    if (weekStartParam && weekEndParam) {
+      weekStart = new Date(weekStartParam + 'T12:00:00');
+      weekEnd = new Date(weekEndParam + 'T12:00:00');
+    } else {
+      weekStart = getWeekStart();
+      weekEnd = getWeekEnd();
+      isCurrentWeek = true;
+    }
+    
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+    const weekEndStr = weekEnd.toISOString().split('T')[0];
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
@@ -29,8 +47,8 @@ export async function GET() {
     const { data: weekEntries, error: weekError } = await supabase
       .from('gym_entries')
       .select('user_id, date')
-      .gte('date', weekStart)
-      .lte('date', weekEnd);
+      .gte('date', weekStartStr)
+      .lte('date', weekEndStr);
 
     if (weekError) {
       console.error('Error obteniendo entradas semanales:', weekError);
@@ -53,23 +71,21 @@ export async function GET() {
       );
     }
 
-    // Obtener las fotos de hoy para todos los usuarios
-    const today = getTodayDate();
-    const { data: todayEntries, error: todayError } = await supabase
-      .from('gym_entries')
-      .select('user_id, photo_url')
-      .eq('date', today);
-
-    if (todayError) {
-      console.error('Error obteniendo fotos de hoy:', todayError);
-      // No es crítico, continuamos sin las fotos
-    }
-
-    // Crear mapa de fotos de hoy por usuario
+    // Obtener las fotos de hoy para todos los usuarios (solo si es la semana actual)
     const userTodayPhotos = new Map<string, string>();
-    todayEntries?.forEach(entry => {
-      userTodayPhotos.set(entry.user_id, entry.photo_url);
-    });
+    if (isCurrentWeek) {
+      const today = getTodayDate();
+      const { data: todayEntries, error: todayError } = await supabase
+        .from('gym_entries')
+        .select('user_id, photo_url, updated_at, created_at')
+        .eq('date', today);
+
+      if (!todayError && todayEntries) {
+        todayEntries.forEach(entry => {
+          userTodayPhotos.set(entry.user_id, entry.photo_url);
+        });
+      }
+    }
 
     // Agrupar fechas por usuario
     const userWeekDates = new Map<string, string[]>();

@@ -157,6 +157,54 @@ export function getWeekDates(): string[] {
 }
 
 /**
+ * Obtiene el inicio de la semana (lunes) para una fecha específica
+ */
+export function getWeekStartForDate(date: Date): Date {
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(date);
+  monday.setDate(diff);
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+/**
+ * Obtiene el fin de la semana (domingo) para una fecha específica
+ */
+export function getWeekEndForDate(date: Date): Date {
+  const monday = getWeekStartForDate(date);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+  return sunday;
+}
+
+/**
+ * Genera array de fechas de una semana específica (basada en una fecha)
+ */
+export function getWeekDatesForDate(date: Date): string[] {
+  const monday = getWeekStartForDate(date);
+  const dates: string[] = [];
+  
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    dates.push(d.toISOString().split('T')[0]);
+  }
+  
+  return dates;
+}
+
+/**
+ * Obtiene el límite mínimo (semana del 1 de enero de 2026)
+ */
+export function getMinWeekStart(): Date {
+  // 1 de enero de 2026 en hora de Chile
+  const minDate = new Date('2026-01-05T12:00:00');
+  return getWeekStartForDate(minDate);
+}
+
+/**
  * Formatea fecha a día de la semana corto
  */
 export function getDayName(dateStr: string): string {
