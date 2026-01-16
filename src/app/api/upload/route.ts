@@ -6,7 +6,6 @@ import { STORAGE_BUCKET } from '@/lib/constants';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('AAAA');
     const supabase = await createServerSupabaseClient();
     
     // Verificar autenticación

@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     // Si se proporcionan parámetros de semana, usarlos; sino usar semana actual
     let weekStart: Date;
     let weekEnd: Date;
-    let isCurrentWeek = false;
     
     if (weekStartParam && weekEndParam) {
       weekStart = new Date(weekStartParam + 'T12:00:00');
@@ -21,8 +20,15 @@ export async function GET(request: NextRequest) {
     } else {
       weekStart = getWeekStart();
       weekEnd = getWeekEnd();
-      isCurrentWeek = true;
     }
+    
+    // Determinar si es la semana actual comparando solo el día (sin hora/minuto)
+    const currentWeekStart = getWeekStart();
+    // Comparar solo año, mes y día (no hora/minuto/segundo)
+    const isCurrentWeek = 
+      weekStart.getFullYear() === currentWeekStart.getFullYear() &&
+      weekStart.getMonth() === currentWeekStart.getMonth() &&
+      weekStart.getDate() === currentWeekStart.getDate();
     
     const weekStartStr = weekStart.toISOString().split('T')[0];
     const weekEndStr = weekEnd.toISOString().split('T')[0];
@@ -72,7 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Obtener las fotos de hoy para todos los usuarios (solo si es la semana actual)
-    const userTodayPhotos = new Map<string, string>();
+    const userTodayPhotos = new Map<string, { photo_url: string; timestamp: string }>();
     if (isCurrentWeek) {
       const today = getTodayDate();
       const { data: todayEntries, error: todayError } = await supabase
@@ -82,7 +88,10 @@ export async function GET(request: NextRequest) {
 
       if (!todayError && todayEntries) {
         todayEntries.forEach(entry => {
-          userTodayPhotos.set(entry.user_id, entry.photo_url);
+          userTodayPhotos.set(entry.user_id, {
+            photo_url: entry.photo_url,
+            timestamp: entry.updated_at || entry.created_at,
+          });
         });
       }
     }
@@ -107,7 +116,12 @@ export async function GET(request: NextRequest) {
     const usersWithStats = users?.map(user => {
       const weekDates = userWeekDates.get(user.id) || [];
       const allDates = userAllDates.get(user.id) || [];
-      const todayPhotoUrl = userTodayPhotos.get(user.id);
+      const todayPhotoData = userTodayPhotos.get(user.id);
+      
+      // Construir URL con timestamp para cache busting
+      const todayPhotoUrl = todayPhotoData 
+        ? `${todayPhotoData.photo_url}?t=${new Date(todayPhotoData.timestamp).getTime()}`
+        : undefined;
       
       return {
         id: user.id,
@@ -119,8 +133,8 @@ export async function GET(request: NextRequest) {
         totalDays: calculateCappedTotal(allDates),
         // Total mensual con cap semanal aplicado
         monthlyDays: calculateCappedMonthlyTotal(allDates, currentYear, currentMonth),
-        // URL de la foto de hoy (si existe)
-        todayPhotoUrl: todayPhotoUrl || undefined,
+        // URL de la foto de hoy (si existe) con timestamp para cache busting
+        todayPhotoUrl: todayPhotoUrl,
       };
     }) || [];
 
