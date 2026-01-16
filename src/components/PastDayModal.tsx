@@ -24,6 +24,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
   const [currentUserPhoto, setCurrentUserPhoto] = useState<{ photo_url: string; timestamp: string } | null>(null);
   const [selectedUser, setSelectedUser] = useState<DayUser | null>(null);
   const [isHorizontal, setIsHorizontal] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -150,7 +151,10 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
                 {usersWithPhotos.map((user) => (
                   <button
                     key={user.id}
-                    onClick={() => setSelectedUser(user)}
+                    onClick={() => {
+                      setImageLoading(true);
+                      setSelectedUser(user);
+                    }}
                     className="!flex !flex-col !items-center !gap-1 !p-2 !rounded-xl hover:!bg-white/10 !transition-colors"
                   >
                     <div className="!relative !w-14 !h-14 !rounded-full !flex !items-center !justify-center
@@ -182,6 +186,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
           className="!fixed !inset-0 !z-[60] !bg-black/95 !flex !items-center !justify-center"
           onClick={(e) => {
             e.stopPropagation(); // Evita que se cierre el PastDayModal
+            setImageLoading(true);
             setSelectedUser(null); // Solo cierra el story
           }}
         >
@@ -213,12 +218,21 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
             />
           </div>
 
+          {/* Loader mientras carga la imagen */}
+          {imageLoading && (
+            <div className="!absolute !inset-0 !flex !items-center !justify-center !z-5">
+              <Loader2 className="!w-12 !h-12 !text-white !animate-spin" />
+            </div>
+          )}
+
           {/* Imagen */}
           <img
             src={selectedUser.photoUrl}
             alt={`Foto de ${selectedUser.name}`}
-            className="!max-w-full !max-h-full !object-contain"
+            className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
             onClick={(e) => e.stopPropagation()}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageLoading(false)}
           />
 
           {/* Indicador */}

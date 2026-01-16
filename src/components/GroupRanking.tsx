@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 
 interface GroupRankingProps {
   users: UserStats[];
@@ -12,6 +12,7 @@ interface GroupRankingProps {
 
 export default function GroupRanking({ users, currentUserId }: GroupRankingProps) {
   const [selectedUser, setSelectedUser] = useState<UserStats | null>(null);
+  const [imageLoading, setImageLoading] = useState(true);
 
   // Auto-cerrar el story después de 5 segundos
   useEffect(() => {
@@ -41,12 +42,14 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
   const handleAvatarClick = (user: UserStats) => {
     // Solo abrir story si tiene foto de hoy y no es el usuario actual
     if (user.todayPhotoUrl && user.id !== currentUserId) {
+      setImageLoading(true);
       setSelectedUser(user);
     }
   };
 
   const closeStory = () => {
     setSelectedUser(null);
+    setImageLoading(true);
   };
 
   return (
@@ -157,12 +160,21 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
             />
           </div>
 
+          {/* Loader mientras carga la imagen */}
+          {imageLoading && (
+            <div className="!absolute !inset-0 !flex !items-center !justify-center !z-5">
+              <Loader2 className="!w-12 !h-12 !text-white !animate-spin" />
+            </div>
+          )}
+
           {/* Imagen */}
           <img
             src={selectedUser.todayPhotoUrl}
             alt={`Foto de ${selectedUser.name}`}
-            className="!max-w-full !max-h-full !object-contain"
+            className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
             onClick={(e) => e.stopPropagation()}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageLoading(false)}
           />
 
           {/* Indicador de toque para cerrar */}
