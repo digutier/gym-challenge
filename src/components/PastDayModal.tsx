@@ -25,6 +25,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
   const [selectedUser, setSelectedUser] = useState<DayUser | null>(null);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [myPhotoLoading, setMyPhotoLoading] = useState(true);
 
   // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
   useEffect(() => {
     const fetchDayData = async () => {
       setLoading(true);
+      setMyPhotoLoading(true);
       try {
         const response = await fetch(`/api/day-stats?date=${date}`);
         if (response.ok) {
@@ -114,11 +116,22 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
             {myPhotoUrl ? (
               <div className="!rounded-2xl !overflow-hidden !shadow-xl">
                 <div className={`!relative !aspect-[4/5] ${isHorizontal ? '!bg-black' : '!bg-gray-900'}`}>
+                  {myPhotoLoading && (
+                    <div className="!absolute !inset-0 !flex !items-center !justify-center !z-10">
+                      <div className="!w-16 !h-16 !rounded-full !bg-white/20 !flex !items-center !justify-center">
+                        <Loader2 className="!w-8 !h-8 !text-white !animate-spin" />
+                      </div>
+                    </div>
+                  )}
                   <img
                     src={myPhotoUrl}
                     alt="Tu foto"
-                    onLoad={handleImageLoad}
-                    className={`!w-full !h-full ${isHorizontal ? '!object-contain' : '!object-cover'}`}
+                    onLoad={(e) => {
+                      handleImageLoad(e);
+                      setMyPhotoLoading(false);
+                    }}
+                    onError={() => setMyPhotoLoading(false)}
+                    className={`!w-full !h-full ${isHorizontal ? '!object-contain' : '!object-cover'} ${myPhotoLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
                   />
                   <div className="!absolute !top-2 !right-2 !flex !items-center !gap-1.5 
                                 !bg-emerald-500 !text-white !px-2 !py-1 !rounded-full
