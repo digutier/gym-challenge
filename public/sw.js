@@ -1,5 +1,5 @@
 // ⚠️ IMPORTANTE: Cambia CACHE_VERSION en cada deploy para forzar actualizaciones
-const CACHE_VERSION = 'v1.4.1';
+const CACHE_VERSION = 'v1.4.2';
 const CACHE_NAME = `gym-challenge-${CACHE_VERSION}`;
 
 // Archivos esenciales a cachear

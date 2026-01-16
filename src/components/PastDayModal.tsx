@@ -56,16 +56,16 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
     fetchDayData();
   }, [date]);
 
-  // Auto-cerrar el story después de 5 segundos
+  // Auto-cerrar el story después de 5 segundos, solo cuando la imagen termine de cargar
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedUser && !imageLoading) {
       const timer = setTimeout(() => {
         setSelectedUser(null);
       }, 5000);
       
       return () => clearTimeout(timer);
     }
-  }, [selectedUser]);
+  }, [selectedUser, imageLoading]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -212,10 +212,12 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
 
           {/* Barra de progreso */}
           <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">
-            <div 
-              className="!h-full !bg-white !rounded-full"
-              style={{ animation: 'storyProgress 5s linear forwards' }}
-            />
+            {!imageLoading && (
+              <div 
+                className="!h-full !bg-white !rounded-full animate-story-progress"
+                style={{ animation: 'storyProgress 5s linear forwards' }}
+              />
+            )}
           </div>
 
           {/* Loader mientras carga la imagen */}

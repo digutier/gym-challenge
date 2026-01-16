@@ -14,16 +14,17 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
   const [selectedUser, setSelectedUser] = useState<UserStats | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
 
-  // Auto-cerrar el story después de 5 segundos
+  // Auto-cerrar el story después de 5 segundos, solo cuando la imagen termine de cargar
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedUser && !imageLoading) {
+      console.log('MIAU');
       const timer = setTimeout(() => {
         setSelectedUser(null);
       }, 5000);
       
       return () => clearTimeout(timer);
     }
-  }, [selectedUser]);
+  }, [selectedUser, imageLoading]);
 
   // Ordenar por días con cap aplicado
   const sortedUsers = [...users].sort((a, b) => 
@@ -154,10 +155,12 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
 
           {/* Barra de progreso (estilo Instagram) */}
           <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">
-            <div 
-              className="!h-full !bg-white !rounded-full"
-              style={{ animation: 'storyProgress 5s linear forwards' }}
-            />
+            {!imageLoading && (
+              <div 
+                className="!h-full !bg-white !rounded-full animate-story-progress"
+                style={{ animation: 'storyProgress 5s linear forwards' }}
+              />
+            )}
           </div>
 
           {/* Loader mientras carga la imagen */}
