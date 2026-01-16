@@ -17,7 +17,6 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
   // Auto-cerrar el story después de 5 segundos, solo cuando la imagen termine de cargar
   useEffect(() => {
     if (selectedUser && !imageLoading) {
-      console.log('MIAU');
       const timer = setTimeout(() => {
         setSelectedUser(null);
       }, 5000);
@@ -31,11 +30,33 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
     capDays(b.daysThisWeek) - capDays(a.daysThisWeek)
   );
 
-  const getRankEmoji = (index: number) => {
-    switch (index) {
-      case 0: return '🏆';
-      case 1: return '🥈';
-      case 2: return '🥉';
+  // Calcular posiciones con empates
+  const getUserPosition = (index: number): number => {
+    if (index === 0) return 1;
+    
+    const currentDays = capDays(sortedUsers[index].daysThisWeek);
+    const previousDays = capDays(sortedUsers[index - 1].daysThisWeek);
+    
+    // Si tiene los mismos días que el anterior, comparte la posición
+    if (currentDays === previousDays) {
+      return getUserPosition(index - 1);
+    }
+    
+    // Si no, es la siguiente posición única
+    let position = 1;
+    for (let i = 0; i < index; i++) {
+      if (capDays(sortedUsers[i].daysThisWeek) !== capDays(sortedUsers[i + 1]?.daysThisWeek)) {
+        position++;
+      }
+    }
+    return position;
+  };
+
+  const getRankEmoji = (position: number) => {
+    switch (position) {
+      case 1: return '🏆';
+      case 2: return '🥈';
+      case 3: return '🥉';
       default: return '🎖️';
     }
   };
@@ -60,28 +81,29 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
           🏆 Ranking Semanal
         </h3>
         
-        <div className="!space-y-2">
-          {sortedUsers.map((user, index) => {
-            const isCurrentUser = user.id === currentUserId;
-            const cappedDays = capDays(user.daysThisWeek);
-            const reachedGoal = cappedDays >= WEEKLY_GOAL;
-            // Mostrar borde verde si tiene foto de hoy y no es el usuario actual
-            const hasTodayPhoto = user.todayPhotoUrl && !isCurrentUser;
-            
-            return (
-              <div
-                key={user.id}
-                className={`!flex !items-center !gap-2.5 !p-2.5 !rounded-xl !transition-all
-                  ${isCurrentUser 
-                    ? '!bg-amber-400/20 !ring-1 !ring-amber-400/40' 
-                    : '!bg-white/5'
-                  }
-                `}
-              >
-                {/* Posición */}
-                <span className="!text-xl !w-7 !text-center">
-                  {getRankEmoji(index)}
-                </span>
+          <div className="!space-y-2">
+            {sortedUsers.map((user, index) => {
+              const isCurrentUser = user.id === currentUserId;
+              const cappedDays = capDays(user.daysThisWeek);
+              const reachedGoal = cappedDays >= WEEKLY_GOAL;
+              // Mostrar borde verde si tiene foto de hoy y no es el usuario actual
+              const hasTodayPhoto = user.todayPhotoUrl && !isCurrentUser;
+              const position = getUserPosition(index);
+              
+              return (
+                <div
+                  key={user.id}
+                  className={`!flex !items-center !gap-2.5 !p-2.5 !rounded-xl !transition-all
+                    ${isCurrentUser 
+                      ? '!bg-amber-400/20 !ring-1 !ring-amber-400/40' 
+                      : '!bg-white/5'
+                    }
+                  `}
+                >
+                  {/* Posición */}
+                  <span className="!text-xl !w-7 !text-center">
+                    {getRankEmoji(position)}
+                  </span>
                 
                 {/* Avatar con borde si tiene foto de hoy */}
                 <button
