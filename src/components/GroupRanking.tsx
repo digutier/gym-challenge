@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { UserStats } from '@/types';
-import { capDays, WEEKLY_GOAL } from '@/lib/utils';
+import { capDays, WEEKLY_GOAL, formatTimeChile } from '@/lib/utils';
 import { X, Loader2 } from 'lucide-react';
 
 interface GroupRankingProps {
@@ -165,7 +165,14 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
             </div>
             <div className="!flex-1">
               <p className="!text-white !font-semibold !text-sm">{selectedUser.name}</p>
-              <p className="!text-white/60 !text-xs">Hoy</p>
+              <div className="!flex !items-center !gap-2">
+                <p className="!text-white/60 !text-xs">Hoy</p>
+                {selectedUser.todayPhotoTimestamp && (
+                  <span className="!text-white/40 !text-xs">
+                    {formatTimeChile(selectedUser.todayPhotoTimestamp)}
+                  </span>
+                )}
+              </div>
             </div>
             <button 
               onClick={closeStory}

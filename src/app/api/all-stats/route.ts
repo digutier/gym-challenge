@@ -135,6 +135,8 @@ export async function GET(request: NextRequest) {
         monthlyDays: calculateCappedMonthlyTotal(allDates, currentYear, currentMonth),
         // URL de la foto de hoy (si existe) con timestamp para cache busting
         todayPhotoUrl: todayPhotoUrl,
+        // Timestamp de la foto de hoy (si existe)
+        todayPhotoTimestamp: todayPhotoData?.timestamp,
       };
     }) || [];
 

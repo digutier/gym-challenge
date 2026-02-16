@@ -31,6 +31,7 @@ export interface UserStats {
   totalDays: number;
   monthlyDays?: number; // Total mensual con cap semanal aplicado
   todayPhotoUrl?: string; // URL de la foto de hoy (si existe)
+  todayPhotoTimestamp?: string; // Timestamp de la foto de hoy (si existe)
 }
 
 export interface CheckTodayResponse {

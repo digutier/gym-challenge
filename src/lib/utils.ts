@@ -216,6 +216,9 @@ export function getDayName(dateStr: string): string {
 /**
  * Formatea fecha legible
  */
+/**
+ * Formatea una fecha en formato chileno (ej: "lunes, 4 de enero")
+ */
 export function formatDate(dateStr: string): string {
   const date = new Date(dateStr + 'T12:00:00');
   return date.toLocaleDateString('es-ES', {
@@ -223,6 +226,23 @@ export function formatDate(dateStr: string): string {
     day: 'numeric',
     month: 'long',
   });
+}
+
+/**
+ * Formatea un timestamp ISO a hora chilena (ej: "14:30")
+ */
+export function formatTimeChile(timestamp: string): string {
+  const date = new Date(timestamp);
+  
+  // Convertir a hora chilena usando Intl.DateTimeFormat
+  const chileTime = new Intl.DateTimeFormat('es-CL', {
+    timeZone: 'America/Santiago',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+  
+  return chileTime;
 }
 
 /**

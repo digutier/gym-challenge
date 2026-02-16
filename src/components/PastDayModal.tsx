@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTimeChile } from '@/lib/utils';
 
 type DayUser = {
   id: string;
   name: string;
   avatar: string;
   photoUrl: string | null;
+  photoTimestamp: string | null;
   hasPhoto: boolean;
 };
 
@@ -109,9 +110,16 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
         <div className="!flex-1 !overflow-y-auto !px-4 !pb-6" onClick={(e) => e.stopPropagation()}>
           {/* Mi foto del día */}
           <div className="!mb-6">
-            <h3 className="!text-white/60 !text-xs !font-bold !uppercase !tracking-wider !mb-3">
-              Tu registro
-            </h3>
+            <div className="!flex !items-center !justify-between !mb-3">
+              <h3 className="!text-white/60 !text-xs !font-bold !uppercase !tracking-wider">
+                Tu registro
+              </h3>
+              {currentUserPhoto?.timestamp && (
+                <span className="!text-white/40 !text-xs">
+                  {formatTimeChile(currentUserPhoto.timestamp)}
+                </span>
+              )}
+            </div>
             
             {myPhotoUrl ? (
               <div className="!rounded-2xl !overflow-hidden !shadow-xl">
@@ -210,7 +218,14 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
             </div>
             <div className="!flex-1">
               <p className="!text-white !font-semibold !text-sm">{selectedUser.name}</p>
-              <p className="!text-white/60 !text-xs !capitalize">{formatDate(date)}</p>
+              <div className="!flex !items-center !gap-2">
+                <p className="!text-white/60 !text-xs !capitalize">{formatDate(date)}</p>
+                {selectedUser.photoTimestamp && (
+                  <span className="!text-white/40 !text-xs">
+                    {formatTimeChile(selectedUser.photoTimestamp)}
+                  </span>
+                )}
+              </div>
             </div>
             <button 
               onClick={(e) => {
