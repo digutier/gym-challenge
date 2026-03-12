@@ -119,6 +119,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `perf`
 - Must be served over HTTPS for PWA install prompts (Vercel handles this)
 - iOS: install via Safari Share > Add to Home Screen
 - Android: Chrome install banner or menu > Install app
+- No tests currently
 
 ## Environment Variables
 
