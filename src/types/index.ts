@@ -64,9 +64,15 @@ export interface AllStatsResponse {
   users: UserStats[];
 }
 
-export type AppState = 
+export type AppState =
   | 'loading'
   | 'login'
   | 'not-registered'
   | 'registered'
   | 'uploading';
+
+export interface FriendRequest {
+  id: string;
+  requester: { id: string; name: string; avatar: string; email: string };
+  created_at: string;
+}

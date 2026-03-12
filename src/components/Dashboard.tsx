@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckCircle, Trophy, LogOut } from 'lucide-react';
+import { CheckCircle, Trophy, LogOut, Bell, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PhotoUpload from './PhotoUpload';
 import WeekProgress from './WeekProgress';
 import GroupRanking from './GroupRanking';
-import { WeekEntry, UserStats } from '@/types';
+import AddFriendModal from './AddFriendModal';
+import NotificationsModal from './NotificationsModal';
+import { WeekEntry, UserStats, FriendRequest } from '@/types';
 import { formatDate, getTodayDate, getCurrentMonthName, getWeekStart } from '@/lib/utils';
 
 interface DashboardProps {
@@ -35,6 +37,25 @@ export default function Dashboard({
   const [loading, setLoading] = useState(true);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(getWeekStart());
+  const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAddFriend, setShowAddFriend] = useState(false);
+
+  const fetchPendingRequests = async () => {
+    try {
+      const res = await fetch('/api/friends');
+      if (res.ok) {
+        const data = await res.json();
+        setPendingRequests(data.pendingRequests || []);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingRequests();
+  }, [user.id]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -88,6 +109,7 @@ export default function Dashboard({
   };
 
   return (
+    <>
     <div className="!min-h-screen !bg-gradient-to-br !from-violet-600 !via-purple-600 !to-fuchsia-600 !flex !flex-col !items-center !px-4 !pt-3 !pb-8">
       {/* Container principal */}
       <div className="!w-full !max-w-md !flex !flex-col !gap-4">
@@ -111,17 +133,46 @@ export default function Dashboard({
             </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="!rounded-full !bg-white/10 hover:!bg-white/20 !text-white !mr-2 !px-2"
-          >
-            <a href="/public-dashboard" className="!flex !items-center !gap-2">
-              <Trophy className="!w-4 !h-4 !text-amber-300" />
-              <span className="!text-xs">Ranking {getCurrentMonthName()}</span>
-            </a>
-          </Button>
+          <div className="!flex !items-center !gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="!rounded-full !bg-white/10 hover:!bg-white/20 !text-white !px-2"
+            >
+              <a href="/public-dashboard" className="!flex !items-center !gap-2">
+                <Trophy className="!w-4 !h-4 !text-amber-300" />
+                <span className="!text-xs">Ranking {getCurrentMonthName()}</span>
+              </a>
+            </Button>
+
+            {/* Botón agregar amigo */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowAddFriend(true)}
+              className="!relative !rounded-full !bg-white/10 hover:!bg-white/20 !w-8 !h-8"
+              title="Agregar amigo"
+            >
+              <UserPlus className="!w-4 !h-4 !text-white/70" />
+            </Button>
+
+            {/* Botón notificaciones */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowNotifications(true)}
+              className="!relative !rounded-full !bg-white/10 hover:!bg-white/20 !w-8 !h-8"
+              title="Solicitudes de amistad"
+            >
+              <Bell className="!w-4 !h-4 !text-white/70" />
+              {pendingRequests.length > 0 && (
+                <span className="!absolute !-top-0.5 !-right-0.5 !w-4 !h-4 !bg-red-500 !text-white !text-[10px] !font-bold !rounded-full !flex !items-center !justify-center">
+                  {pendingRequests.length}
+                </span>
+              )}
+            </Button>
+          </div>
         </header>
 
         {/* Sección de foto */}
@@ -201,6 +252,22 @@ export default function Dashboard({
         )}
       </div>
     </div>
+
+    {showAddFriend && (
+      <AddFriendModal onClose={() => setShowAddFriend(false)} />
+    )}
+
+    {showNotifications && (
+      <NotificationsModal
+        requests={pendingRequests}
+        onClose={() => setShowNotifications(false)}
+        onRefresh={() => {
+          fetchPendingRequests();
+          setSelectedWeekStart(prev => new Date(prev));
+        }}
+      />
+    )}
+    </>
   );
 }
 

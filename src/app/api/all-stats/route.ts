@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal, getTodayDate } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
@@ -36,10 +37,32 @@ export async function GET(request: NextRequest) {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    // Obtener todos los usuarios de la tabla profiles
-    const { data: users, error: usersError } = await supabase
-      .from('profiles')
-      .select('id, name, avatar');
+    // Verificar autenticación para filtrar por amigos
+    const authSupabase = await createServerSupabaseClient();
+    const { data: { session } } = await authSupabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+
+    // Si está autenticado, obtener solo amigos aceptados + sí mismo
+    let allowedUserIds: string[] | null = null;
+    if (currentUserId) {
+      const { data: friendships } = await supabase
+        .from('friendships')
+        .select('requester_id, recipient_id')
+        .or(`recipient_id.eq.${currentUserId},requester_id.eq.${currentUserId}`)
+        .eq('status', 'accepted');
+
+      const friendIds = (friendships || []).map(f =>
+        f.requester_id === currentUserId ? f.recipient_id : f.requester_id
+      );
+      allowedUserIds = [currentUserId, ...friendIds];
+    }
+
+    // Obtener usuarios (filtrados si autenticado)
+    let usersQuery = supabase.from('profiles').select('id, name, avatar');
+    if (allowedUserIds) {
+      usersQuery = usersQuery.in('id', allowedUserIds);
+    }
+    const { data: users, error: usersError } = await usersQuery;
 
     if (usersError) {
       console.error('Error obteniendo usuarios:', usersError);
