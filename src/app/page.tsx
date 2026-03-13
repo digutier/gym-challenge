@@ -67,6 +67,10 @@ export default function Home() {
     }
   };
 
+  const handleEntryDelete = () => {
+    setTodayEntry(null);
+  };
+
   const handleLogout = () => {
     signOut();
   };
@@ -74,14 +78,11 @@ export default function Home() {
   // Loading state
   if (authLoading || (user && checkingToday)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 
-                    flex flex-col items-center justify-center">
-        <div className="relative">
-          <div className="!w-20 !h-20 !rounded-full bg-white/20 flex items-center justify-center">
-            <Loader2 className="!w-10 !h-10 !text-white animate-spin" />
-          </div>
+      <div className="min-h-screen bg-[#191022] flex flex-col items-center justify-center">
+        <div className="bg-[rgba(127,13,242,0.2)] rounded-full size-20 flex items-center justify-center">
+          <Loader2 className="w-10 h-10 text-[#7f0df2] animate-spin" />
         </div>
-        <p className="!text-white/80 !mt-4 !font-medium">Cargando...</p>
+        <p className="text-[#94a3b8] mt-4 font-medium">Cargando...</p>
       </div>
     );
   }
@@ -110,6 +111,7 @@ export default function Home() {
       user={userData}
       entry={entryData}
       onPhotoUpload={handlePhotoUpload}
+      onEntryDelete={handleEntryDelete}
       onLogout={handleLogout}
     />
   );

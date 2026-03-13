@@ -8,64 +8,37 @@ import { X, Loader2 } from 'lucide-react';
 interface GroupRankingProps {
   users: UserStats[];
   currentUserId?: string;
+  period?: 'week' | 'month' | 'year';
 }
 
-export default function GroupRanking({ users, currentUserId }: GroupRankingProps) {
+export default function GroupRanking({ users, currentUserId, period = 'week' }: GroupRankingProps) {
   const [selectedUser, setSelectedUser] = useState<UserStats | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
 
-  // Auto-cerrar el story después de 5 segundos, solo cuando la imagen termine de cargar
   useEffect(() => {
     if (selectedUser && !imageLoading) {
-      const timer = setTimeout(() => {
-        setSelectedUser(null);
-      }, 5000);
-      
+      const timer = setTimeout(() => setSelectedUser(null), 5000);
       return () => clearTimeout(timer);
     }
   }, [selectedUser, imageLoading]);
 
-  // Ordenar por días con cap aplicado
-  const sortedUsers = [...users].sort((a, b) => 
-    capDays(b.daysThisWeek) - capDays(a.daysThisWeek)
-  );
-
-  // Calcular posiciones con empates
-  const getUserPosition = (index: number): number => {
-    if (index === 0) return 1;
-    
-    const currentDays = capDays(sortedUsers[index].daysThisWeek);
-    const previousDays = capDays(sortedUsers[index - 1].daysThisWeek);
-    
-    // Si tiene los mismos días que el anterior, comparte la posición
-    if (currentDays === previousDays) {
-      return getUserPosition(index - 1);
-    }
-    
-    // Si no, es la siguiente posición única
-    let position = 1;
-    for (let i = 0; i < index; i++) {
-      if (capDays(sortedUsers[i].daysThisWeek) !== capDays(sortedUsers[i + 1]?.daysThisWeek)) {
-        position++;
-      }
-    }
-    return position;
+  const getMetric = (u: UserStats) => {
+    if (period === 'month') return u.monthlyDays ?? 0;
+    if (period === 'year') return u.totalDays;
+    return capDays(u.daysThisWeek);
   };
 
-  const getRankEmoji = (position: number) => {
-    switch (position) {
-      case 1: return '🏆';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return '🎖️';
-    }
+  const sortedUsers = [...users].sort((a, b) => getMetric(b) - getMetric(a));
+
+  const metricLabel = (u: UserStats) => {
+    const m = getMetric(u);
+    return period === 'week' ? `${m}/${WEEKLY_GOAL} días` : `${m} días`;
   };
 
-  const handleAvatarClick = (user: UserStats) => {
-    // Solo abrir story si tiene foto de hoy y no es el usuario actual
-    if (user.todayPhotoUrl && user.id !== currentUserId) {
+  const handleAvatarClick = (u: UserStats) => {
+    if (period === 'week' && u.todayPhotoUrl && u.id !== currentUserId) {
       setImageLoading(true);
-      setSelectedUser(user);
+      setSelectedUser(u);
     }
   };
 
@@ -74,145 +47,186 @@ export default function GroupRanking({ users, currentUserId }: GroupRankingProps
     setImageLoading(true);
   };
 
+  const hasTodayPhoto = (u: UserStats) =>
+    period === 'week' && !!u.todayPhotoUrl && u.id !== currentUserId;
+
+  // Podium: top 3
+  const first = sortedUsers[0];
+  const second = sortedUsers[1];
+  const third = sortedUsers[2];
+  const rest = sortedUsers.slice(3);
+
+  const podiumMetricColor = (u: UserStats) => {
+    const m = getMetric(u);
+    return period === 'week' && m >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-[#f1f5f9]';
+  };
+
+  const podiumTopOffset: Record<number, string> = {
+    1: 'pt-0',
+    2: 'pt-10',
+    3: 'pt-16',
+  };
+
+  const PodiumAvatar = ({ u, rank }: { u: UserStats; rank: number }) => {
+    const isMe = u.id === currentUserId;
+    const hasPhoto = hasTodayPhoto(u);
+    const avatarSize = rank === 1 ? 'w-[88px] h-[88px] text-5xl' : 'w-[68px] h-[68px] text-4xl';
+    const medalColors: Record<number, string> = {
+      1: 'bg-amber-400 text-amber-900',
+      2: 'bg-[#94a3b8] text-slate-800',
+      3: 'bg-amber-700 text-amber-100',
+    };
+    const ringColors: Record<number, string> = {
+      1: 'ring-amber-400',
+      2: 'ring-[#94a3b8]',
+      3: 'ring-amber-700',
+    };
+
+    return (
+      <div className={`flex flex-col items-center gap-2 flex-1 ${podiumTopOffset[rank]}`}>
+        <div className="relative">
+          {rank === 1 && (
+            <div className="absolute -top-9 left-1/2 -translate-x-1/2 text-4xl">👑</div>
+          )}
+          <button
+            onClick={() => handleAvatarClick(u)}
+            disabled={!hasPhoto}
+            className={`${avatarSize} rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] ring-[4px] ${ringColors[rank]} ${hasPhoto ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
+            style={rank === 1 ? { animation: 'goldGlow 2s ease-in-out infinite' } : undefined}
+          >
+            <span>{u.avatar}</span>
+          </button>
+          {/* Rank pill — overlaps bottom of avatar */}
+          <div className={`absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-10 ${medalColors[rank]} px-3 py-[3px] rounded-lg text-[11px] font-black shadow-lg whitespace-nowrap`}>
+            {rank === 1 ? '1er' : rank === 2 ? '2do' : '3er'}
+          </div>
+          {hasPhoto && (
+            <div className="absolute inset-0 rounded-full ring-[3px] ring-emerald-400 ring-offset-2 ring-offset-[#191022] pointer-events-none" />
+          )}
+        </div>
+        <div className="flex flex-col items-center gap-0.5 mt-2">
+          <p className={`text-xs font-bold truncate max-w-[90px] text-center ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
+            {u.name}{isMe && <span className="text-[9px] opacity-60 ml-0.5">(tú)</span>}
+          </p>
+          <p className={`text-sm font-black ${podiumMetricColor(u)}`}>
+            {metricLabel(u)}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
-      <div className="!bg-white/10 !backdrop-blur-md !rounded-2xl !p-4 !border !border-white/10 !shadow-lg">
-        <h3 className="!text-white/90 !text-xs !font-bold !mb-3 !uppercase !tracking-widest">
-          🏆 Ranking Semanal
-        </h3>
-        
-          <div className="!space-y-2">
-            {sortedUsers.map((user, index) => {
-              const isCurrentUser = user.id === currentUserId;
-              const cappedDays = capDays(user.daysThisWeek);
-              const reachedGoal = cappedDays >= WEEKLY_GOAL;
-              // Mostrar borde verde si tiene foto de hoy y no es el usuario actual
-              const hasTodayPhoto = user.todayPhotoUrl && !isCurrentUser;
-              const position = getUserPosition(index);
-              
-              return (
-                <div
-                  key={user.id}
-                  className={`!flex !items-center !gap-2.5 !p-2.5 !rounded-xl !transition-all
-                    ${isCurrentUser 
-                      ? '!bg-amber-400/20 !ring-1 !ring-amber-400/40' 
-                      : '!bg-white/5'
-                    }
-                  `}
-                >
-                  {/* Posición */}
-                  <span className="!text-xl !w-7 !text-center">
-                    {getRankEmoji(position)}
-                  </span>
-                
-                {/* Avatar con borde si tiene foto de hoy */}
+      {/* Podium */}
+      {sortedUsers.length > 0 && (
+        <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl px-4 pt-4 pb-6">
+          <div className="flex items-end justify-center gap-4">
+            {/* 2nd */}
+            {second ? (
+              <PodiumAvatar u={second} rank={2} />
+            ) : (
+              <div className="flex-1" />
+            )}
+            {/* 1st */}
+            {first && <PodiumAvatar u={first} rank={1} />}
+            {/* 3rd */}
+            {third ? (
+              <PodiumAvatar u={third} rank={3} />
+            ) : (
+              <div className="flex-1" />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Rest of the list (4th+) */}
+      {rest.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {rest.map((u, i) => {
+            const isMe = u.id === currentUserId;
+            const hasPhoto = hasTodayPhoto(u);
+            const pos = i + 4;
+            const metric = getMetric(u);
+            const reachedGoal = period === 'week' && metric >= WEEKLY_GOAL;
+
+            return (
+              <div
+                key={u.id}
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
+              >
+                <span className="text-[#64748b] text-sm font-bold w-5 text-center">{pos}</span>
                 <button
-                  onClick={() => handleAvatarClick(user)}
-                  disabled={!hasTodayPhoto}
-                  className={`!relative !flex !items-center !justify-center !w-10 !h-10 !rounded-full !transition-all
-                    ${hasTodayPhoto 
-                      ? '!ring-[3px] !ring-emerald-400 !cursor-pointer hover:!scale-110 active:!scale-95' 
-                      : '!cursor-default'
-                    }
-                  `}
-                  style={{
-                    background: hasTodayPhoto 
-                      ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)' 
-                      : 'transparent'
-                  }}
+                  onClick={() => handleAvatarClick(u)}
+                  disabled={!hasPhoto}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] text-xl shrink-0 ${hasPhoto ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
                 >
-                  <span className={`!text-2xl ${hasTodayPhoto ? '!bg-[#6b46c1] !rounded-full !w-9 !h-9 !flex !items-center !justify-center' : ''}`}>
-                    {user.avatar}
-                  </span>
+                  {u.avatar}
                 </button>
-                
-                {/* Nombre */}
-                <div className="!flex-1 !min-w-0">
-                  <p className={`!font-semibold !text-sm !truncate ${isCurrentUser ? '!text-amber-200' : '!text-white'}`}>
-                    {user.name}
-                    {isCurrentUser && <span className="!text-[10px] !ml-1 !opacity-60">(tú)</span>}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
+                    {u.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
                   </p>
-                  <p className="!text-white/40 !text-[10px]">
-                    {user.totalDays} total
-                  </p>
+                  <p className="text-[#64748b] text-[11px]">{u.totalDays} total histórico</p>
                 </div>
-                
-                {/* Días esta semana (con cap) */}
-                <div className="!text-right !flex-shrink-0">
-                  <p className={`!text-xl !font-black !leading-none ${reachedGoal ? '!text-emerald-400' : '!text-white'}`}>
-                    {cappedDays}
+                <div className="text-right shrink-0">
+                  <p className={`text-lg font-black leading-none ${reachedGoal ? 'text-emerald-400' : 'text-[#f1f5f9]'}`}>
+                    {metric}
                   </p>
-                  <p className="!text-white/40 !text-[10px]">
-                    / {WEEKLY_GOAL}
-                  </p>
+                  <p className="text-[#64748b] text-[10px]">{period === 'week' ? `/ ${WEEKLY_GOAL}` : 'días'}</p>
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      )}
 
       {/* Story Modal */}
       {selectedUser && selectedUser.todayPhotoUrl && (
-        <div 
-          className="!fixed !inset-0 !z-50 !bg-black/95 !flex !items-center !justify-center"
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={closeStory}
         >
-          {/* Header con info del usuario */}
-          <div className="!absolute !top-0 !left-0 !right-0 !p-4 !flex !items-center !gap-3 !bg-gradient-to-b !from-black/60 !to-transparent !z-10">
-            <div className="!w-10 !h-10 !rounded-full !bg-purple-600 !flex !items-center !justify-center !ring-2 !ring-white/30">
-              <span className="!text-xl">{selectedUser.avatar}</span>
+          <div className="absolute top-0 left-0 right-0 p-4 flex items-center gap-3 bg-gradient-to-b from-black/60 to-transparent z-10">
+            <div className="w-10 h-10 rounded-full bg-[rgba(127,13,242,0.3)] flex items-center justify-center ring-2 ring-white/30">
+              <span className="text-xl">{selectedUser.avatar}</span>
             </div>
-            <div className="!flex-1">
-              <p className="!text-white !font-semibold !text-sm">{selectedUser.name}</p>
-              <div className="!flex !items-center !gap-2">
-                <p className="!text-white/60 !text-xs">Hoy</p>
+            <div className="flex-1">
+              <p className="text-white font-semibold text-sm">{selectedUser.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-white/60 text-xs">Hoy</p>
                 {selectedUser.todayPhotoTimestamp && (
-                  <span className="!text-white/40 !text-xs">
-                    {formatTimeChile(selectedUser.todayPhotoTimestamp)}
-                  </span>
+                  <span className="text-white/40 text-xs">{formatTimeChile(selectedUser.todayPhotoTimestamp)}</span>
                 )}
               </div>
             </div>
-            <button 
-              onClick={closeStory}
-              className="!w-8 !h-8 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors"
-            >
-              <X className="!w-5 !h-5 !text-white" />
+            <button onClick={closeStory} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
 
-          {/* Barra de progreso (estilo Instagram) */}
-          <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">
+          <div className="absolute top-2 left-4 right-4 h-0.5 bg-white/20 rounded-full z-10">
             {!imageLoading && (
-              <div 
-                className="!h-full !bg-white !rounded-full animate-story-progress"
-                style={{ animation: 'storyProgress 5s linear forwards' }}
-              />
+              <div className="h-full bg-white rounded-full" style={{ animation: 'storyProgress 5s linear forwards' }} />
             )}
           </div>
 
-          {/* Loader mientras carga la imagen */}
           {imageLoading && (
-            <div className="!absolute !inset-0 !flex !items-center !justify-center !z-5">
-              <Loader2 className="!w-12 !h-12 !text-white !animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-12 h-12 text-white animate-spin" />
             </div>
           )}
 
-          {/* Imagen */}
           <img
             src={selectedUser.todayPhotoUrl}
             alt={`Foto de ${selectedUser.name}`}
-            className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
+            className={`max-w-full max-h-full object-contain ${imageLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
             onClick={(e) => e.stopPropagation()}
             onLoad={() => setImageLoading(false)}
             onError={() => setImageLoading(false)}
           />
 
-          {/* Indicador de toque para cerrar */}
-          <p className="!absolute !bottom-6 !left-0 !right-0 !text-center !text-white/40 !text-xs">
-            Toca para cerrar
-          </p>
+          <p className="absolute bottom-6 left-0 right-0 text-center text-white/40 text-xs">Toca para cerrar</p>
         </div>
       )}
     </>
