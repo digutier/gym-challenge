@@ -4,6 +4,48 @@ import { getServiceSupabase } from '@/lib/supabase';
 import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/utils';
 import { STORAGE_BUCKET } from '@/lib/constants';
 
+export async function DELETE() {
+  try {
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+      return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const today = getTodayDate();
+    const serviceSupabase = getServiceSupabase();
+
+    // Eliminar archivos del storage para hoy
+    const { data: existingFiles } = await serviceSupabase.storage
+      .from(STORAGE_BUCKET)
+      .list(userId, { search: today });
+
+    if (existingFiles && existingFiles.length > 0) {
+      const filesToDelete = existingFiles.map(f => `${userId}/${f.name}`);
+      await serviceSupabase.storage.from(STORAGE_BUCKET).remove(filesToDelete);
+    }
+
+    // Eliminar registro de la base de datos
+    const { error: deleteError } = await supabase
+      .from('gym_entries')
+      .delete()
+      .eq('user_id', userId)
+      .eq('date', today);
+
+    if (deleteError) {
+      console.error('Error eliminando entry:', deleteError);
+      return NextResponse.json({ error: 'Error al eliminar registro' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error en delete:', error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
