@@ -12,9 +12,12 @@ import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
 import StoryViewer from './StoryViewer';
-import { WeekEntry, UserStats, FriendRequest, Friend, EntryData, User as UserType } from '@/types';
-import { getTodayDate, getWeekStart, getMinWeekStart, formatTimeChile } from '@/lib/date';
+import { UserStats, EntryData, User as UserType } from '@/types';
+import { getTodayDate, formatTimeChile } from '@/lib/date';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
+import { useWeekNavigation } from '@/hooks/useWeekNavigation';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { useFriendRequests } from '@/hooks/useFriendRequests';
 
 type Tab = 'home' | 'workouts' | 'feed' | 'profile';
 
@@ -30,14 +33,7 @@ const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('home');
-  const [weekEntries, setWeekEntries] = useState<WeekEntry[]>([]);
-  const [currentWeekActiveDays, setCurrentWeekActiveDays] = useState(0);
-  const [ranking, setRanking] = useState<UserStats[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isHorizontal, setIsHorizontal] = useState(false);
-  const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(getWeekStart());
-  const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
-  const [friends, setFriends] = useState<Friend[]>([]);
   const [homeStoryUser, setHomeStoryUser] = useState<UserStats | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -48,59 +44,15 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   const [showOverwriteConfirm, setShowOverwriteConfirm] = useState(false);
   const fabRef = useRef<PhotoUploadHandle>(null);
 
-  const fetchPendingRequests = async () => {
-    try {
-      const res = await fetch('/api/friends');
-      if (res.ok) {
-        const data = await res.json();
-        setPendingRequests(data.pendingRequests || []);
-        setFriends(data.friends || []);
-      }
-    } catch { /* ignore */ }
-  };
+  const {
+    selectedWeekStart, setSelectedWeekStart, weekLabel, isCurrentWeek,
+    canGoPrev, canGoNext, handleWeekPrev, handleWeekNext,
+  } = useWeekNavigation();
 
-  useEffect(() => {
-    fetchPendingRequests();
-  }, [user.id]);
+  const { weekEntries, currentWeekActiveDays, ranking, loading, refreshStats } =
+    useDashboardStats(user.id, selectedWeekStart);
 
-  // Función central de refresco — se llama al montar, al cambiar semana,
-  // y explícitamente tras upload/delete para evitar condición de carrera.
-  const refreshStats = useCallback(async () => {
-    setLoading(true);
-    try {
-      const weekStartStr = selectedWeekStart.toISOString().split('T')[0];
-      const weekEndDate = new Date(selectedWeekStart);
-      weekEndDate.setDate(selectedWeekStart.getDate() + 6);
-      const weekEndStr = weekEndDate.toISOString().split('T')[0];
-
-      const [userStatsRes, allStatsRes] = await Promise.all([
-        fetch(`/api/user-stats?userId=${user.id}&weekStart=${weekStartStr}&weekEnd=${weekEndStr}`),
-        fetch(`/api/all-stats?weekStart=${weekStartStr}&weekEnd=${weekEndStr}`),
-      ]);
-
-      if (userStatsRes.ok) {
-        const userStats = await userStatsRes.json();
-        setWeekEntries(userStats.weekEntries);
-        if (selectedWeekStart.getTime() === getWeekStart().getTime()) {
-          const days = userStats.weekEntries.filter((e: WeekEntry) => e.registered).length;
-          setCurrentWeekActiveDays(Math.min(days, WEEKLY_GOAL));
-        }
-      }
-
-      if (allStatsRes.ok) {
-        const allStats = await allStatsRes.json();
-        setRanking(allStats.users);
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user.id, selectedWeekStart]);
-
-  useEffect(() => {
-    refreshStats();
-  }, [refreshStats]);
+  const { pendingRequests, friends, fetchPendingRequests } = useFriendRequests(user.id);
 
   // Wrapper de upload: actualiza entry en el padre y luego refresca stats
   // para que grid semanal, ranking y mensaje de motivación queden en sync.
@@ -135,34 +87,8 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   const hasEntryToday = entry && entry.date === today;
   const photoUrl = entry ? `${entry.photo_url}?t=${new Date(entry.timestamp).getTime()}` : '';
 
-  const currentWeekStart = getWeekStart();
-  const minWeekStart = getMinWeekStart();
-  const isCurrentWeek = selectedWeekStart.getTime() === currentWeekStart.getTime();
-  const canGoPrev = selectedWeekStart > minWeekStart;
-  const canGoNext = !isCurrentWeek;
-
   const activeDaysThisWeek = weekEntries.filter(e => e.registered).length;
   const cappedActiveDays = Math.min(activeDaysThisWeek, WEEKLY_GOAL);
-
-  const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  const weekEnd = new Date(selectedWeekStart);
-  weekEnd.setDate(selectedWeekStart.getDate() + 6);
-  const weekLabel = selectedWeekStart.getMonth() === weekEnd.getMonth()
-    ? `${selectedWeekStart.getDate()}-${weekEnd.getDate()} ${MONTHS[selectedWeekStart.getMonth()]}`
-    : `${selectedWeekStart.getDate()} ${MONTHS[selectedWeekStart.getMonth()]} - ${weekEnd.getDate()} ${MONTHS[weekEnd.getMonth()]}`;
-
-  const handleWeekPrev = () => {
-    const prev = new Date(selectedWeekStart);
-    prev.setDate(prev.getDate() - 7);
-    if (prev >= minWeekStart) setSelectedWeekStart(prev);
-  };
-
-  const handleWeekNext = () => {
-    if (!canGoNext) return;
-    const next = new Date(selectedWeekStart);
-    next.setDate(next.getDate() + 7);
-    setSelectedWeekStart(next <= currentWeekStart ? next : currentWeekStart);
-  };
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
