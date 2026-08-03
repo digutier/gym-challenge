@@ -5,6 +5,7 @@ import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import { formatTimeChile } from '@/lib/date';
 import { X, Loader2 } from 'lucide-react';
+import PodiumAvatar from './PodiumAvatar';
 
 interface GroupRankingProps {
   users: UserStats[];
@@ -62,61 +63,6 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
     return period === 'week' && m >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-[#f1f5f9]';
   };
 
-  const podiumTopOffset: Record<number, string> = {
-    1: 'pt-0',
-    2: 'pt-10',
-    3: 'pt-16',
-  };
-
-  const PodiumAvatar = ({ u, rank }: { u: UserStats; rank: number }) => {
-    const isMe = u.id === currentUserId;
-    const hasPhoto = hasTodayPhoto(u);
-    const avatarSize = rank === 1 ? 'w-[88px] h-[88px] text-5xl' : 'w-[68px] h-[68px] text-4xl';
-    const medalColors: Record<number, string> = {
-      1: 'bg-amber-400 text-amber-900',
-      2: 'bg-[#94a3b8] text-slate-800',
-      3: 'bg-amber-700 text-amber-100',
-    };
-    const ringColors: Record<number, string> = {
-      1: 'ring-amber-400',
-      2: 'ring-[#94a3b8]',
-      3: 'ring-amber-700',
-    };
-
-    return (
-      <div className={`flex flex-col items-center gap-2 flex-1 ${podiumTopOffset[rank]}`}>
-        <div className="relative">
-          {rank === 1 && (
-            <div className="absolute -top-9 left-1/2 -translate-x-1/2 text-4xl">👑</div>
-          )}
-          <button
-            onClick={() => handleAvatarClick(u)}
-            disabled={!hasPhoto}
-            className={`${avatarSize} rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] ring-[4px] ${ringColors[rank]} ${hasPhoto ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
-            style={rank === 1 ? { animation: 'goldGlow 2s ease-in-out infinite' } : undefined}
-          >
-            <span>{u.avatar}</span>
-          </button>
-          {/* Rank pill — overlaps bottom of avatar */}
-          <div className={`absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-10 ${medalColors[rank]} px-3 py-[3px] rounded-lg text-[11px] font-black shadow-lg whitespace-nowrap`}>
-            {rank === 1 ? '1er' : rank === 2 ? '2do' : '3er'}
-          </div>
-          {hasPhoto && (
-            <div className="absolute inset-0 rounded-full ring-[3px] ring-emerald-400 ring-offset-2 ring-offset-[#191022] pointer-events-none" />
-          )}
-        </div>
-        <div className="flex flex-col items-center gap-0.5 mt-2">
-          <p className={`text-xs font-bold truncate max-w-[90px] text-center ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-            {u.name}{isMe && <span className="text-[9px] opacity-60 ml-0.5">(tú)</span>}
-          </p>
-          <p className={`text-sm font-black ${podiumMetricColor(u)}`}>
-            {metricLabel(u)}
-          </p>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
       {/* Podium */}
@@ -125,15 +71,41 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
           <div className="flex items-end justify-center gap-4">
             {/* 2nd */}
             {second ? (
-              <PodiumAvatar u={second} rank={2} />
+              <PodiumAvatar
+                u={second}
+                rank={2}
+                isMe={second.id === currentUserId}
+                hasPhoto={hasTodayPhoto(second)}
+                metricLabel={metricLabel(second)}
+                metricColorClassName={podiumMetricColor(second)}
+                onAvatarClick={handleAvatarClick}
+              />
             ) : (
               <div className="flex-1" />
             )}
             {/* 1st */}
-            {first && <PodiumAvatar u={first} rank={1} />}
+            {first && (
+              <PodiumAvatar
+                u={first}
+                rank={1}
+                isMe={first.id === currentUserId}
+                hasPhoto={hasTodayPhoto(first)}
+                metricLabel={metricLabel(first)}
+                metricColorClassName={podiumMetricColor(first)}
+                onAvatarClick={handleAvatarClick}
+              />
+            )}
             {/* 3rd */}
             {third ? (
-              <PodiumAvatar u={third} rank={3} />
+              <PodiumAvatar
+                u={third}
+                rank={3}
+                isMe={third.id === currentUserId}
+                hasPhoto={hasTodayPhoto(third)}
+                metricLabel={metricLabel(third)}
+                metricColorClassName={podiumMetricColor(third)}
+                onAvatarClick={handleAvatarClick}
+              />
             ) : (
               <div className="flex-1" />
             )}
