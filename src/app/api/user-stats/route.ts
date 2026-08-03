@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireAuth } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getWeekDates, getWeekStart, getWeekEnd, getWeekDatesForDate, getWeekStartForDate, getWeekEndForDate } from '@/lib/utils';
 
@@ -12,16 +12,9 @@ export async function GET(request: NextRequest) {
 
     // Si no se proporciona userId, usar el usuario autenticado
     if (!userId) {
-      const supabase = await createServerSupabaseClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        return NextResponse.json(
-          { error: 'No autenticado' },
-          { status: 401 }
-        );
-      }
-      userId = session.user.id;
+      const auth = await requireAuth();
+      if ('error' in auth) return auth.error;
+      userId = auth.userId;
     }
 
     const supabase = getServiceSupabase();

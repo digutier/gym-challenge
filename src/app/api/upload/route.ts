@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireAuthClient } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/utils';
 import { STORAGE_BUCKET } from '@/lib/constants';
 
 export async function DELETE() {
   try {
-    const supabase = await createServerSupabaseClient();
+    const auth = await requireAuthClient();
+    if ('error' in auth) return auth.error;
+    const { userId, supabase } = auth;
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
     const today = getTodayDate();
     const serviceSupabase = getServiceSupabase();
 
@@ -48,19 +44,9 @@ export async function DELETE() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    
-    // Verificar autenticación
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-    
-    const userId = session.user.id;
+    const auth = await requireAuthClient();
+    if ('error' in auth) return auth.error;
+    const { userId, supabase } = auth;
 
     // Obtener archivo de FormData
     const formData = await request.formData();

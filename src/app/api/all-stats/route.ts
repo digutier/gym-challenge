@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getOptionalUserId } from '@/lib/api-auth';
 import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal, getTodayDate } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
@@ -38,9 +38,7 @@ export async function GET(request: NextRequest) {
     const currentMonth = now.getMonth();
 
     // Verificar autenticación para filtrar por amigos
-    const authSupabase = await createServerSupabaseClient();
-    const { data: { session } } = await authSupabase.auth.getSession();
-    const currentUserId = session?.user?.id;
+    const currentUserId = await getOptionalUserId();
 
     // Si está autenticado, obtener solo amigos aceptados + sí mismo
     let allowedUserIds: string[] | null = null;

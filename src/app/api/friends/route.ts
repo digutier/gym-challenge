@@ -1,19 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireAuth } from '@/lib/api-auth';
 import { ProfileRow, AcceptedProfileRow } from '@/types';
 
 // GET: Obtener solicitudes pendientes y amigos aceptados del usuario actual
 export async function GET() {
   try {
-    const authSupabase = await createServerSupabaseClient();
-    const { data: { session } } = await authSupabase.auth.getSession();
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+    const currentUserId = auth.userId;
 
-    if (!session) {
-      return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
-    }
-
-    const currentUserId = session.user.id;
     const supabase = getServiceSupabase();
 
     // Solicitudes pendientes recibidas

@@ -1,23 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse } from 'next/server';
+import { requireAuthUser } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const supabase = await createServerSupabaseClient();
-    
-    // Verificar autenticación
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-    
-    const userId = session.user.id;
-    
+    const auth = await requireAuthUser();
+    if ('error' in auth) return auth.error;
+    const { user } = auth;
+    const userId = user.id;
+
     // Usar service client para bypass RLS si es necesario
     const serviceSupabase = getServiceSupabase();
     
@@ -30,9 +21,9 @@ export async function GET(request: NextRequest) {
     if (error) {
       // Si el perfil no existe, crearlo
       if (error.code === 'PGRST116') {
-        const email = session.user.email || '';
-        const name = session.user.user_metadata?.name || email.split('@')[0] || 'Usuario';
-        const avatar = session.user.user_metadata?.avatar || '🧑';
+        const email = user.email || '';
+        const name = user.user_metadata?.name || email.split('@')[0] || 'Usuario';
+        const avatar = user.user_metadata?.avatar || '🧑';
         
         const { data: newProfile, error: createError } = await serviceSupabase
           .from('profiles')
