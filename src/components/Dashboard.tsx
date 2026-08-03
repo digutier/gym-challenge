@@ -6,15 +6,17 @@ import {
   Check, X as XIcon, ChevronLeft, ChevronRight, Heart, Trophy, Zap, Trash2, Loader2, CalendarDays,
 } from 'lucide-react';
 import PhotoUpload, { PhotoUploadHandle } from './PhotoUpload';
-import GroupRanking from './GroupRanking';
 import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
-import StoryViewer from './StoryViewer';
-import { UserStats, EntryData, User as UserType } from '@/types';
-import { getTodayDate, formatTimeChile } from '@/lib/date';
-import { capDays, WEEKLY_GOAL } from '@/lib/stats';
+import HomeTab from './dashboard/HomeTab';
+import WorkoutsTab from './dashboard/WorkoutsTab';
+import FeedTab from './dashboard/FeedTab';
+import ProfileTab from './dashboard/ProfileTab';
+import { EntryData, User as UserType } from '@/types';
+import { getTodayDate } from '@/lib/date';
+import { WEEKLY_GOAL } from '@/lib/stats';
 import { useWeekNavigation } from '@/hooks/useWeekNavigation';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
@@ -29,12 +31,8 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-
 export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('home');
-  const [isHorizontal, setIsHorizontal] = useState(false);
-  const [homeStoryUser, setHomeStoryUser] = useState<UserStats | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
@@ -89,403 +87,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
   const activeDaysThisWeek = weekEntries.filter(e => e.registered).length;
   const cappedActiveDays = Math.min(activeDaysThisWeek, WEEKLY_GOAL);
-
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    setIsHorizontal(img.naturalWidth / img.naturalHeight > 1);
-  };
-
-  const getWeekMotivation = (days: number): string => {
-    if (days >= 4) return '¡Semana completada! Eres una máquina 🔥';
-    if (days === 3) return '¡Solo falta uno para cumplir la meta! 🤪';
-    if (days === 2) return 'Ya vas por la mitad, no te detengas 😫';
-    if (days === 1) return '¡Arrancaste la semana con todo! 🚀';
-    return '';
-  };
-
-  const friendActivity = ranking.slice(0, 5);
-
-  // Compute ranks (ties share the same rank)
-  const rankOf = (idx: number): number => {
-    if (idx === 0) return 1;
-    const sorted = [...ranking].sort((a, b) => capDays(b.daysThisWeek) - capDays(a.daysThisWeek));
-    let rank = 1;
-    for (let i = 1; i <= idx; i++) {
-      if (capDays(sorted[i].daysThisWeek) < capDays(sorted[i - 1].daysThisWeek)) rank = i + 1;
-    }
-    return rank;
-  };
-
-  const rankIcon = (rank: number) => {
-    if (rank === 1) return '🏆';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return <span className="text-[#64748b] text-xs font-bold w-6 text-center">{rank}</span>;
-  };
-
-  // ─── Ranking List (reutilizado en mobile y desktop sidebar) ───────────────
-
-  const renderRankingList = () => (
-    <>
-      {loading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl h-[74px] animate-pulse" />
-          ))}
-        </div>
-      ) : friendActivity.length > 0 ? (
-        <div className="flex flex-col gap-3">
-          {friendActivity.map((friend, idx) => {
-            const isMe = friend.id === user.id;
-            const hasPhoto = !!friend.todayPhotoUrl;
-            const metric = capDays(friend.daysThisWeek);
-            const rank = rankOf(idx);
-            return (
-              <div
-                key={friend.id}
-                className={`backdrop-blur-[5px] flex items-center gap-3 p-[13px] rounded-3xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
-              >
-                <div className="w-7 flex items-center justify-center shrink-0 text-lg leading-none">
-                  {rankIcon(rank)}
-                </div>
-                <button
-                  onClick={() => {
-                    if (hasPhoto && !isMe) { setHomeStoryUser(friend); }
-                  }}
-                  disabled={!hasPhoto || isMe}
-                  className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
-                >
-                  {friend.avatar}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-                    {friend.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
-                  </p>
-                  {hasPhoto && friend.todayPhotoTimestamp && (
-                    <p className="text-emerald-400 text-xs truncate">
-                      Fue al gym hoy {formatTimeChile(friend.todayPhotoTimestamp)} hrs
-                    </p>
-                  )}
-                </div>
-                <div className="text-right shrink-0">
-                  <p className={`text-lg font-black leading-none ${metric >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-[#f1f5f9]'}`}>
-                    {metric}
-                  </p>
-                  <p className="text-[#64748b] text-[10px]">/ {WEEKLY_GOAL}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="text-[#64748b] text-sm text-center py-6">
-          Agrega amigos para ver su actividad aquí.
-        </p>
-      )}
-    </>
-  );
-
-  // ─── Home Tab ─────────────────────────────────────────────────────────────
-
-  const renderHomeTab = () => (
-    <div className="flex flex-col lg:flex-row gap-0 lg:gap-6 lg:max-w-[1280px] lg:w-full lg:mx-auto lg:px-6 lg:py-2">
-      {/* Left column: hero card + week grid + ranking (mobile) */}
-      <div className="flex flex-col gap-4 pb-6 flex-1 lg:pb-2 min-w-0">
-      {/* Hero card */}
-      {hasEntryToday && entry ? (
-        <div className="relative overflow-hidden rounded-3xl mx-4 lg:mx-0 lg:h-[500px] shadow-[0px_20px_25px_-5px_rgba(127,13,242,0.35)] bg-black">
-          <img
-            src={photoUrl}
-            alt="Foto del gym"
-            onLoad={handleImageLoad}
-            className={`w-full lg:absolute lg:inset-0 lg:h-full lg:w-full lg:object-contain ${isHorizontal ? 'max-h-64 object-contain' : 'aspect-[3/4] object-cover'}`}
-          />
-
-          {/* Delete FAB — top left */}
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="absolute top-4 left-4 z-10 rounded-full size-10 flex items-center justify-center bg-black/60 backdrop-blur-md active:scale-95 transition-transform"
-          >
-            <Trash2 className="w-4 h-4 text-white" />
-          </button>
-
-          {/* PHOTO UPLOADED badge */}
-          <div className="absolute top-4 right-2 flex items-center gap-2 bg-black/75 backdrop-blur-md px-4 py-2 rounded-full z-10">
-            <div className="bg-[#7f0df2] rounded-full size-5 flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3 text-white" strokeWidth={3} />
-            </div>
-            <span className="text-white text-xs font-bold tracking-widest uppercase whitespace-nowrap">¡Hoy!</span>
-          </div>
-
-          {/* Bottom gradient overlay — text left, button right, no overlap */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent px-5 pt-20 pb-5 flex items-end justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-3xl font-black italic leading-tight uppercase">
-                ¡Bien hecho, {user.name}!
-              </p>
-              <div className="flex items-center gap-2 mt-2">
-                <Zap className="w-5 h-5 text-[#7f0df2] fill-[#7f0df2] shrink-0" />
-                <span className="text-white/90 text-base font-semibold">{getWeekMotivation(currentWeekActiveDays)}</span>
-              </div>
-            </div>
-            {/* Cambiar foto — solo visible en desktop (en mobile lo maneja el FAB) */}
-            <button
-              onClick={() => setShowOverwriteConfirm(true)}
-              className="hidden lg:flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 text-white text-sm font-semibold px-4 py-2.5 rounded-2xl hover:bg-white/25 active:scale-95 transition-all shrink-0"
-            >
-              <Camera className="w-4 h-4" />
-              Cambiar
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div
-          className="mx-4 lg:mx-0 relative overflow-hidden flex flex-col gap-4 items-start p-6 rounded-3xl shadow-[0px_20px_25px_-5px_rgba(127,13,242,0.2),0px_8px_10px_-6px_rgba(127,13,242,0.2)]"
-          style={{ background: 'linear-gradient(151deg, rgb(127,13,242) 0%, rgba(127,13,242,0.8) 50%, rgb(79,70,229) 100%)' }}
-        >
-          <div className="absolute bg-white/10 blur-[32px] -right-12 -top-12 rounded-full size-48 pointer-events-none" />
-
-          <div className="flex items-start justify-between w-full relative">
-            <div className="flex flex-col gap-1 flex-1 pr-4">
-              <h2 className="text-white text-2xl font-bold leading-tight">¡Anda al GYM CTM!</h2>
-              <p className="text-white/80 text-sm leading-5">Captura tu ida del día.</p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0">
-              <Camera className="w-6 h-6 text-white" />
-            </div>
-          </div>
-
-          <div className="w-full relative">
-            <PhotoUpload onUploadComplete={handleUploadComplete} variant="cta" />
-          </div>
-        </div>
-      )}
-
-      {/* This Week */}
-      <div className="flex flex-col gap-4 px-4 lg:px-0 pt-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[#f1f5f9] text-lg font-bold">{isCurrentWeek ? 'Esta semana' : weekLabel}</h3>
-          <span className="text-[#7f0df2] text-xs font-semibold tracking-[1.2px] uppercase">
-            {cappedActiveDays}/{WEEKLY_GOAL} Idas al GYM 💪
-          </span>
-        </div>
-
-        {!loading && weekEntries.length > 0 ? (
-          <>
-            <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-between px-4 py-4 rounded-3xl">
-              {weekEntries.map((dayEntry, i) => {
-                const isToday = dayEntry.date === today;
-                const isPast = dayEntry.date < today;
-                const isFuture = dayEntry.date > today;
-
-                return (
-                  <button
-                    key={dayEntry.date}
-                    onClick={() => isPast && setSelectedDate(dayEntry.date)}
-                    disabled={!isPast}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <span className={`text-[10px] font-bold uppercase ${isToday ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>
-                      {DAY_LABELS[i]}
-                    </span>
-                    {isFuture || (isToday && !dayEntry.registered) ? (
-                      <div className="border-2 border-dashed border-[#334155] rounded-full size-9" />
-                    ) : isToday && dayEntry.registered ? (
-                      <div className="relative bg-[#7f0df2] rounded-full size-9 flex items-center justify-center shadow-[0px_0px_0px_4px_rgba(127,13,242,0.2)]">
-                        <Check className="w-[14px] h-[14px] text-white" strokeWidth={3} />
-                      </div>
-                    ) : dayEntry.registered ? (
-                      <div className="bg-[rgba(127,13,242,0.2)] rounded-full size-9 flex items-center justify-center">
-                        <Check className="w-[14px] h-[14px] text-[#7f0df2]" strokeWidth={3} />
-                      </div>
-                    ) : (
-                      <div className="bg-[#1e293b] rounded-full size-9 flex items-center justify-center">
-                        <XIcon className="w-[14px] h-[14px] text-[#64748b]" strokeWidth={2.5} />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Week navigation */}
-            <div className="flex items-center justify-between -mt-1">
-              <button
-                onClick={handleWeekPrev}
-                disabled={!canGoPrev}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoPrev ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                Anterior
-              </button>
-
-              <button
-                onClick={handleWeekNext}
-                disabled={!canGoNext}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoNext ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
-              >
-                Siguiente
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </>
-        ) : loading ? (
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl h-20 animate-pulse" />
-        ) : null}
-      </div>
-
-      {/* Ranking Semanal — sólo visible en mobile */}
-      <div className="lg:hidden flex flex-col gap-4 px-4">
-        <h3 className="text-[#f1f5f9] text-lg font-bold">Ranking Semanal</h3>
-        {renderRankingList()}
-      </div>
-
-      </div>{/* /left column */}
-
-      {/* Right column: ranking semanal — sólo visible en desktop (lg+) */}
-      <div className="hidden lg:flex flex-col gap-4 w-[280px] shrink-0 pb-6">
-        <h3 className="text-[#f1f5f9] text-base font-bold">Ranking Semanal</h3>
-        {renderRankingList()}
-      </div>
-
-    </div>
-  );
-
-  // ─── Workouts Tab ──────────────────────────────────────────────────────────
-
-  const renderWorkoutsTab = () => (
-    <div className="flex flex-col items-center justify-center gap-4 px-6 lg:max-w-[800px] lg:mx-auto lg:w-full" style={{ minHeight: 'calc(100dvh - 160px)' }}>
-      <div className="bg-[rgba(127,13,242,0.1)] rounded-full p-6">
-        <CalendarDays className="w-12 h-12 text-[#7f0df2]" />
-      </div>
-      <div className="text-center">
-        <h3 className="text-[#f1f5f9] text-xl font-bold mb-2">Registros</h3>
-        <p className="text-[#64748b] text-sm">Esta sección está en camino.</p>
-      </div>
-    </div>
-  );
-
-  // ─── Feed Tab ──────────────────────────────────────────────────────────────
-
-  const [rankingPeriod, setRankingPeriod] = useState<'week' | 'month' | 'year'>('week');
-
-  const PERIOD_LABELS = { week: 'Semana', month: 'Mes', year: 'Año' } as const;
-
-  const renderFeedTab = () => (
-    <div className="flex flex-col gap-4 px-4 pb-6 pt-4 lg:max-w-[800px] lg:mx-auto lg:w-full lg:px-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[#f1f5f9] text-lg font-bold flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-amber-400" />
-          Ranking Global
-        </h3>
-      </div>
-
-      {/* Period tabs */}
-      <div className="flex bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-2xl p-1 gap-1">
-        {(['week', 'month', 'year'] as const).map(p => (
-          <button
-            key={p}
-            onClick={() => setRankingPeriod(p)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
-              rankingPeriod === p
-                ? 'bg-[#7f0df2] text-white shadow-[0px_2px_8px_rgba(127,13,242,0.4)]'
-                : 'text-[#64748b]'
-            }`}
-          >
-            {PERIOD_LABELS[p]}
-          </button>
-        ))}
-      </div>
-
-      {!loading && ranking.length > 0 ? (
-        <GroupRanking users={ranking} currentUserId={user.id} period={rankingPeriod} />
-      ) : loading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-[rgba(255,255,255,0.03)] rounded-3xl h-16 animate-pulse" />
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-
-  // ─── Profile Tab ───────────────────────────────────────────────────────────
-
-  const renderProfileTab = () => {
-    const myStats = ranking.find(u => u.id === user.id);
-    return (
-      <div className="flex flex-col gap-5 px-4 pb-6 pt-4 lg:max-w-[640px] lg:mx-auto lg:w-full lg:px-6">
-        <div className="flex flex-col items-center gap-3 pt-4">
-          <div className="bg-[rgba(127,13,242,0.2)] border-2 border-[rgba(127,13,242,0.5)] rounded-full size-20 flex items-center justify-center text-4xl">
-            {user.avatar}
-          </div>
-          <div className="text-center">
-            <h3 className="text-[#f1f5f9] text-xl font-bold">{user.name}</h3>
-            <p className="text-[#94a3b8] text-sm">Tu perfil</p>
-          </div>
-        </div>
-
-        {myStats && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-              <p className="text-[#7f0df2] text-2xl font-black">{capDays(myStats.daysThisWeek)}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Esta sem.</p>
-            </div>
-            <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.monthlyDays}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Este mes</p>
-            </div>
-            <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.totalDays}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Total 2026</p>
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={() => { fetchPendingRequests(); setShowFriendsList(true); }}
-            className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
-          >
-            <Users className="w-5 h-5 text-[#7f0df2]" />
-            <span className="text-[#f1f5f9] text-sm font-semibold">Mis amigos</span>
-            {friends.length > 0 && (
-              <span className="ml-auto text-[#64748b] text-xs font-semibold">{friends.length}</span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setShowAddFriend(true)}
-            className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
-          >
-            <UserPlus className="w-5 h-5 text-[#7f0df2]" />
-            <span className="text-[#f1f5f9] text-sm font-semibold">Agregar amigo</span>
-          </button>
-
-          <button
-            onClick={() => setShowNotifications(true)}
-            className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left relative"
-          >
-            <Bell className="w-5 h-5 text-[#7f0df2]" />
-            <span className="text-[#f1f5f9] text-sm font-semibold">Solicitudes recibidas</span>
-            {pendingRequests.length > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
-                {pendingRequests.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={onLogout}
-            className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
-          >
-            <User className="w-5 h-5 text-red-400" />
-            <span className="text-red-400 text-sm font-semibold">Cerrar sesión</span>
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   const TAB_LABELS: Record<Tab, string> = {
     home: 'Dashboard',
@@ -585,10 +186,47 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
           {/* Main content */}
           <main className="flex-1 overflow-y-auto pb-[90px] lg:pb-6 pt-4">
-            {activeTab === 'home' && renderHomeTab()}
-            {activeTab === 'workouts' && renderWorkoutsTab()}
-            {activeTab === 'feed' && renderFeedTab()}
-            {activeTab === 'profile' && renderProfileTab()}
+            {activeTab === 'home' && (
+              <HomeTab
+                user={user}
+                entry={entry}
+                hasEntryToday={hasEntryToday}
+                photoUrl={photoUrl}
+                today={today}
+                currentWeekActiveDays={currentWeekActiveDays}
+                cappedActiveDays={cappedActiveDays}
+                weekEntries={weekEntries}
+                loading={loading}
+                isCurrentWeek={isCurrentWeek}
+                weekLabel={weekLabel}
+                canGoPrev={canGoPrev}
+                canGoNext={canGoNext}
+                onWeekPrev={handleWeekPrev}
+                onWeekNext={handleWeekNext}
+                onSelectDate={setSelectedDate}
+                onRequestDelete={() => setShowDeleteConfirm(true)}
+                onRequestOverwrite={() => setShowOverwriteConfirm(true)}
+                onUploadComplete={handleUploadComplete}
+                ranking={ranking}
+                currentUserId={user.id}
+              />
+            )}
+            {activeTab === 'workouts' && <WorkoutsTab />}
+            {activeTab === 'feed' && (
+              <FeedTab ranking={ranking} loading={loading} currentUserId={user.id} />
+            )}
+            {activeTab === 'profile' && (
+              <ProfileTab
+                user={user}
+                ranking={ranking}
+                friendsCount={friends.length}
+                pendingRequestsCount={pendingRequests.length}
+                onShowFriendsList={() => { fetchPendingRequests(); setShowFriendsList(true); }}
+                onShowAddFriend={() => setShowAddFriend(true)}
+                onShowNotifications={() => setShowNotifications(true)}
+                onLogout={onLogout}
+              />
+            )}
           </main>
 
           {/* Mobile bottom nav — oculto en desktop */}
@@ -735,18 +373,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           date={selectedDate}
           currentUserId={user.id}
           onClose={() => setSelectedDate(null)}
-        />
-      )}
-
-      {/* Home story modal */}
-      {homeStoryUser && homeStoryUser.todayPhotoUrl && (
-        <StoryViewer
-          avatar={homeStoryUser.avatar}
-          name={homeStoryUser.name}
-          photoUrl={homeStoryUser.todayPhotoUrl}
-          subtitle="Hoy"
-          timestamp={homeStoryUser.todayPhotoTimestamp}
-          onClose={() => setHomeStoryUser(null)}
         />
       )}
     </>
