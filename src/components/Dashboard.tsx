@@ -1,10 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  Camera, Home, Users, User, Bell, UserPlus,
-  Check, X as XIcon, ChevronLeft, ChevronRight, Heart, Trophy, Zap, Trash2, Loader2, CalendarDays,
-} from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { Home, User, Trophy, Loader2, CalendarDays } from 'lucide-react';
 import PhotoUpload, { PhotoUploadHandle } from './PhotoUpload';
 import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
@@ -59,8 +56,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   ) => {
     onPhotoUpload(entryData);
     await refreshStats();
-  // refreshStats depende de selectedWeekStart y user.id (estables tras upload)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onPhotoUpload, refreshStats]);
 
   const handleDeleteEntry = async () => {
