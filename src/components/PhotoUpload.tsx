@@ -3,10 +3,11 @@
 import { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Camera, Loader2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { compressImage } from '@/lib/utils';
+import { compressImage } from '@/lib/image';
+import { EntryData } from '@/types';
 
 interface PhotoUploadProps {
-  onUploadComplete: (entryData?: { date: string; photo_url: string; timestamp: string }) => void;
+  onUploadComplete: (entryData?: EntryData) => void;
   isRetake?: boolean;
   variant?: 'default' | 'cta' | 'fab' | 'retake-fab';
   onBeforeOpen?: () => boolean;

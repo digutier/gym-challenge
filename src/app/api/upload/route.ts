@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireAuthClient } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/utils';
+import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/date';
 import { STORAGE_BUCKET } from '@/lib/constants';
 
 export async function DELETE() {
   try {
-    const supabase = await createServerSupabaseClient();
+    const auth = await requireAuthClient();
+    if ('error' in auth) return auth.error;
+    const { userId, supabase } = auth;
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
     const today = getTodayDate();
     const serviceSupabase = getServiceSupabase();
 
@@ -48,19 +44,9 @@ export async function DELETE() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    
-    // Verificar autenticación
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-    
-    const userId = session.user.id;
+    const auth = await requireAuthClient();
+    if ('error' in auth) return auth.error;
+    const { userId, supabase } = auth;
 
     // Obtener archivo de FormData
     const formData = await request.formData();
@@ -85,8 +71,6 @@ export async function POST(request: NextRequest) {
     const serviceSupabase = getServiceSupabase();
 
     const today = getTodayDate();
-    console.log('today date es:');
-    console.log(today);
     const timestamp = Date.now();
     // Usar timestamp en el nombre para evitar caché de CDN
     const fileName = `${userId}/${today}-${timestamp}.jpg`;
@@ -128,8 +112,6 @@ export async function POST(request: NextRequest) {
     const photoUrl = urlData.publicUrl;
 
     // Verificar si ya existe un registro de hoy (para update vs insert)
-    console.log('verificando el dia actual:');
-    console.log(today);
     const { data: existingEntry } = await supabase
       .from('gym_entries')
       .select('id')
@@ -161,8 +143,6 @@ export async function POST(request: NextRequest) {
       entry = data;
     } else {
       // Crear nuevo registro
-      console.log('creando nuevo registro');
-      console.log(today);
       const { data, error } = await supabase
         .from('gym_entries')
         .insert({

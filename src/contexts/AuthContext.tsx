@@ -40,29 +40,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Verificar configuración de Supabase
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    console.log('[AuthContext] Initializing AuthProvider');
-    console.log('[AuthContext] Supabase URL:', supabaseUrl ? '✅ Configured' : '❌ Missing');
-    console.log('[AuthContext] Supabase Key:', supabaseKey ? '✅ Configured' : '❌ Missing');
-    
+
     if (!supabaseUrl || !supabaseKey) {
-      console.error('[AuthContext] ⚠️ Supabase environment variables not configured!');
       setLoading(false);
       return;
     }
-    
+
     let isMounted = true;
 
-    const loadProfile = async (userId: string) => {
-      console.log('[AuthContext] Loading profile for userId:', userId);
+    const loadProfile = async () => {
       try {
         // Usar API route en vez de consulta directa para evitar problemas de RLS
-        console.log('[AuthContext] Fetching profile from API route...');
         const response = await fetch('/api/profile');
-        
+
         if (!response.ok) {
           if (response.status === 401) {
-            console.log('[AuthContext] Not authenticated');
             if (isMounted) {
               setProfile(null);
             }
@@ -70,80 +62,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const { profile: data, error } = await response.json();
-        
+
         // Si hay error en la respuesta JSON
         if (error) {
           throw new Error(error);
         }
-        
-        console.log('[AuthContext] Profile loaded from API:', data);
-        
+
         if (!isMounted) {
-          console.log('[AuthContext] Component unmounted, skipping profile update');
           return;
         }
-        
+
         if (data) {
-          console.log('[AuthContext] Setting profile state');
           setProfile(data);
         } else {
-          console.log('[AuthContext] No profile data, setting to null');
           setProfile(null);
         }
-      } catch (error: unknown) {
-        const errorObj = error as { message?: string; code?: string; details?: string; hint?: string };
-        console.error('[AuthContext] Error loading profile (catch):', errorObj);
-        console.error('[AuthContext] Error details:', {
-          message: errorObj?.message,
-          code: errorObj?.code,
-          details: errorObj?.details,
-          hint: errorObj?.hint,
-        });
-        
-        
+      } catch {
         if (isMounted) {
           setProfile(null);
         }
       }
     };
-    
+
     // Verificar sesión actual
-    console.log('[AuthContext] Initializing, checking session...');
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('[AuthContext] getSession result:', { 
-        hasSession: !!session, 
-        userId: session?.user?.id,
-        error 
-      });
-      
       if (!isMounted) {
-        console.log('[AuthContext] Component unmounted during getSession');
         return;
       }
-      
+
       if (error) {
-        console.error('[AuthContext] Error getting session:', error);
         setLoading(false);
         return;
       }
-      
+
       setUser(session?.user ?? null);
       if (session?.user) {
-        console.log('[AuthContext] User found, loading profile...');
-        loadProfile(session.user.id).finally(() => {
-          console.log('[AuthContext] loadProfile finished, setting loading to false');
+        loadProfile().finally(() => {
           if (isMounted) {
             setLoading(false);
           }
         });
       } else {
-        console.log('[AuthContext] No session, setting loading to false');
         setLoading(false);
       }
-    }).catch((error) => {
-      console.error('[AuthContext] Error in getSession (catch):', error);
+    }).catch(() => {
       if (isMounted) {
         setLoading(false);
       }
@@ -153,27 +117,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         if (!isMounted) return;
-        
-        console.log('Auth event:', event);
-        
+
         // ⚠️ IGNORAR TOKEN_REFRESHED si ya tenemos datos cargados
         if (event === 'TOKEN_REFRESHED') {
-          console.log('[AuthContext] Token refreshed, but skipping reload');
           return; // No hacer nada, solo es un refresh del token
         }
-        
+
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
-          try {
-            await loadProfile(session.user.id);
-          } catch (error) {
-            console.error('Error loading profile in auth change:', error);
-          }
+          await loadProfile();
         } else {
           setProfile(null);
         }
-        
+
         setLoading(false);
       }
     );
@@ -181,7 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Timeout de seguridad (10 segundos)
     const timeout = setTimeout(() => {
       if (isMounted) {
-        console.warn('Auth loading timeout, forcing false');
         setLoading(false);
       }
     }, 10000);

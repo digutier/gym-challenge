@@ -5,7 +5,8 @@ import { ArrowLeft, Loader2, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { UserStats } from '@/types';
-import { getCurrentMonthName, WEEKLY_GOAL } from '@/lib/utils';
+import { getCurrentMonthName } from '@/lib/date';
+import { WEEKLY_GOAL } from '@/lib/stats';
 
 export default function PublicDashboard() {
   const router = useRouter();

@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireAuth } from '@/lib/api-auth';
 
 // POST: Aceptar o rechazar solicitud de amistad
 export async function POST(request: NextRequest) {
   try {
-    const authSupabase = await createServerSupabaseClient();
-    const { data: { session } } = await authSupabase.auth.getSession();
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+    const currentUserId = auth.userId;
 
-    if (!session) {
-      return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
-    }
-
-    const currentUserId = session.user.id;
     const { friendshipId, action } = await request.json();
 
     if (!friendshipId || !action || !['accept', 'decline'].includes(action)) {

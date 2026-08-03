@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getOptionalUserId } from '@/lib/api-auth';
 
 // GET: Obtener estadísticas de un día específico (fotos de todos los usuarios)
 export async function GET(request: NextRequest) {
@@ -26,9 +26,7 @@ export async function GET(request: NextRequest) {
     const supabase = getServiceSupabase();
 
     // Obtener autenticación para saber quién es el usuario actual
-    const authSupabase = await createServerSupabaseClient();
-    const { data: { session } } = await authSupabase.auth.getSession();
-    const currentUserId = session?.user?.id;
+    const currentUserId = await getOptionalUserId();
 
     // Si está autenticado, filtrar por amigos aceptados + sí mismo
     let allowedUserIds: string[] | null = null;

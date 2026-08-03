@@ -4,7 +4,6 @@ export interface User {
   id: string;
   name: string;
   avatar: string;
-  token: string;
   created_at?: string;
 }
 
@@ -34,13 +33,15 @@ export interface UserStats {
   todayPhotoTimestamp?: string; // Timestamp de la foto de hoy (si existe)
 }
 
+export interface EntryData {
+  date: string;
+  photo_url: string;
+  timestamp: string;
+}
+
 export interface CheckTodayResponse {
   alreadyRegistered: boolean;
-  entry?: {
-    date: string;
-    photo_url: string;
-    timestamp: string;
-  };
+  entry?: EntryData;
   user: {
     id: string;
     name: string;
@@ -64,15 +65,41 @@ export interface AllStatsResponse {
   users: UserStats[];
 }
 
-export type AppState =
-  | 'loading'
-  | 'login'
-  | 'not-registered'
-  | 'registered'
-  | 'uploading';
-
 export interface FriendRequest {
   id: string;
   requester: { id: string; name: string; avatar: string; email: string };
   created_at: string;
 }
+
+export interface Friend {
+  friendshipId: string;
+  id: string;
+  name: string;
+  avatar: string;
+  email: string;
+}
+
+export interface DayUser {
+  id: string;
+  name: string;
+  avatar: string;
+  photoUrl: string | null;
+  photoTimestamp: string | null;
+  hasPhoto: boolean;
+}
+
+export interface UserSearchResult {
+  user_id: string;
+  email: string;
+  name: string;
+  avatar: string;
+}
+
+export interface ProfileRow {
+  id: string;
+  name: string;
+  avatar: string;
+  email: string;
+}
+
+export type AcceptedProfileRow = ProfileRow | ProfileRow[] | null;
