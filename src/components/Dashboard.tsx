@@ -11,6 +11,7 @@ import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
+import StoryViewer from './StoryViewer';
 import { WeekEntry, UserStats, FriendRequest, Friend, EntryData, User as UserType } from '@/types';
 import { getTodayDate, getWeekStart, getMinWeekStart, formatTimeChile } from '@/lib/date';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
@@ -38,7 +39,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [homeStoryUser, setHomeStoryUser] = useState<UserStats | null>(null);
-  const [homeStoryLoading, setHomeStoryLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
@@ -62,13 +62,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   useEffect(() => {
     fetchPendingRequests();
   }, [user.id]);
-
-  useEffect(() => {
-    if (homeStoryUser && !homeStoryLoading) {
-      const t = setTimeout(() => setHomeStoryUser(null), 5000);
-      return () => clearTimeout(t);
-    }
-  }, [homeStoryUser, homeStoryLoading]);
 
   // Función central de refresco — se llama al montar, al cambiar semana,
   // y explícitamente tras upload/delete para evitar condición de carrera.
@@ -231,7 +224,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 </div>
                 <button
                   onClick={() => {
-                    if (hasPhoto && !isMe) { setHomeStoryLoading(true); setHomeStoryUser(friend); }
+                    if (hasPhoto && !isMe) { setHomeStoryUser(friend); }
                   }}
                   disabled={!hasPhoto || isMe}
                   className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
@@ -821,51 +814,14 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
       {/* Home story modal */}
       {homeStoryUser && homeStoryUser.todayPhotoUrl && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
-          onClick={() => setHomeStoryUser(null)}
-        >
-          <div className="absolute top-0 left-0 right-0 p-4 flex items-center gap-3 bg-gradient-to-b from-black/60 to-transparent z-10">
-            <div className="w-10 h-10 rounded-full bg-[rgba(127,13,242,0.3)] flex items-center justify-center ring-2 ring-white/30">
-              <span className="text-xl">{homeStoryUser.avatar}</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-semibold text-sm">{homeStoryUser.name}</p>
-              <div className="flex items-center gap-2">
-                <p className="text-white/60 text-xs">Hoy</p>
-                {homeStoryUser.todayPhotoTimestamp && (
-                  <span className="text-white/40 text-xs">{formatTimeChile(homeStoryUser.todayPhotoTimestamp)}</span>
-                )}
-              </div>
-            </div>
-            <button onClick={() => setHomeStoryUser(null)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <XIcon className="w-5 h-5 text-white" />
-            </button>
-          </div>
-
-          <div className="absolute top-2 left-4 right-4 h-0.5 bg-white/20 rounded-full z-10">
-            {!homeStoryLoading && (
-              <div className="h-full bg-white rounded-full" style={{ animation: 'storyProgress 5s linear forwards' }} />
-            )}
-          </div>
-
-          {homeStoryLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-12 h-12 text-white animate-spin" />
-            </div>
-          )}
-
-          <img
-            src={homeStoryUser.todayPhotoUrl}
-            alt={`Foto de ${homeStoryUser.name}`}
-            className={`max-w-full max-h-full object-contain ${homeStoryLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
-            onClick={(e) => e.stopPropagation()}
-            onLoad={() => setHomeStoryLoading(false)}
-            onError={() => setHomeStoryLoading(false)}
-          />
-
-          <p className="absolute bottom-6 left-0 right-0 text-center text-white/40 text-xs">Toca para cerrar</p>
-        </div>
+        <StoryViewer
+          avatar={homeStoryUser.avatar}
+          name={homeStoryUser.name}
+          photoUrl={homeStoryUser.todayPhotoUrl}
+          subtitle="Hoy"
+          timestamp={homeStoryUser.todayPhotoTimestamp}
+          onClose={() => setHomeStoryUser(null)}
+        />
       )}
     </>
   );

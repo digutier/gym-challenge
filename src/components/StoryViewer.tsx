@@ -1,0 +1,87 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { X, Loader2 } from 'lucide-react';
+import { formatTimeChile } from '@/lib/date';
+
+interface StoryViewerProps {
+  avatar: string;
+  name: string;
+  photoUrl: string;
+  subtitle: string;
+  timestamp?: string;
+  avatarBgClassName?: string;
+  zIndexClassName?: string;
+  onClose: (e?: React.MouseEvent) => void;
+}
+
+export default function StoryViewer({
+  avatar,
+  name,
+  photoUrl,
+  subtitle,
+  timestamp,
+  avatarBgClassName = '!bg-[rgba(127,13,242,0.3)]',
+  zIndexClassName = '!z-50',
+  onClose,
+}: StoryViewerProps) {
+  const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    if (!imageLoading) {
+      const t = setTimeout(() => onClose(), 5000);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageLoading]);
+
+  return (
+    <div
+      className={`!fixed !inset-0 ${zIndexClassName} !bg-black/95 !flex !items-center !justify-center`}
+      onClick={onClose}
+    >
+      <div className="!absolute !top-0 !left-0 !right-0 !p-4 !flex !items-center !gap-3 !bg-gradient-to-b !from-black/60 !to-transparent !z-10">
+        <div className={`!w-10 !h-10 !rounded-full ${avatarBgClassName} !flex !items-center !justify-center !ring-2 !ring-white/30`}>
+          <span className="!text-xl">{avatar}</span>
+        </div>
+        <div className="!flex-1">
+          <p className="!text-white !font-semibold !text-sm">{name}</p>
+          <div className="!flex !items-center !gap-2">
+            <p className="!text-white/60 !text-xs !capitalize">{subtitle}</p>
+            {timestamp && (
+              <span className="!text-white/40 !text-xs">{formatTimeChile(timestamp)}</span>
+            )}
+          </div>
+        </div>
+        <button onClick={onClose} className="!w-8 !h-8 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors">
+          <X className="!w-5 !h-5 !text-white" />
+        </button>
+      </div>
+
+      <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">
+        {!imageLoading && (
+          <div className="!h-full !bg-white !rounded-full" style={{ animation: 'storyProgress 5s linear forwards' }} />
+        )}
+      </div>
+
+      {imageLoading && (
+        <div className="!absolute !inset-0 !flex !items-center !justify-center">
+          <Loader2 className="!w-12 !h-12 !text-white !animate-spin" />
+        </div>
+      )}
+
+      <img
+        src={photoUrl}
+        alt={`Foto de ${name}`}
+        className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
+        onClick={(e) => e.stopPropagation()}
+        onLoad={() => setImageLoading(false)}
+        onError={() => setImageLoading(false)}
+      />
+
+      <p className="!absolute !bottom-6 !left-0 !right-0 !text-center !text-white/40 !text-xs" onClick={onClose}>
+        Toca para cerrar
+      </p>
+    </div>
+  );
+}

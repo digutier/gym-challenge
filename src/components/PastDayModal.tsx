@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { formatDate, formatTimeChile } from '@/lib/date';
 import { DayUser, EntryData } from '@/types';
+import StoryViewer from './StoryViewer';
 
 type PastDayModalProps = {
   date: string;
@@ -17,7 +18,6 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
   const [currentUserPhoto, setCurrentUserPhoto] = useState<EntryData | null>(null);
   const [selectedUser, setSelectedUser] = useState<DayUser | null>(null);
   const [isHorizontal, setIsHorizontal] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
   const [myPhotoLoading, setMyPhotoLoading] = useState(true);
 
   // Bloquear scroll del body cuando el modal está abierto
@@ -50,17 +50,6 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
 
     fetchDayData();
   }, [date]);
-
-  // Auto-cerrar el story después de 5 segundos, solo cuando la imagen termine de cargar
-  useEffect(() => {
-    if (selectedUser && !imageLoading) {
-      const timer = setTimeout(() => {
-        setSelectedUser(null);
-      }, 5000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [selectedUser, imageLoading]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -164,10 +153,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
                 {usersWithPhotos.map((user) => (
                   <button
                     key={user.id}
-                    onClick={() => {
-                      setImageLoading(true);
-                      setSelectedUser(user);
-                    }}
+                    onClick={() => setSelectedUser(user)}
                     className="!flex !flex-col !items-center !gap-1 !p-2 !rounded-xl hover:!bg-white/10 !transition-colors"
                   >
                     <div className="!relative !w-14 !h-14 !rounded-full !flex !items-center !justify-center
@@ -195,79 +181,19 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
 
       {/* Story Modal para ver foto de amigo */}
       {selectedUser && selectedUser.photoUrl && (
-        <div 
-          className="!fixed !inset-0 !z-[60] !bg-black/95 !flex !items-center !justify-center"
-          onClick={(e) => {
-            e.stopPropagation(); // Evita que se cierre el PastDayModal
-            setImageLoading(true);
+        <StoryViewer
+          avatar={selectedUser.avatar}
+          name={selectedUser.name}
+          photoUrl={selectedUser.photoUrl}
+          subtitle={formatDate(date)}
+          timestamp={selectedUser.photoTimestamp ?? undefined}
+          avatarBgClassName="!bg-purple-600"
+          zIndexClassName="!z-[60]"
+          onClose={(e) => {
+            e?.stopPropagation(); // Evita que se cierre el PastDayModal
             setSelectedUser(null); // Solo cierra el story
           }}
-        >
-          {/* Header con info del usuario */}
-          <div className="!absolute !top-0 !left-0 !right-0 !p-4 !flex !items-center !gap-3 !bg-gradient-to-b !from-black/60 !to-transparent !z-10">
-            <div className="!w-10 !h-10 !rounded-full !bg-purple-600 !flex !items-center !justify-center !ring-2 !ring-white/30">
-              <span className="!text-xl">{selectedUser.avatar}</span>
-            </div>
-            <div className="!flex-1">
-              <p className="!text-white !font-semibold !text-sm">{selectedUser.name}</p>
-              <div className="!flex !items-center !gap-2">
-                <p className="!text-white/60 !text-xs !capitalize">{formatDate(date)}</p>
-                {selectedUser.photoTimestamp && (
-                  <span className="!text-white/40 !text-xs">
-                    {formatTimeChile(selectedUser.photoTimestamp)}
-                  </span>
-                )}
-              </div>
-            </div>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedUser(null);
-              }}
-              className="!w-8 !h-8 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors"
-            >
-              <X className="!w-5 !h-5 !text-white" />
-            </button>
-          </div>
-
-          {/* Barra de progreso */}
-          <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">
-            {!imageLoading && (
-              <div 
-                className="!h-full !bg-white !rounded-full animate-story-progress"
-                style={{ animation: 'storyProgress 5s linear forwards' }}
-              />
-            )}
-          </div>
-
-          {/* Loader mientras carga la imagen */}
-          {imageLoading && (
-            <div className="!absolute !inset-0 !flex !items-center !justify-center !z-5">
-              <Loader2 className="!w-12 !h-12 !text-white !animate-spin" />
-            </div>
-          )}
-
-          {/* Imagen */}
-          <img
-            src={selectedUser.photoUrl}
-            alt={`Foto de ${selectedUser.name}`}
-            className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
-            onClick={(e) => e.stopPropagation()}
-            onLoad={() => setImageLoading(false)}
-            onError={() => setImageLoading(false)}
-          />
-
-          {/* Indicador */}
-          <p 
-            className="!absolute !bottom-6 !left-0 !right-0 !text-center !text-white/40 !text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedUser(null);
-            }}
-          >
-            Toca para cerrar
-          </p>
-        </div>
+        />
       )}
     </div>
   );

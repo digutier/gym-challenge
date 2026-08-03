@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
-import { formatTimeChile } from '@/lib/date';
-import { X, Loader2 } from 'lucide-react';
 import PodiumAvatar from './PodiumAvatar';
+import StoryViewer from './StoryViewer';
 
 interface GroupRankingProps {
   users: UserStats[];
@@ -15,14 +14,6 @@ interface GroupRankingProps {
 
 export default function GroupRanking({ users, currentUserId, period = 'week' }: GroupRankingProps) {
   const [selectedUser, setSelectedUser] = useState<UserStats | null>(null);
-  const [imageLoading, setImageLoading] = useState(true);
-
-  useEffect(() => {
-    if (selectedUser && !imageLoading) {
-      const timer = setTimeout(() => setSelectedUser(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedUser, imageLoading]);
 
   const getMetric = (u: UserStats) => {
     if (period === 'month') return u.monthlyDays ?? 0;
@@ -39,14 +30,8 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
 
   const handleAvatarClick = (u: UserStats) => {
     if (period === 'week' && u.todayPhotoUrl && u.id !== currentUserId) {
-      setImageLoading(true);
       setSelectedUser(u);
     }
-  };
-
-  const closeStory = () => {
-    setSelectedUser(null);
-    setImageLoading(true);
   };
 
   const hasTodayPhoto = (u: UserStats) =>
@@ -156,51 +141,14 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
 
       {/* Story Modal */}
       {selectedUser && selectedUser.todayPhotoUrl && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
-          onClick={closeStory}
-        >
-          <div className="absolute top-0 left-0 right-0 p-4 flex items-center gap-3 bg-gradient-to-b from-black/60 to-transparent z-10">
-            <div className="w-10 h-10 rounded-full bg-[rgba(127,13,242,0.3)] flex items-center justify-center ring-2 ring-white/30">
-              <span className="text-xl">{selectedUser.avatar}</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-semibold text-sm">{selectedUser.name}</p>
-              <div className="flex items-center gap-2">
-                <p className="text-white/60 text-xs">Hoy</p>
-                {selectedUser.todayPhotoTimestamp && (
-                  <span className="text-white/40 text-xs">{formatTimeChile(selectedUser.todayPhotoTimestamp)}</span>
-                )}
-              </div>
-            </div>
-            <button onClick={closeStory} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <X className="w-5 h-5 text-white" />
-            </button>
-          </div>
-
-          <div className="absolute top-2 left-4 right-4 h-0.5 bg-white/20 rounded-full z-10">
-            {!imageLoading && (
-              <div className="h-full bg-white rounded-full" style={{ animation: 'storyProgress 5s linear forwards' }} />
-            )}
-          </div>
-
-          {imageLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-12 h-12 text-white animate-spin" />
-            </div>
-          )}
-
-          <img
-            src={selectedUser.todayPhotoUrl}
-            alt={`Foto de ${selectedUser.name}`}
-            className={`max-w-full max-h-full object-contain ${imageLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
-            onClick={(e) => e.stopPropagation()}
-            onLoad={() => setImageLoading(false)}
-            onError={() => setImageLoading(false)}
-          />
-
-          <p className="absolute bottom-6 left-0 right-0 text-center text-white/40 text-xs">Toca para cerrar</p>
-        </div>
+        <StoryViewer
+          avatar={selectedUser.avatar}
+          name={selectedUser.name}
+          photoUrl={selectedUser.todayPhotoUrl}
+          subtitle="Hoy"
+          timestamp={selectedUser.todayPhotoTimestamp}
+          onClose={() => setSelectedUser(null)}
+        />
       )}
     </>
   );
