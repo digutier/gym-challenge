@@ -94,8 +94,6 @@ export function getChileDate(): Date {
  */
 export function getTodayDate(): string {
   const chileDate = new Date().toLocaleString('es-CL', { timeZone: 'America/Santiago' });
-  console.log('chileDate es:');
-  console.log(chileDate);
   const dateParts = (chileDate.split(',')[0]).split('-');
   return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 }
@@ -284,17 +282,4 @@ export async function compressImage(file: File, maxWidth = 1080): Promise<Blob> 
     img.onerror = () => reject(new Error('Error al cargar imagen'));
     img.src = URL.createObjectURL(file);
   });
-}
-
-/**
- * Valida si es un token válido
- */
-export function isValidToken(token: string): boolean {
-  const validTokens = [
-    'token-android-guryx',
-    'token-ios-cuyi',
-    'token-ios-karin',
-    'token-ios-pablo',
-  ];
-  return validTokens.includes(token);
 }

@@ -85,8 +85,6 @@ export async function POST(request: NextRequest) {
     const serviceSupabase = getServiceSupabase();
 
     const today = getTodayDate();
-    console.log('today date es:');
-    console.log(today);
     const timestamp = Date.now();
     // Usar timestamp en el nombre para evitar caché de CDN
     const fileName = `${userId}/${today}-${timestamp}.jpg`;
@@ -128,8 +126,6 @@ export async function POST(request: NextRequest) {
     const photoUrl = urlData.publicUrl;
 
     // Verificar si ya existe un registro de hoy (para update vs insert)
-    console.log('verificando el dia actual:');
-    console.log(today);
     const { data: existingEntry } = await supabase
       .from('gym_entries')
       .select('id')
@@ -161,8 +157,6 @@ export async function POST(request: NextRequest) {
       entry = data;
     } else {
       // Crear nuevo registro
-      console.log('creando nuevo registro');
-      console.log(today);
       const { data, error } = await supabase
         .from('gym_entries')
         .insert({
