@@ -10,17 +10,19 @@ export type AuthClientResult = { userId: string; supabase: ServerSupabaseClient 
 
 /**
  * Hard auth: requires a valid Supabase session, returns a ready-to-return
- * 401 NextResponse if there isn't one.
+ * 401 NextResponse if there isn't one. Uses getUser() (not getSession()) so
+ * the user claim is verified against the Supabase Auth server rather than
+ * trusted from the cookie as-is.
  */
 export async function requireAuth(): Promise<AuthResult> {
   const authSupabase = await createServerSupabaseClient();
-  const { data: { session } } = await authSupabase.auth.getSession();
+  const { data: { user } } = await authSupabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return { error: NextResponse.json({ error: 'No autenticado' }, { status: 401 }) };
   }
 
-  return { userId: session.user.id };
+  return { userId: user.id };
 }
 
 /**
@@ -29,13 +31,13 @@ export async function requireAuth(): Promise<AuthResult> {
  */
 export async function requireAuthUser(): Promise<AuthUserResult> {
   const authSupabase = await createServerSupabaseClient();
-  const { data: { session } } = await authSupabase.auth.getSession();
+  const { data: { user } } = await authSupabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return { error: NextResponse.json({ error: 'No autenticado' }, { status: 401 }) };
   }
 
-  return { user: session.user };
+  return { user };
 }
 
 /**
@@ -45,20 +47,20 @@ export async function requireAuthUser(): Promise<AuthUserResult> {
  */
 export async function requireAuthClient(): Promise<AuthClientResult> {
   const supabase = await createServerSupabaseClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return { error: NextResponse.json({ error: 'No autenticado' }, { status: 401 }) };
   }
 
-  return { userId: session.user.id, supabase };
+  return { userId: user.id, supabase };
 }
 
 /**
- * Soft auth: returns the session's userId if present, otherwise null. Never 401s.
+ * Soft auth: returns the userId if present, otherwise null. Never 401s.
  */
 export async function getOptionalUserId(): Promise<string | null> {
   const authSupabase = await createServerSupabaseClient();
-  const { data: { session } } = await authSupabase.auth.getSession();
-  return session?.user?.id ?? null;
+  const { data: { user } } = await authSupabase.auth.getUser();
+  return user?.id ?? null;
 }
