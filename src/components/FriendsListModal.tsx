@@ -2,14 +2,7 @@
 
 import { useState } from 'react';
 import { X, Loader2, UserMinus } from 'lucide-react';
-
-interface Friend {
-  friendshipId: string;
-  id: string;
-  name: string;
-  avatar: string;
-  email: string;
-}
+import { Friend } from '@/types';
 
 interface FriendsListModalProps {
   friends: Friend[];

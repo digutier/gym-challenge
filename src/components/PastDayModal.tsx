@@ -3,15 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { formatDate, formatTimeChile } from '@/lib/utils';
-
-type DayUser = {
-  id: string;
-  name: string;
-  avatar: string;
-  photoUrl: string | null;
-  photoTimestamp: string | null;
-  hasPhoto: boolean;
-};
+import { DayUser, EntryData } from '@/types';
 
 type PastDayModalProps = {
   date: string;
@@ -22,7 +14,7 @@ type PastDayModalProps = {
 export default function PastDayModal({ date, currentUserId, onClose }: PastDayModalProps) {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<DayUser[]>([]);
-  const [currentUserPhoto, setCurrentUserPhoto] = useState<{ photo_url: string; timestamp: string } | null>(null);
+  const [currentUserPhoto, setCurrentUserPhoto] = useState<EntryData | null>(null);
   const [selectedUser, setSelectedUser] = useState<DayUser | null>(null);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);

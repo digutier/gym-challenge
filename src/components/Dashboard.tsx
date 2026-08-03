@@ -11,7 +11,7 @@ import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
-import { WeekEntry, UserStats, FriendRequest } from '@/types';
+import { WeekEntry, UserStats, FriendRequest, Friend, EntryData, User as UserType } from '@/types';
 import {
   getTodayDate, getWeekStart, capDays, WEEKLY_GOAL,
   getMinWeekStart, formatTimeChile,
@@ -20,17 +20,9 @@ import {
 type Tab = 'home' | 'workouts' | 'feed' | 'profile';
 
 interface DashboardProps {
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  entry?: {
-    date: string;
-    photo_url: string;
-    timestamp: string;
-  } | null;
-  onPhotoUpload: (entryData?: { date: string; photo_url: string; timestamp: string }) => void;
+  user: UserType;
+  entry?: EntryData | null;
+  onPhotoUpload: (entryData?: EntryData) => void;
   onEntryDelete: () => void;
   onLogout: () => void;
 }
@@ -46,7 +38,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(getWeekStart());
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
-  const [friends, setFriends] = useState<{ friendshipId: string; id: string; name: string; avatar: string; email: string }[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [homeStoryUser, setHomeStoryUser] = useState<UserStats | null>(null);
   const [homeStoryLoading, setHomeStoryLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);

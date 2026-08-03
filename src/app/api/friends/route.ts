@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { ProfileRow, AcceptedProfileRow } from '@/types';
 
 // GET: Obtener solicitudes pendientes y amigos aceptados del usuario actual
 export async function GET() {
@@ -27,7 +28,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Error al obtener solicitudes' }, { status: 500 });
     }
 
-    type ProfileRow = { id: string; name: string; avatar: string; email: string };
     const pendingRequests = (pendingData || []).map((row: {
       id: string;
       created_at: string;
@@ -56,7 +56,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Error al obtener amigos' }, { status: 500 });
     }
 
-    type AcceptedProfileRow = { id: string; name: string; avatar: string; email: string } | { id: string; name: string; avatar: string; email: string }[] | null;
     const friends = (acceptedData || []).map((row: {
       id: string;
       requester_id: string;

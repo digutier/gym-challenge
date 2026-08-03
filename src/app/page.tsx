@@ -7,6 +7,7 @@ import AuthScreen from '@/components/AuthScreen';
 import Dashboard from '@/components/Dashboard';
 import { supabase } from '@/lib/supabase';
 import { getTodayDate } from '@/lib/utils';
+import { User, EntryData } from '@/types';
 
 type TodayEntry = {
   date: string;
@@ -50,7 +51,7 @@ export default function Home() {
     }
   }, [user, checkTodayEntry]);
 
-  const handlePhotoUpload = async (entryData?: { date: string; photo_url: string; timestamp: string }) => {
+  const handlePhotoUpload = async (entryData?: EntryData) => {
     if (entryData) {
       // Si tenemos los datos directamente de la API, usarlos inmediatamente
       setTodayEntry({
@@ -93,14 +94,14 @@ export default function Home() {
   }
 
   // Preparar datos del usuario
-  const userData = {
+  const userData: User = {
     id: user.id,
     name: profile?.name || user.email?.split('@')[0] || 'Usuario',
     avatar: profile?.avatar || user.user_metadata?.avatar || '🧑',
   };
 
   // Preparar entry si existe
-  const entryData = todayEntry ? {
+  const entryData: EntryData | null = todayEntry ? {
     date: todayEntry.date,
     photo_url: todayEntry.photo_url,
     timestamp: todayEntry.updated_at || todayEntry.created_at,

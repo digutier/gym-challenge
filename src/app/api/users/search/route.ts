@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
+import { UserSearchResult } from '@/types';
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -23,13 +24,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    type UserSearchResult = {
-      user_id: string;
-      email: string;
-      name: string;
-      avatar: string;
-    };
-    
     let users: UserSearchResult[] = [];
     
     // Si parece un email completo, buscar exacto primero
