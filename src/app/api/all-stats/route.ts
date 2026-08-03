@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getOptionalUserId } from '@/lib/api-auth';
-import { getWeekStart, getWeekEnd, calculateCappedTotal, calculateCappedMonthlyTotal, getTodayDate } from '@/lib/utils';
+import { getWeekStart, getWeekEnd, getTodayDate } from '@/lib/date';
+import { calculateCappedTotal, calculateCappedMonthlyTotal } from '@/lib/stats';
 
 export async function GET(request: NextRequest) {
   try {

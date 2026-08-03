@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AuthScreen from '@/components/AuthScreen';
 import Dashboard from '@/components/Dashboard';
 import { supabase } from '@/lib/supabase';
-import { getTodayDate } from '@/lib/utils';
+import { getTodayDate } from '@/lib/date';
 import { User, EntryData } from '@/types';
 
 type TodayEntry = {

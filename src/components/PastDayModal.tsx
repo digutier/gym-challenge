@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { formatDate, formatTimeChile } from '@/lib/utils';
+import { formatDate, formatTimeChile } from '@/lib/date';
 import { DayUser, EntryData } from '@/types';
 
 type PastDayModalProps = {

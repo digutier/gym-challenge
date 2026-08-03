@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { UserStats } from '@/types';
-import { capDays, WEEKLY_GOAL, formatTimeChile } from '@/lib/utils';
+import { capDays, WEEKLY_GOAL } from '@/lib/stats';
+import { formatTimeChile } from '@/lib/date';
 import { X, Loader2 } from 'lucide-react';
 
 interface GroupRankingProps {

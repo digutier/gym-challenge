@@ -12,10 +12,8 @@ import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
 import { WeekEntry, UserStats, FriendRequest, Friend, EntryData, User as UserType } from '@/types';
-import {
-  getTodayDate, getWeekStart, capDays, WEEKLY_GOAL,
-  getMinWeekStart, formatTimeChile,
-} from '@/lib/utils';
+import { getTodayDate, getWeekStart, getMinWeekStart, formatTimeChile } from '@/lib/date';
+import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 
 type Tab = 'home' | 'workouts' | 'feed' | 'profile';
 

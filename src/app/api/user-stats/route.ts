@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getWeekDates, getWeekStart, getWeekEnd, getWeekDatesForDate, getWeekStartForDate, getWeekEndForDate } from '@/lib/utils';
+import { getWeekDates, getWeekStart, getWeekEnd, getWeekDatesForDate, getWeekStartForDate, getWeekEndForDate } from '@/lib/date';
 
 export async function GET(request: NextRequest) {
   try {

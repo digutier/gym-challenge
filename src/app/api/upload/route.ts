@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuthClient } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
-import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/utils';
+import { getTodayDate, getWeekStart, getWeekEnd } from '@/lib/date';
 import { STORAGE_BUCKET } from '@/lib/constants';
 
 export async function DELETE() {
