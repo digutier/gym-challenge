@@ -81,6 +81,11 @@ export default function HomeTab({
       {/* Hero card */}
       {hasEntryToday && entry ? (
         <div className="relative overflow-hidden rounded-3xl mx-4 lg:mx-0 lg:h-[500px] shadow-[0px_20px_25px_-5px_rgba(127,13,242,0.35)] bg-black">
+          {/* Intentionally not next/image: intrinsic aspect-ratio sizing on
+              mobile vs absolute fill on desktop, with object-fit also
+              branching on photo orientation — too much layout risk to
+              restructure without visual verification. See StoryViewer/
+              PastDayModal for the migrated pattern. */}
           <img
             src={photoUrl}
             alt="Foto del gym"
