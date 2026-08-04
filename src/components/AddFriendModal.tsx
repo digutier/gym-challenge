@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface AddFriendModalProps {
   onClose: () => void;
@@ -57,7 +58,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
             <label className="text-[#64748b] text-[11px] font-semibold uppercase tracking-widest">
               Email del amigo
             </label>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

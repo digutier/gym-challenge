@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -75,7 +76,7 @@ export default function AuthScreen() {
               <label className="block !text-sm !font-medium text-gray-700 !mb-1">
                 Nombre
               </label>
-              <input
+              <Input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -91,7 +92,7 @@ export default function AuthScreen() {
             <label className="block !text-sm !font-medium text-gray-700 !mb-1">
               Email
             </label>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -105,7 +106,7 @@ export default function AuthScreen() {
             <label className="block !text-sm !font-medium text-gray-700 !mb-1">
               Contraseña
             </label>
-            <input
+            <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
