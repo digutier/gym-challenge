@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Check, Loader2 } from 'lucide-react';
 import { FriendRequest } from '@/types';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface NotificationsModalProps {
   requests: FriendRequest[];
@@ -38,17 +39,15 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
   const isEmpty = localRequests.length === 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-5 shadow-2xl">
-
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-0.5">
-            <p className="text-[#f1f5f9] text-lg font-bold">Solicitudes recibidas</p>
-            <p className="text-[#64748b] text-sm">
+            <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Solicitudes recibidas</DialogTitle>
+            <DialogDescription className="text-[#64748b] text-sm">
               {isEmpty ? 'Sin solicitudes pendientes' : `${localRequests.length} pendiente${localRequests.length > 1 ? 's' : ''}`}
-            </p>
+            </DialogDescription>
           </div>
           <button
             onClick={onClose}
@@ -106,7 +105,7 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface AddFriendModalProps {
   onClose: () => void;
@@ -42,15 +43,12 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-5 shadow-2xl">
-
-        {/* Header */}
-        <div className="flex flex-col gap-1">
-          <p className="text-[#f1f5f9] text-lg font-bold">Agregar amigo</p>
-          <p className="text-[#94a3b8] text-sm">Invita a tu amigo registrado por email</p>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Agregar amigo</DialogTitle>
+          <DialogDescription>Invita a tu amigo registrado por email</DialogDescription>
+        </DialogHeader>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -105,7 +103,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
