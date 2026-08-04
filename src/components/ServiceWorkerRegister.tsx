@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { RefreshCw, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function ServiceWorkerRegister() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -83,20 +84,20 @@ export default function ServiceWorkerRegister() {
         <p className="text-white/70 text-xs">Actualiza para ver los últimos cambios</p>
       </div>
       
-      <button
+      <Button
         onClick={applyUpdate}
         className="flex items-center gap-2 bg-white text-purple-600 px-4 py-2 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-transform shadow-lg flex-shrink-0"
       >
         <RefreshCw className="w-4 h-4" />
         Actualizar
-      </button>
-      
-      <button
+      </Button>
+
+      <Button
         onClick={() => setUpdateAvailable(false)}
         className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors flex-shrink-0"
       >
         <X className="w-4 h-4" />
-      </button>
+      </Button>
     </div>
   );
 }

@@ -91,7 +91,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           onChange={handleFileChange}
           className="hidden"
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
           className="relative bg-[#7f0df2] rounded-full size-[68px] flex items-center justify-center shadow-[0px_0px_0px_5px_#191022,0px_12px_20px_-4px_rgba(127,13,242,0.5),0px_6px_8px_-4px_rgba(127,13,242,0.4)] active:scale-95 transition-transform"
@@ -101,7 +101,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           ) : (
             <Camera className="w-6 h-6 text-white" />
           )}
-        </button>
+        </Button>
         {error && (
           <p className="text-red-400 text-[10px] mt-1 text-center max-w-[80px]">{error}</p>
         )}
@@ -121,7 +121,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           onChange={handleFileChange}
           className="hidden"
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
           className="bg-[#7f0df2] rounded-full size-14 flex items-center justify-center shadow-[0px_4px_24px_rgba(127,13,242,0.5)] active:scale-95 transition-transform"
@@ -131,7 +131,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           ) : (
             <RotateCcw className="w-5 h-5 text-white" />
           )}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -148,7 +148,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           onChange={handleFileChange}
           className="hidden"
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
           className="w-full flex items-center justify-center gap-2 bg-white py-4 rounded-3xl font-bold text-[#7f0df2] text-base shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] active:scale-[0.98] transition-transform"
@@ -164,7 +164,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
               <span className="text-[#7f0df2]">→</span>
             </>
           )}
-        </button>
+        </Button>
         {error && (
           <div className="mt-2 px-3 py-1.5 bg-red-500/20 border border-red-500/40 rounded-xl">
             <p className="text-red-200 text-xs">{error}</p>
@@ -215,7 +215,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           Retomar
         </Button>
       ) : (
-        <button
+        <Button
           onClick={triggerFileInput}
           className="group relative !w-40 !h-40
                    !bg-gradient-to-br !from-emerald-400 !to-cyan-500
@@ -230,7 +230,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
           </span>
 
           <div className="absolute inset-0 !rounded-full !bg-emerald-400 animate-ping !opacity-20" />
-        </button>
+        </Button>
       )}
 
       {error && (

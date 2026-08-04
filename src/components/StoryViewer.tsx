@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { formatTimeChile } from '@/lib/date';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface StoryViewerProps {
   avatar: string;
@@ -56,9 +57,9 @@ export default function StoryViewer({
               )}
             </div>
           </div>
-          <button onClick={onClose} className="!w-8 !h-8 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors">
+          <Button onClick={onClose} className="!w-8 !h-8 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors">
             <X className="!w-5 !h-5 !text-white" />
-          </button>
+          </Button>
         </div>
 
         <div className="!absolute !top-2 !left-4 !right-4 !h-0.5 !bg-white/20 !rounded-full !z-10">

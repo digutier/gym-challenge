@@ -7,6 +7,7 @@ import StoryViewer from '../StoryViewer';
 import RankingList from './RankingList';
 import { User, EntryData, WeekEntry, UserStats } from '@/types';
 import { WEEKLY_GOAL } from '@/lib/stats';
+import { Button } from '@/components/ui/button';
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
@@ -88,12 +89,12 @@ export default function HomeTab({
           />
 
           {/* Delete FAB — top left */}
-          <button
+          <Button
             onClick={onRequestDelete}
             className="absolute top-4 left-4 z-10 rounded-full size-10 flex items-center justify-center bg-black/60 backdrop-blur-md active:scale-95 transition-transform"
           >
             <Trash2 className="w-4 h-4 text-white" />
-          </button>
+          </Button>
 
           {/* PHOTO UPLOADED badge */}
           <div className="absolute top-4 right-2 flex items-center gap-2 bg-black/75 backdrop-blur-md px-4 py-2 rounded-full z-10">
@@ -115,13 +116,13 @@ export default function HomeTab({
               </div>
             </div>
             {/* Cambiar foto — solo visible en desktop (en mobile lo maneja el FAB) */}
-            <button
+            <Button
               onClick={onRequestOverwrite}
               className="hidden lg:flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 text-white text-sm font-semibold px-4 py-2.5 rounded-2xl hover:bg-white/25 active:scale-95 transition-all shrink-0"
             >
               <Camera className="w-4 h-4" />
               Cambiar
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
@@ -165,7 +166,7 @@ export default function HomeTab({
                 const isFuture = dayEntry.date > today;
 
                 return (
-                  <button
+                  <Button
                     key={dayEntry.date}
                     onClick={() => isPast && onSelectDate(dayEntry.date)}
                     disabled={!isPast}
@@ -189,30 +190,30 @@ export default function HomeTab({
                         <XIcon className="w-[14px] h-[14px] text-[#64748b]" strokeWidth={2.5} />
                       </div>
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
             {/* Week navigation */}
             <div className="flex items-center justify-between -mt-1">
-              <button
+              <Button
                 onClick={onWeekPrev}
                 disabled={!canGoPrev}
                 className={`flex items-center gap-1 text-xs transition-colors ${canGoPrev ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 Anterior
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={onWeekNext}
                 disabled={!canGoNext}
                 className={`flex items-center gap-1 text-xs transition-colors ${canGoNext ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
               >
                 Siguiente
                 <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
           </>
         ) : loading ? (

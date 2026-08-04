@@ -150,7 +150,7 @@ export default function AuthScreen() {
 
         {/* Toggle mode */}
         <div className="!mt-6 text-center">
-          <button
+          <Button
             type="button"
             onClick={() => {
               setMode(mode === 'login' ? 'signup' : 'login');
@@ -159,10 +159,10 @@ export default function AuthScreen() {
             }}
             className="text-violet-600 hover:text-violet-700 !text-sm !font-medium"
           >
-            {mode === 'login' 
-              ? '¿No tienes cuenta? Regístrate' 
+            {mode === 'login'
+              ? '¿No tienes cuenta? Regístrate'
               : '¿Ya tienes cuenta? Inicia sesión'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

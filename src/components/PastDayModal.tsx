@@ -6,6 +6,7 @@ import { formatDate, formatTimeChile } from '@/lib/date';
 import { DayUser, EntryData } from '@/types';
 import StoryViewer from './StoryViewer';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 type PastDayModalProps = {
   date: string;
@@ -66,12 +67,12 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
           <DialogTitle className="!text-white !font-bold !text-lg !capitalize">
             {formatDate(date)}
           </DialogTitle>
-          <button
+          <Button
             onClick={onClose}
             className="!w-10 !h-10 !rounded-full !bg-white/10 !flex !items-center !justify-center hover:!bg-white/20 !transition-colors"
           >
             <X className="!w-5 !h-5 !text-white" />
-          </button>
+          </Button>
         </div>
 
         {loading ? (
@@ -142,7 +143,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
 
                 <div className="!flex !flex-wrap !gap-3">
                   {usersWithPhotos.map((user) => (
-                    <button
+                    <Button
                       key={user.id}
                       onClick={() => setSelectedUser(user)}
                       className="!flex !flex-col !items-center !gap-1 !p-2 !rounded-xl hover:!bg-white/10 !transition-colors"
@@ -154,7 +155,7 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
                       <span className="!text-white/80 !text-xs !font-medium !truncate !max-w-[60px]">
                         {user.name}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>

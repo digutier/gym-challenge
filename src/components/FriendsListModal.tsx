@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 interface FriendsListModalProps {
   friends: Friend[];
@@ -55,12 +56,12 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
                 {isEmpty ? 'Aún no tienes amigos' : `${localFriends.length} amigo${localFriends.length > 1 ? 's' : ''}`}
               </DialogDescription>
             </div>
-            <button
+            <Button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.06)] flex items-center justify-center"
             >
               <X className="w-4 h-4 text-[#64748b]" />
-            </button>
+            </Button>
           </div>
 
           {/* Content */}
@@ -86,12 +87,12 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
                     <p className="text-[#f1f5f9] text-sm font-semibold truncate">{friend.name}</p>
                     <p className="text-[#64748b] text-xs truncate mt-0.5">{friend.email}</p>
                   </div>
-                  <button
+                  <Button
                     onClick={() => setConfirmRemove(friend)}
                     className="shrink-0 w-8 h-8 rounded-xl bg-[rgba(255,255,255,0.05)] flex items-center justify-center active:scale-95 transition-transform"
                   >
                     <UserMinus className="w-4 h-4 text-[#64748b]" />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -110,14 +111,14 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
             ¿Estás seguro que quieres eliminar a <span className="text-[#f1f5f9] font-semibold">{confirmRemove?.name}</span> de tus amigos? Dejarán de verse en el ranking del otro.
           </AlertDialogDescription>
           <div className="flex gap-3 mt-1">
-            <button
+            <Button
               onClick={() => setConfirmRemove(null)}
               disabled={removing}
               className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleRemove}
               disabled={removing}
               className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
@@ -127,7 +128,7 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
               ) : (
                 'Sí, eliminar'
               )}
-            </button>
+            </Button>
           </div>
         </AlertDialogContent>
       </AlertDialog>

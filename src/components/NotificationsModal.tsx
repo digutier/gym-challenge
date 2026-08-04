@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, Check, Loader2 } from 'lucide-react';
 import { FriendRequest } from '@/types';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface NotificationsModalProps {
   requests: FriendRequest[];
@@ -49,12 +50,12 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
               {isEmpty ? 'Sin solicitudes pendientes' : `${localRequests.length} pendiente${localRequests.length > 1 ? 's' : ''}`}
             </DialogDescription>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.06)] flex items-center justify-center"
           >
             <X className="w-4 h-4 text-[#64748b]" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -85,19 +86,19 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
                     <Loader2 className="w-5 h-5 animate-spin text-[#64748b]" />
                   ) : (
                     <div className="flex gap-2">
-                      <button
+                      <Button
                         onClick={() => handleRespond(req.id, 'accept')}
                         className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white text-xs font-semibold rounded-xl active:scale-95 transition-transform"
                       >
                         <Check className="w-3.5 h-3.5" />
                         Aceptar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleRespond(req.id, 'decline')}
                         className="px-3 py-2 border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-xs font-semibold rounded-xl active:scale-95 transition-transform"
                       >
                         No
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>

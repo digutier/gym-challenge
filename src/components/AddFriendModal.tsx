@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface AddFriendModalProps {
   onClose: () => void;
@@ -80,14 +81,14 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
           )}
 
           <div className="flex gap-3 mt-1">
-            <button
+            <Button
               type="button"
               onClick={onClose}
               className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={loading}
               className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
@@ -100,7 +101,7 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
                   Enviar
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </DialogContent>

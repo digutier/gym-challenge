@@ -5,6 +5,7 @@ import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import PodiumAvatar from './PodiumAvatar';
 import StoryViewer from './StoryViewer';
+import { Button } from '@/components/ui/button';
 
 interface GroupRankingProps {
   users: UserStats[];
@@ -114,13 +115,13 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
                 className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
               >
                 <span className="text-[#64748b] text-sm font-bold w-5 text-center">{pos}</span>
-                <button
+                <Button
                   onClick={() => handleAvatarClick(u)}
                   disabled={!hasPhoto}
                   className={`w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] text-xl shrink-0 ${hasPhoto ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
                 >
                   {u.avatar}
-                </button>
+                </Button>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-semibold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
                     {u.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}

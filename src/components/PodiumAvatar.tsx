@@ -1,4 +1,5 @@
 import { UserStats } from '@/types';
+import { Button } from '@/components/ui/button';
 
 const podiumTopOffset: Record<number, string> = {
   1: 'pt-0',
@@ -45,14 +46,14 @@ export default function PodiumAvatar({
         {rank === 1 && (
           <div className="absolute -top-9 left-1/2 -translate-x-1/2 text-4xl">👑</div>
         )}
-        <button
+        <Button
           onClick={() => onAvatarClick(u)}
           disabled={!hasPhoto}
           className={`${avatarSize} rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] ring-[4px] ${ringColors[rank]} ${hasPhoto ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
           style={rank === 1 ? { animation: 'goldGlow 2s ease-in-out infinite' } : undefined}
         >
           <span>{u.avatar}</span>
-        </button>
+        </Button>
         {/* Rank pill — overlaps bottom of avatar */}
         <div className={`absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-10 ${medalColors[rank]} px-3 py-[3px] rounded-lg text-[11px] font-black shadow-lg whitespace-nowrap`}>
           {rank === 1 ? '1er' : rank === 2 ? '2do' : '3er'}

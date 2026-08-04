@@ -1,6 +1,7 @@
 import { Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
 import { User, UserStats } from '@/types';
 import { capDays } from '@/lib/stats';
+import { Button } from '@/components/ui/button';
 
 interface ProfileTabProps {
   user: User;
@@ -55,7 +56,7 @@ export default function ProfileTab({
       )}
 
       <div className="flex flex-col gap-3">
-        <button
+        <Button
           onClick={onShowFriendsList}
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
@@ -64,17 +65,17 @@ export default function ProfileTab({
           {friendsCount > 0 && (
             <span className="ml-auto text-[#64748b] text-xs font-semibold">{friendsCount}</span>
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onShowAddFriend}
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
           <UserPlus className="w-5 h-5 text-[#7f0df2]" />
           <span className="text-[#f1f5f9] text-sm font-semibold">Agregar amigo</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onShowNotifications}
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left relative"
         >
@@ -85,15 +86,15 @@ export default function ProfileTab({
               {pendingRequestsCount}
             </span>
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onLogout}
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
           <UserIcon className="w-5 h-5 text-red-400" />
           <span className="text-red-400 text-sm font-semibold">Cerrar sesión</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ import {
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import HomeTab from './dashboard/HomeTab';
 import WorkoutsTab from './dashboard/WorkoutsTab';
 import FeedTab from './dashboard/FeedTab';
@@ -309,20 +310,20 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
             Esta acción es irreversible. ¿Seguro que quieres borrar tu foto de hoy?
           </AlertDialogDescription>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={isDeleting}
               className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleDeleteEntry}
               disabled={isDeleting}
               className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sí, eliminar'}
-            </button>
+            </Button>
           </div>
         </AlertDialogContent>
       </AlertDialog>
@@ -335,13 +336,13 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
             ¿Seguro que quieres sobreescribir la foto de hoy?
           </AlertDialogDescription>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() => setShowOverwriteConfirm(false)}
               className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 setShowOverwriteConfirm(false);
                 fabRef.current?.open();
@@ -349,7 +350,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)]"
             >
               Sí, cambiar
-            </button>
+            </Button>
           </div>
         </AlertDialogContent>
       </AlertDialog>

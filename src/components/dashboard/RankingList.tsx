@@ -1,6 +1,7 @@
 import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import { formatTimeChile } from '@/lib/date';
+import { Button } from '@/components/ui/button';
 
 interface RankingListProps {
   ranking: UserStats[];
@@ -57,7 +58,7 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                 <div className="w-7 flex items-center justify-center shrink-0 text-lg leading-none">
                   {rankIcon(rank)}
                 </div>
-                <button
+                <Button
                   onClick={() => {
                     if (hasPhoto && !isMe) { onAvatarClick(friend); }
                   }}
@@ -65,7 +66,7 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                   className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
                 >
                   {friend.avatar}
-                </button>
+                </Button>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-bold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
                     {friend.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
