@@ -2,6 +2,7 @@ import { Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
 import { User, UserStats } from '@/types';
 import { capDays } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface ProfileTabProps {
   user: User;
@@ -40,18 +41,24 @@ export default function ProfileTab({
 
       {myStats && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#7f0df2] text-2xl font-black">{capDays(myStats.daysThisWeek)}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Esta sem.</p>
-          </div>
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#f1f5f9] text-2xl font-black">{myStats.monthlyDays}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Este mes</p>
-          </div>
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#f1f5f9] text-2xl font-black">{myStats.totalDays}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Total 2026</p>
-          </div>
+          <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
+            <CardContent className="px-3">
+              <p className="text-[#7f0df2] text-2xl font-black">{capDays(myStats.daysThisWeek)}</p>
+              <p className="text-[#64748b] text-xs mt-0.5">Esta sem.</p>
+            </CardContent>
+          </Card>
+          <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
+            <CardContent className="px-3">
+              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.monthlyDays}</p>
+              <p className="text-[#64748b] text-xs mt-0.5">Este mes</p>
+            </CardContent>
+          </Card>
+          <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
+            <CardContent className="px-3">
+              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.totalDays}</p>
+              <p className="text-[#64748b] text-xs mt-0.5">Total 2026</p>
+            </CardContent>
+          </Card>
         </div>
       )}
 
