@@ -7,6 +7,12 @@ import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from '@/components/ui/alert-dialog';
 import HomeTab from './dashboard/HomeTab';
 import WorkoutsTab from './dashboard/WorkoutsTab';
 import FeedTab from './dashboard/FeedTab';
@@ -286,63 +292,60 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
       </div>
 
       {/* Delete confirmation modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isDeleting && setShowDeleteConfirm(false)} />
-          <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-4 shadow-2xl">
-            <div className="flex flex-col gap-1">
-              <p className="text-[#f1f5f9] text-lg font-bold">Eliminar foto de hoy</p>
-              <p className="text-[#94a3b8] text-sm">Esta acción es irreversible. ¿Seguro que quieres borrar tu foto de hoy?</p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={isDeleting}
-                className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDeleteEntry}
-                disabled={isDeleting}
-                className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sí, eliminar'}
-              </button>
-            </div>
+      <AlertDialog
+        open={showDeleteConfirm}
+        onOpenChange={(open) => { if (!open && !isDeleting) setShowDeleteConfirm(false); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogTitle className="text-[#f1f5f9] text-lg font-bold">Eliminar foto de hoy</AlertDialogTitle>
+          <AlertDialogDescription className="text-[#94a3b8] text-sm">
+            Esta acción es irreversible. ¿Seguro que quieres borrar tu foto de hoy?
+          </AlertDialogDescription>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleDeleteEntry}
+              disabled={isDeleting}
+              className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sí, eliminar'}
+            </button>
           </div>
-        </div>
-      )}
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Overwrite confirmation modal */}
-      {showOverwriteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowOverwriteConfirm(false)} />
-          <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-4 shadow-2xl">
-            <div className="flex flex-col gap-1">
-              <p className="text-[#f1f5f9] text-lg font-bold">Ya tienes una foto hoy</p>
-              <p className="text-[#94a3b8] text-sm">¿Seguro que quieres sobreescribir la foto de hoy?</p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowOverwriteConfirm(false)}
-                className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setShowOverwriteConfirm(false);
-                  fabRef.current?.open();
-                }}
-                className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)]"
-              >
-                Sí, cambiar
-              </button>
-            </div>
+      <AlertDialog open={showOverwriteConfirm} onOpenChange={setShowOverwriteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogTitle className="text-[#f1f5f9] text-lg font-bold">Ya tienes una foto hoy</AlertDialogTitle>
+          <AlertDialogDescription className="text-[#94a3b8] text-sm">
+            ¿Seguro que quieres sobreescribir la foto de hoy?
+          </AlertDialogDescription>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowOverwriteConfirm(false)}
+              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => {
+                setShowOverwriteConfirm(false);
+                fabRef.current?.open();
+              }}
+              className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)]"
+            >
+              Sí, cambiar
+            </button>
           </div>
-        </div>
-      )}
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Modals */}
       {showAddFriend && <AddFriendModal onClose={() => setShowAddFriend(false)} />}
