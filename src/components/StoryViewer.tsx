@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { X, Loader2 } from 'lucide-react';
 import { formatTimeChile } from '@/lib/date';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -74,14 +75,17 @@ export default function StoryViewer({
           </div>
         )}
 
-        <img
-          src={photoUrl}
-          alt={`Foto de ${name}`}
-          className={`!max-w-full !max-h-full !object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
-          onClick={(e) => e.stopPropagation()}
-          onLoad={() => setImageLoading(false)}
-          onError={() => setImageLoading(false)}
-        />
+        <div className="!relative !w-full !h-full" onClick={(e) => e.stopPropagation()}>
+          <Image
+            src={photoUrl}
+            alt={`Foto de ${name}`}
+            fill
+            sizes="100vw"
+            className={`!object-contain ${imageLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageLoading(false)}
+          />
+        </div>
 
         <p className="!absolute !bottom-6 !left-0 !right-0 !text-center !text-white/40 !text-xs" onClick={onClose}>
           Toca para cerrar

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { X, Loader2 } from 'lucide-react';
 import { formatDate, formatTimeChile } from '@/lib/date';
 import { DayUser, EntryData } from '@/types';
@@ -104,15 +105,17 @@ export default function PastDayModal({ date, currentUserId, onClose }: PastDayMo
                         </div>
                       </div>
                     )}
-                    <img
+                    <Image
                       src={myPhotoUrl}
                       alt="Tu foto"
+                      fill
+                      sizes="(min-width: 1024px) 640px, 100vw"
                       onLoad={(e) => {
                         handleImageLoad(e);
                         setMyPhotoLoading(false);
                       }}
                       onError={() => setMyPhotoLoading(false)}
-                      className={`!w-full !h-full ${isHorizontal ? '!object-contain' : '!object-cover'} ${myPhotoLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
+                      className={`${isHorizontal ? '!object-contain' : '!object-cover'} ${myPhotoLoading ? '!opacity-0' : '!opacity-100 !transition-opacity !duration-300'}`}
                     />
                     <div className="!absolute !top-2 !right-2 !flex !items-center !gap-1.5
                                   !bg-emerald-500 !text-white !px-2 !py-1 !rounded-full
