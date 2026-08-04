@@ -5,6 +5,7 @@ import { X, Check, Loader2 } from 'lucide-react';
 import { FriendRequest } from '@/types';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface NotificationsModalProps {
   requests: FriendRequest[];
@@ -63,10 +64,10 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <span className="text-5xl">🤝</span>
             <div>
-              <p className="text-[#f1f5f9] text-sm font-semibold">Todo al día</p>
-              <p className="text-[#64748b] text-xs mt-1 leading-relaxed">
+              <Text size="sm" weight="semibold">Todo al día</Text>
+              <Text size="xs" color="muted" className="mt-1 leading-relaxed">
                 Cuando alguien te envíe una solicitud de amistad, aparecerá aquí.
-              </p>
+              </Text>
             </div>
           </div>
         ) : (
@@ -78,8 +79,8 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
               >
                 <span className="text-2xl shrink-0 leading-none">{req.requester.avatar}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[#f1f5f9] text-sm font-semibold truncate">{req.requester.name}</p>
-                  <p className="text-[#64748b] text-xs truncate mt-0.5">{req.requester.email}</p>
+                  <Text size="sm" weight="semibold" className="truncate">{req.requester.name}</Text>
+                  <Text size="xs" color="muted" className="truncate mt-0.5">{req.requester.email}</Text>
                 </div>
                 <div className="shrink-0">
                   {processingId === req.id ? (

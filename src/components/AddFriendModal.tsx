@@ -5,6 +5,7 @@ import { Loader2, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
 
 interface AddFriendModalProps {
   onClose: () => void;
@@ -55,9 +56,9 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-[#64748b] text-[11px] font-semibold uppercase tracking-widest">
+            <Text as="label" size="11px" color="muted" weight="semibold" className="uppercase tracking-widest">
               Email del amigo
-            </label>
+            </Text>
             <Input
               type="email"
               value={email}
@@ -71,13 +72,13 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
 
           {error && (
             <div className="px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl">
-              <p className="text-red-400 text-xs">{error}</p>
+              <Text size="xs" color="danger">{error}</Text>
             </div>
           )}
 
           {success && (
             <div className="px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-              <p className="text-emerald-400 text-xs">{success}</p>
+              <Text size="xs" color="success">{success}</Text>
             </div>
           )}
 

@@ -11,6 +11,7 @@ import {
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface FriendsListModalProps {
   friends: Friend[];
@@ -69,10 +70,10 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
             <div className="flex flex-col items-center gap-3 py-6 text-center">
               <span className="text-5xl">👥</span>
               <div>
-                <p className="text-[#f1f5f9] text-sm font-semibold">Sin amigos aún</p>
-                <p className="text-[#64748b] text-xs mt-1 leading-relaxed">
+                <Text size="sm" weight="semibold">Sin amigos aún</Text>
+                <Text size="xs" color="muted" className="mt-1 leading-relaxed">
                   Agrega amigos por email para competir en el ranking juntos.
-                </p>
+                </Text>
               </div>
             </div>
           ) : (
@@ -84,8 +85,8 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
                 >
                   <span className="text-2xl shrink-0 leading-none">{friend.avatar}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#f1f5f9] text-sm font-semibold truncate">{friend.name}</p>
-                    <p className="text-[#64748b] text-xs truncate mt-0.5">{friend.email}</p>
+                    <Text size="sm" weight="semibold" className="truncate">{friend.name}</Text>
+                    <Text size="xs" color="muted" className="truncate mt-0.5">{friend.email}</Text>
                   </div>
                   <Button
                     onClick={() => setConfirmRemove(friend)}
@@ -108,7 +109,7 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
         <AlertDialogContent>
           <AlertDialogTitle className="text-[#f1f5f9] text-lg font-bold">Eliminar amigo</AlertDialogTitle>
           <AlertDialogDescription className="text-[#94a3b8] text-sm">
-            ¿Estás seguro que quieres eliminar a <span className="text-[#f1f5f9] font-semibold">{confirmRemove?.name}</span> de tus amigos? Dejarán de verse en el ranking del otro.
+            ¿Estás seguro que quieres eliminar a <Text as="span" weight="semibold">{confirmRemove?.name}</Text> de tus amigos? Dejarán de verse en el ranking del otro.
           </AlertDialogDescription>
           <div className="flex gap-3 mt-1">
             <Button
