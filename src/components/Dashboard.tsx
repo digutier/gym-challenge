@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import HomeTab from './dashboard/HomeTab';
 import WorkoutsTab from './dashboard/WorkoutsTab';
 import FeedTab from './dashboard/FeedTab';
@@ -100,7 +101,11 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
   return (
     <>
-      <div className="min-h-screen bg-[#191022] flex">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as Tab)}
+        className="min-h-screen bg-[#191022] flex"
+      >
 
         {/* ── DESKTOP SIDEBAR ── oculto en mobile, visible en lg+ */}
         <aside className="hidden lg:flex flex-col w-[220px] min-h-screen fixed left-0 top-0 bottom-0 bg-[#110c1a] border-r border-[rgba(255,255,255,0.06)] z-20">
@@ -116,7 +121,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           </div>
 
           {/* Nav items */}
-          <nav className="flex flex-col gap-1 p-3 flex-1">
+          <TabsList className="flex flex-col gap-1 p-3 flex-1">
             {(
               [
                 { tab: 'home' as Tab, icon: <Home className="w-[18px] h-[18px]" />, label: 'Inicio' },
@@ -125,9 +130,9 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 { tab: 'profile' as Tab, icon: <User className="w-[18px] h-[18px]" />, label: 'Perfil' },
               ] as const
             ).map(({ tab, icon, label }) => (
-              <button
+              <TabsTrigger
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                value={tab}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
                   activeTab === tab
                     ? 'bg-[rgba(127,13,242,0.15)] text-[#7f0df2]'
@@ -141,9 +146,9 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                     {pendingRequests.length}
                   </span>
                 )}
-              </button>
+              </TabsTrigger>
             ))}
-          </nav>
+          </TabsList>
 
           {/* User pill */}
           <div className="p-3 border-t border-[rgba(255,255,255,0.06)]">
@@ -187,7 +192,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
           {/* Main content */}
           <main className="flex-1 overflow-y-auto pb-[90px] lg:pb-6 pt-4">
-            {activeTab === 'home' && (
+            <TabsContent value="home">
               <HomeTab
                 user={user}
                 entry={entry}
@@ -211,12 +216,14 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 ranking={ranking}
                 currentUserId={user.id}
               />
-            )}
-            {activeTab === 'workouts' && <WorkoutsTab />}
-            {activeTab === 'feed' && (
+            </TabsContent>
+            <TabsContent value="workouts">
+              <WorkoutsTab />
+            </TabsContent>
+            <TabsContent value="feed">
               <FeedTab ranking={ranking} loading={loading} currentUserId={user.id} />
-            )}
-            {activeTab === 'profile' && (
+            </TabsContent>
+            <TabsContent value="profile">
               <ProfileTab
                 user={user}
                 ranking={ranking}
@@ -227,7 +234,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 onShowNotifications={() => setShowNotifications(true)}
                 onLogout={onLogout}
               />
-            )}
+            </TabsContent>
           </main>
 
           {/* Mobile bottom nav — oculto en desktop */}
@@ -235,7 +242,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
             className="lg:hidden fixed bottom-0 left-0 right-0 h-[90px] backdrop-blur-[5px] bg-[rgba(25,16,34,0.9)] border-t border-[#1e293b] z-10"
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
-            <div className="relative flex items-center justify-around h-full px-2">
+            <TabsList className="relative flex items-center justify-around h-full px-2">
               {/* Camera FAB — absolutely centered, floats above the nav */}
               <div className="absolute left-1/2 -translate-x-1/2 -top-5 z-10">
                 <PhotoUpload
@@ -254,28 +261,28 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               </div>
 
               {/* Home */}
-              <button onClick={() => setActiveTab('home')} className="flex flex-col items-center gap-1 flex-1">
+              <TabsTrigger value="home" className="flex flex-col items-center gap-1 flex-1">
                 <Home className={`w-[22px] h-[22px] ${activeTab === 'home' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
                 <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'home' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Inicio</span>
-              </button>
+              </TabsTrigger>
 
               {/* Workouts */}
-              <button onClick={() => setActiveTab('workouts')} className="flex flex-col items-center gap-1 flex-1">
+              <TabsTrigger value="workouts" className="flex flex-col items-center gap-1 flex-1">
                 <CalendarDays className={`w-[22px] h-[22px] ${activeTab === 'workouts' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
                 <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'workouts' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Registros</span>
-              </button>
+              </TabsTrigger>
 
               {/* Spacer for FAB column */}
               <div className="flex-1" />
 
               {/* Feed */}
-              <button onClick={() => setActiveTab('feed')} className="flex flex-col items-center gap-1 flex-1">
+              <TabsTrigger value="feed" className="flex flex-col items-center gap-1 flex-1">
                 <Trophy className={`w-[22px] h-[22px] ${activeTab === 'feed' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
                 <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'feed' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Ranking</span>
-              </button>
+              </TabsTrigger>
 
               {/* Profile */}
-              <button onClick={() => setActiveTab('profile')} className="flex flex-col items-center gap-1 flex-1">
+              <TabsTrigger value="profile" className="flex flex-col items-center gap-1 flex-1">
                 <div className="relative">
                   <User className={`w-[22px] h-[22px] ${activeTab === 'profile' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
                   {pendingRequests.length > 0 && (
@@ -283,13 +290,13 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                   )}
                 </div>
                 <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'profile' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Perfil</span>
-              </button>
+              </TabsTrigger>
 
-            </div>
+            </TabsList>
           </nav>
 
         </div>
-      </div>
+      </Tabs>
 
       {/* Delete confirmation modal */}
       <AlertDialog
