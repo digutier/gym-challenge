@@ -1,4 +1,6 @@
 import { CalendarDays } from 'lucide-react';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 
 export default function WorkoutsTab() {
   return (
@@ -7,8 +9,8 @@ export default function WorkoutsTab() {
         <CalendarDays className="w-12 h-12 text-[#7f0df2]" />
       </div>
       <div className="text-center">
-        <h3 className="text-[#f1f5f9] text-xl font-bold mb-2">Registros</h3>
-        <p className="text-[#64748b] text-sm">Esta sección está en camino.</p>
+        <Heading as="h3" size="xl" className="mb-2">Registros</Heading>
+        <Text size="sm" color="muted">Esta sección está en camino.</Text>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import { formatTimeChile } from '@/lib/date';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface RankingListProps {
   ranking: UserStats[];
@@ -14,7 +15,7 @@ const rankIcon = (rank: number) => {
   if (rank === 1) return '🏆';
   if (rank === 2) return '🥈';
   if (rank === 3) return '🥉';
-  return <span className="text-[#64748b] text-xs font-bold w-6 text-center">{rank}</span>;
+  return <Text as="span" size="xs" color="muted" weight="bold" className="w-6 text-center">{rank}</Text>;
 };
 
 export default function RankingList({ ranking, loading, currentUserId, onAvatarClick }: RankingListProps) {
@@ -68,29 +69,29 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                   {friend.avatar}
                 </Button>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-                    {friend.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
-                  </p>
+                  <Text size="sm" weight="bold" color={isMe ? 'accent' : 'primary'} className="truncate">
+                    {friend.name}{isMe && <Text as="span" size="10px" className="opacity-60 ml-1">(tú)</Text>}
+                  </Text>
                   {hasPhoto && friend.todayPhotoTimestamp && (
-                    <p className="text-emerald-400 text-xs truncate">
+                    <Text size="xs" color="success" className="truncate">
                       Fue al gym hoy {formatTimeChile(friend.todayPhotoTimestamp)} hrs
-                    </p>
+                    </Text>
                   )}
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={`text-lg font-black leading-none ${metric >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-[#f1f5f9]'}`}>
+                  <Text size="lg" weight="black" color={metric >= WEEKLY_GOAL ? 'success' : 'primary'} className="leading-none">
                     {metric}
-                  </p>
-                  <p className="text-[#64748b] text-[10px]">/ {WEEKLY_GOAL}</p>
+                  </Text>
+                  <Text size="10px" color="muted">/ {WEEKLY_GOAL}</Text>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <p className="text-[#64748b] text-sm text-center py-6">
+        <Text size="sm" color="muted" className="text-center py-6">
           Agrega amigos para ver su actividad aquí.
-        </p>
+        </Text>
       )}
     </>
   );

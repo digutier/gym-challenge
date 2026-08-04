@@ -8,6 +8,8 @@ import RankingList from './RankingList';
 import { User, EntryData, WeekEntry, UserStats } from '@/types';
 import { WEEKLY_GOAL } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
@@ -156,10 +158,10 @@ export default function HomeTab({
       {/* This Week */}
       <div className="flex flex-col gap-4 px-4 lg:px-0 pt-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-[#f1f5f9] text-lg font-bold">{isCurrentWeek ? 'Esta semana' : weekLabel}</h3>
-          <span className="text-[#7f0df2] text-xs font-semibold tracking-[1.2px] uppercase">
+          <Heading as="h3" size="lg">{isCurrentWeek ? 'Esta semana' : weekLabel}</Heading>
+          <Text as="span" size="xs" color="accent" weight="semibold" className="tracking-[1.2px] uppercase">
             {cappedActiveDays}/{WEEKLY_GOAL} Idas al GYM 💪
-          </span>
+          </Text>
         </div>
 
         {!loading && weekEntries.length > 0 ? (
@@ -177,9 +179,9 @@ export default function HomeTab({
                     disabled={!isPast}
                     className="flex flex-col items-center gap-2"
                   >
-                    <span className={`text-[10px] font-bold uppercase ${isToday ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>
+                    <Text as="span" size="10px" weight="bold" color={isToday ? 'accent' : 'muted'} className="uppercase">
                       {DAY_LABELS[i]}
-                    </span>
+                    </Text>
                     {isFuture || (isToday && !dayEntry.registered) ? (
                       <div className="border-2 border-dashed border-[#334155] rounded-full size-9" />
                     ) : isToday && dayEntry.registered ? (
@@ -228,7 +230,7 @@ export default function HomeTab({
 
       {/* Ranking Semanal — sólo visible en mobile */}
       <div className="lg:hidden flex flex-col gap-4 px-4">
-        <h3 className="text-[#f1f5f9] text-lg font-bold">Ranking Semanal</h3>
+        <Heading as="h3" size="lg">Ranking Semanal</Heading>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 
@@ -236,7 +238,7 @@ export default function HomeTab({
 
       {/* Right column: ranking semanal — sólo visible en desktop (lg+) */}
       <div className="hidden lg:flex flex-col gap-4 w-[280px] shrink-0 pb-6">
-        <h3 className="text-[#f1f5f9] text-base font-bold">Ranking Semanal</h3>
+        <Heading as="h3" size="base">Ranking Semanal</Heading>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 

@@ -5,6 +5,7 @@ import { Trophy } from 'lucide-react';
 import GroupRanking from '../GroupRanking';
 import { UserStats } from '@/types';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Heading } from '@/components/ui/heading';
 
 interface FeedTabProps {
   ranking: UserStats[];
@@ -20,10 +21,10 @@ export default function FeedTab({ ranking, loading, currentUserId }: FeedTabProp
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 pt-4 lg:max-w-[800px] lg:mx-auto lg:w-full lg:px-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-[#f1f5f9] text-lg font-bold flex items-center gap-2">
+        <Heading as="h3" size="lg" className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-amber-400" />
           Ranking Global
-        </h3>
+        </Heading>
       </div>
 
       {/* Period tabs */}

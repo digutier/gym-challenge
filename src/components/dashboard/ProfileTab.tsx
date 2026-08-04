@@ -3,6 +3,8 @@ import { User, UserStats } from '@/types';
 import { capDays } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 
 interface ProfileTabProps {
   user: User;
@@ -34,8 +36,8 @@ export default function ProfileTab({
           {user.avatar}
         </div>
         <div className="text-center">
-          <h3 className="text-[#f1f5f9] text-xl font-bold">{user.name}</h3>
-          <p className="text-[#94a3b8] text-sm">Tu perfil</p>
+          <Heading as="h3" size="xl">{user.name}</Heading>
+          <Text size="sm" color="secondary">Tu perfil</Text>
         </div>
       </div>
 
@@ -43,20 +45,20 @@ export default function ProfileTab({
         <div className="grid grid-cols-3 gap-3">
           <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
             <CardContent className="px-3">
-              <p className="text-[#7f0df2] text-2xl font-black">{capDays(myStats.daysThisWeek)}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Esta sem.</p>
+              <Text size="2xl" color="accent" weight="black">{capDays(myStats.daysThisWeek)}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Esta sem.</Text>
             </CardContent>
           </Card>
           <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
             <CardContent className="px-3">
-              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.monthlyDays}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Este mes</p>
+              <Text size="2xl" weight="black">{myStats.monthlyDays}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Este mes</Text>
             </CardContent>
           </Card>
           <Card className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.05)] rounded-2xl py-3 gap-0 shadow-none text-center">
             <CardContent className="px-3">
-              <p className="text-[#f1f5f9] text-2xl font-black">{myStats.totalDays}</p>
-              <p className="text-[#64748b] text-xs mt-0.5">Total 2026</p>
+              <Text size="2xl" weight="black">{myStats.totalDays}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Total 2026</Text>
             </CardContent>
           </Card>
         </div>
@@ -68,9 +70,9 @@ export default function ProfileTab({
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
           <Users className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Mis amigos</span>
+          <Text as="span" size="sm" weight="semibold">Mis amigos</Text>
           {friendsCount > 0 && (
-            <span className="ml-auto text-[#64748b] text-xs font-semibold">{friendsCount}</span>
+            <Text as="span" size="xs" color="muted" weight="semibold" className="ml-auto">{friendsCount}</Text>
           )}
         </Button>
 
@@ -79,7 +81,7 @@ export default function ProfileTab({
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
           <UserPlus className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Agregar amigo</span>
+          <Text as="span" size="sm" weight="semibold">Agregar amigo</Text>
         </Button>
 
         <Button
@@ -87,7 +89,7 @@ export default function ProfileTab({
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left relative"
         >
           <Bell className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Solicitudes recibidas</span>
+          <Text as="span" size="sm" weight="semibold">Solicitudes recibidas</Text>
           {pendingRequestsCount > 0 && (
             <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
               {pendingRequestsCount}
@@ -100,7 +102,7 @@ export default function ProfileTab({
           className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
         >
           <UserIcon className="w-5 h-5 text-red-400" />
-          <span className="text-red-400 text-sm font-semibold">Cerrar sesión</span>
+          <Text as="span" size="sm" color="danger" weight="semibold">Cerrar sesión</Text>
         </Button>
       </div>
     </div>

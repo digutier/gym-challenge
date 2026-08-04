@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 import HomeTab from './dashboard/HomeTab';
 import WorkoutsTab from './dashboard/WorkoutsTab';
 import FeedTab from './dashboard/FeedTab';
@@ -114,10 +116,10 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           <div className="flex items-center gap-3 px-5 py-4 border-b border-[rgba(255,255,255,0.06)]">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7f0df2] to-[#6366f1] flex items-center justify-center text-xl shrink-0">🏋️</div>
             <div>
-              <p className="text-[#f1f5f9] text-sm font-bold leading-tight">Gym Challenge</p>
-              <p className="text-[#7f0df2] text-[10px] font-semibold tracking-wider uppercase">
+              <Text size="sm" weight="bold" className="leading-tight">Gym Challenge</Text>
+              <Text size="10px" color="accent" weight="semibold" className="tracking-wider uppercase">
                 {cappedActiveDays}/{WEEKLY_GOAL} esta sem.
-              </p>
+              </Text>
             </div>
           </div>
 
@@ -158,8 +160,8 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 {user.avatar}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[#f1f5f9] text-xs font-bold truncate">{user.name}</p>
-                <p className="text-[#64748b] text-[10px]">Gym Challenge</p>
+                <Text size="xs" weight="bold" className="truncate">{user.name}</Text>
+                <Text size="10px" color="muted">Gym Challenge</Text>
               </div>
             </div>
           </div>
@@ -174,21 +176,21 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               <div className="bg-[rgba(127,13,242,0.2)] border-2 border-[rgba(127,13,242,0.5)] rounded-full size-10 flex items-center justify-center text-xl overflow-hidden">
                 {user.avatar}
               </div>
-              <p className="text-[#f1f5f9] text-sm font-bold leading-tight">Gym Challenge</p>
+              <Text size="sm" weight="bold" className="leading-tight">Gym Challenge</Text>
             </div>
           </nav>
 
           {/* Desktop top bar — oculto en mobile */}
           <div className="hidden lg:flex items-center gap-3 px-6 h-14 border-b border-[rgba(255,255,255,0.06)] sticky top-0 bg-[rgba(17,12,26,0.85)] backdrop-blur-[5px] z-10">
-            <h1 className="text-[#f1f5f9] text-base font-bold">{TAB_LABELS[activeTab]}</h1>
+            <Heading as="h1" size="base">{TAB_LABELS[activeTab]}</Heading>
             {activeTab === 'home' && isCurrentWeek && (
-              <span className="text-[10px] font-bold text-[#7f0df2] bg-[rgba(127,13,242,0.12)] px-3 py-1 rounded-full tracking-wider uppercase">
+              <Text as="span" size="10px" weight="bold" color="accent" className="bg-[rgba(127,13,242,0.12)] px-3 py-1 rounded-full tracking-wider uppercase">
                 Esta semana
-              </span>
+              </Text>
             )}
-            <span className="ml-auto text-[#64748b] text-xs capitalize">
+            <Text as="span" size="xs" color="muted" className="ml-auto capitalize">
               {new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </span>
+            </Text>
           </div>
 
           {/* Main content */}
@@ -264,13 +266,13 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               {/* Home */}
               <TabsTrigger value="home" className="flex flex-col items-center gap-1 flex-1">
                 <Home className={`w-[22px] h-[22px] ${activeTab === 'home' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'home' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Inicio</span>
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'home' ? 'accent' : 'muted'} className="text-center leading-tight">Inicio</Text>
               </TabsTrigger>
 
               {/* Workouts */}
               <TabsTrigger value="workouts" className="flex flex-col items-center gap-1 flex-1">
                 <CalendarDays className={`w-[22px] h-[22px] ${activeTab === 'workouts' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'workouts' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Registros</span>
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'workouts' ? 'accent' : 'muted'} className="text-center leading-tight">Registros</Text>
               </TabsTrigger>
 
               {/* Spacer for FAB column */}
@@ -279,7 +281,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               {/* Feed */}
               <TabsTrigger value="feed" className="flex flex-col items-center gap-1 flex-1">
                 <Trophy className={`w-[22px] h-[22px] ${activeTab === 'feed' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'feed' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Ranking</span>
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'feed' ? 'accent' : 'muted'} className="text-center leading-tight">Ranking</Text>
               </TabsTrigger>
 
               {/* Profile */}
@@ -290,7 +292,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                     <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full" />
                   )}
                 </div>
-                <span className={`text-[12px] font-bold text-center leading-tight ${activeTab === 'profile' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>Perfil</span>
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'profile' ? 'accent' : 'muted'} className="text-center leading-tight">Perfil</Text>
               </TabsTrigger>
 
             </TabsList>
