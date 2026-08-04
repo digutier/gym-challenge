@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import { X, Loader2, UserMinus } from 'lucide-react';
 import { Friend } from '@/types';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from '@/components/ui/alert-dialog';
 
 interface FriendsListModalProps {
   friends: Friend[];
@@ -38,17 +45,15 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-5 shadow-2xl">
-
+      <Dialog open onOpenChange={(open) => !open && onClose()}>
+        <DialogContent>
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
-              <p className="text-[#f1f5f9] text-lg font-bold">Mis amigos</p>
-              <p className="text-[#64748b] text-sm">
+              <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Mis amigos</DialogTitle>
+              <DialogDescription className="text-[#64748b] text-sm">
                 {isEmpty ? 'Aún no tienes amigos' : `${localFriends.length} amigo${localFriends.length > 1 ? 's' : ''}`}
-              </p>
+              </DialogDescription>
             </div>
             <button
               onClick={onClose}
@@ -91,41 +96,41 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Confirm remove modal */}
-      {confirmRemove && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !removing && setConfirmRemove(null)} />
-          <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-4 shadow-2xl">
-            <p className="text-[#f1f5f9] text-lg font-bold">Eliminar amigo</p>
-            <p className="text-[#94a3b8] text-sm">
-              ¿Estás seguro que quieres eliminar a <span className="text-[#f1f5f9] font-semibold">{confirmRemove.name}</span> de tus amigos? Dejarán de verse en el ranking del otro.
-            </p>
-            <div className="flex gap-3 mt-1">
-              <button
-                onClick={() => setConfirmRemove(null)}
-                disabled={removing}
-                className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleRemove}
-                disabled={removing}
-                className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {removing ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  'Sí, eliminar'
-                )}
-              </button>
-            </div>
+      <AlertDialog
+        open={!!confirmRemove}
+        onOpenChange={(open) => { if (!open && !removing) setConfirmRemove(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogTitle className="text-[#f1f5f9] text-lg font-bold">Eliminar amigo</AlertDialogTitle>
+          <AlertDialogDescription className="text-[#94a3b8] text-sm">
+            ¿Estás seguro que quieres eliminar a <span className="text-[#f1f5f9] font-semibold">{confirmRemove?.name}</span> de tus amigos? Dejarán de verse en el ranking del otro.
+          </AlertDialogDescription>
+          <div className="flex gap-3 mt-1">
+            <button
+              onClick={() => setConfirmRemove(null)}
+              disabled={removing}
+              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleRemove}
+              disabled={removing}
+              className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {removing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                'Sí, eliminar'
+              )}
+            </button>
           </div>
-        </div>
-      )}
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
