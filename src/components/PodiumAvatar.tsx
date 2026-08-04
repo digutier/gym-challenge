@@ -1,5 +1,6 @@
 import { UserStats } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 const podiumTopOffset: Record<number, string> = {
   1: 'pt-0',
@@ -63,12 +64,12 @@ export default function PodiumAvatar({
         )}
       </div>
       <div className="flex flex-col items-center gap-0.5 mt-2">
-        <p className={`text-xs font-bold truncate max-w-[90px] text-center ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-          {u.name}{isMe && <span className="text-[9px] opacity-60 ml-0.5">(tú)</span>}
-        </p>
-        <p className={`text-sm font-black ${metricColorClassName}`}>
+        <Text size="xs" weight="bold" color={isMe ? 'accent' : 'primary'} className="truncate max-w-[90px] text-center">
+          {u.name}{isMe && <Text as="span" size="9px" className="opacity-60 ml-0.5">(tú)</Text>}
+        </Text>
+        <Text size="sm" weight="black" className={metricColorClassName}>
           {metricLabel}
-        </p>
+        </Text>
       </div>
     </div>
   );
