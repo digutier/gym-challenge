@@ -3,8 +3,11 @@ import { requireAuth } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
 import { toProgressEntries } from '@/lib/progress';
 
-const DEFAULT_LIMIT = 60;
-const MAX_LIMIT = 60;
+// One row per day at most, so even a year of daily use stays reasonable —
+// this cap exists as a sanity ceiling on the query (each row can carry up
+// to 4 photo paths to batch-sign), not a real pagination limit.
+const DEFAULT_LIMIT = 365;
+const MAX_LIMIT = 365;
 
 export async function GET(request: NextRequest) {
   try {

@@ -3,8 +3,10 @@ import { requireAuth } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
 import { GymHistoryEntry } from '@/types';
 
-const DEFAULT_LIMIT = 60;
-const MAX_LIMIT = 60;
+// One row per day at most, so even years of daily use stay small — this
+// cap exists as a sanity ceiling on the query, not a real pagination limit.
+const DEFAULT_LIMIT = 1000;
+const MAX_LIMIT = 1000;
 
 export async function GET(request: NextRequest) {
   try {
