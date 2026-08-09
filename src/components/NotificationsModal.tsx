@@ -6,6 +6,7 @@ import { FriendRequest } from '@/types';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { modalHeaderRow, modalHeaderTextWrap, modalCloseButton, modalEmptyState, modalRow, modalRowAvatar, modalRowTextWrap, notificationsModal as styles } from '@/components/styles/modals';
 
 interface NotificationsModalProps {
   requests: FriendRequest[];
@@ -44,8 +45,8 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-0.5">
+        <div className={modalHeaderRow}>
+          <div className={modalHeaderTextWrap}>
             <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Solicitudes recibidas</DialogTitle>
             <DialogDescription className="text-[#64748b] text-sm">
               {isEmpty ? 'Sin solicitudes pendientes' : `${localRequests.length} pendiente${localRequests.length > 1 ? 's' : ''}`}
@@ -53,7 +54,7 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
           </div>
           <Button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.06)] flex items-center justify-center"
+            className={modalCloseButton}
           >
             <X className="w-4 h-4 text-[#64748b]" />
           </Button>
@@ -61,7 +62,7 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
 
         {/* Content */}
         {isEmpty ? (
-          <div className="flex flex-col items-center gap-3 py-6 text-center">
+          <div className={modalEmptyState}>
             <span className="text-5xl">🤝</span>
             <div>
               <Text size="sm" weight="semibold">Todo al día</Text>
@@ -75,10 +76,10 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
             {localRequests.map((req) => (
               <div
                 key={req.id}
-                className="flex items-center gap-3 p-4 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-2xl"
+                className={modalRow}
               >
-                <span className="text-2xl shrink-0 leading-none">{req.requester.avatar}</span>
-                <div className="flex-1 min-w-0">
+                <span className={modalRowAvatar}>{req.requester.avatar}</span>
+                <div className={modalRowTextWrap}>
                   <Text size="sm" weight="semibold" className="truncate">{req.requester.name}</Text>
                   <Text size="xs" color="muted" className="truncate mt-0.5">{req.requester.email}</Text>
                 </div>
@@ -86,17 +87,17 @@ export default function NotificationsModal({ requests, onClose, onRefresh }: Not
                   {processingId === req.id ? (
                     <Loader2 className="w-5 h-5 animate-spin text-[#64748b]" />
                   ) : (
-                    <div className="flex gap-2">
+                    <div className={styles.actionsWrap}>
                       <Button
                         onClick={() => handleRespond(req.id, 'accept')}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white text-xs font-semibold rounded-xl active:scale-95 transition-transform"
+                        className={styles.acceptButton}
                       >
                         <Check className="w-3.5 h-3.5" />
                         Aceptar
                       </Button>
                       <Button
                         onClick={() => handleRespond(req.id, 'decline')}
-                        className="px-3 py-2 border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-xs font-semibold rounded-xl active:scale-95 transition-transform"
+                        className={styles.declineButton}
                       >
                         No
                       </Button>

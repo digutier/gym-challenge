@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { modalHeaderRow, modalHeaderTextWrap, modalCloseButton, modalEmptyState, modalRow, modalRowAvatar, modalRowTextWrap, friendsListModal as styles } from '@/components/styles/modals';
 
 interface FriendsListModalProps {
   friends: Friend[];
@@ -50,8 +51,8 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
       <Dialog open onOpenChange={(open) => !open && onClose()}>
         <DialogContent>
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col gap-0.5">
+          <div className={modalHeaderRow}>
+            <div className={modalHeaderTextWrap}>
               <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Mis amigos</DialogTitle>
               <DialogDescription className="text-[#64748b] text-sm">
                 {isEmpty ? 'Aún no tienes amigos' : `${localFriends.length} amigo${localFriends.length > 1 ? 's' : ''}`}
@@ -59,7 +60,7 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
             </div>
             <Button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.06)] flex items-center justify-center"
+              className={modalCloseButton}
             >
               <X className="w-4 h-4 text-[#64748b]" />
             </Button>
@@ -67,7 +68,7 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
 
           {/* Content */}
           {isEmpty ? (
-            <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <div className={modalEmptyState}>
               <span className="text-5xl">👥</span>
               <div>
                 <Text size="sm" weight="semibold">Sin amigos aún</Text>
@@ -77,20 +78,20 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
+            <div className={styles.listWrap}>
               {localFriends.map((friend) => (
                 <div
                   key={friend.friendshipId}
-                  className="flex items-center gap-3 p-4 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-2xl"
+                  className={modalRow}
                 >
-                  <span className="text-2xl shrink-0 leading-none">{friend.avatar}</span>
-                  <div className="flex-1 min-w-0">
+                  <span className={modalRowAvatar}>{friend.avatar}</span>
+                  <div className={modalRowTextWrap}>
                     <Text size="sm" weight="semibold" className="truncate">{friend.name}</Text>
                     <Text size="xs" color="muted" className="truncate mt-0.5">{friend.email}</Text>
                   </div>
                   <Button
                     onClick={() => setConfirmRemove(friend)}
-                    className="shrink-0 w-8 h-8 rounded-xl bg-[rgba(255,255,255,0.05)] flex items-center justify-center active:scale-95 transition-transform"
+                    className={styles.removeButton}
                   >
                     <UserMinus className="w-4 h-4 text-[#64748b]" />
                   </Button>
@@ -111,18 +112,18 @@ export default function FriendsListModal({ friends, onClose, onRefresh }: Friend
           <AlertDialogDescription className="text-[#94a3b8] text-sm">
             ¿Estás seguro que quieres eliminar a <Text as="span" weight="semibold">{confirmRemove?.name}</Text> de tus amigos? Dejarán de verse en el ranking del otro.
           </AlertDialogDescription>
-          <div className="flex gap-3 mt-1">
+          <div className={styles.confirmButtonRow}>
             <Button
               onClick={() => setConfirmRemove(null)}
               disabled={removing}
-              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
+              className={styles.confirmCancelButton}
             >
               Cancelar
             </Button>
             <Button
               onClick={handleRemove}
               disabled={removing}
-              className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+              className={styles.confirmDeleteButton}
             >
               {removing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
