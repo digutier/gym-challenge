@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Home, User, Trophy, Loader2, TrendingUp } from 'lucide-react';
+import { Home, User, Trophy, Loader2, BicepsFlexed } from 'lucide-react';
 import PhotoUpload, { PhotoUploadHandle } from './PhotoUpload';
 import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
@@ -129,7 +129,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
             {(
               [
                 { tab: 'home' as Tab, icon: <Home className="w-[18px] h-[18px]" />, label: 'Inicio' },
-                { tab: 'progress' as Tab, icon: <TrendingUp className="w-[18px] h-[18px]" />, label: 'Progreso' },
+                { tab: 'progress' as Tab, icon: <BicepsFlexed className="w-[18px] h-[18px]" />, label: 'Progreso' },
                 { tab: 'feed' as Tab, icon: <Trophy className="w-[18px] h-[18px]" />, label: 'Ranking' },
                 { tab: 'profile' as Tab, icon: <User className="w-[18px] h-[18px]" />, label: 'Perfil' },
               ] as const
@@ -268,7 +268,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
               {/* Progreso */}
               <TabsTrigger value="progress" className={mobileBottomNav.trigger}>
-                <TrendingUp className={mobileBottomNav.icon(activeTab === 'progress')} />
+                <BicepsFlexed className={mobileBottomNav.icon(activeTab === 'progress')} />
                 <Text as="span" size="12px" weight="bold" color={activeTab === 'progress' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Progreso</Text>
               </TabsTrigger>
 
