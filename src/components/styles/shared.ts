@@ -50,3 +50,23 @@ export const fieldInput = 'w-full px-4 py-3 bg-[rgba(255,255,255,0.05)] border b
 // Inline error/success message boxes — identical across every form in the app.
 export const errorBox = 'px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl';
 export const successBox = 'px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl';
+
+// Square thumbnail-in-a-horizontal-strip pattern — shared by the progress
+// and gym photo history galleries.
+export const photoThumbStrip = 'flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1';
+export const photoThumbButton = 'relative shrink-0 w-20 h-20 rounded-2xl overflow-hidden snap-start disabled:opacity-100';
+export const photoThumbImage = 'object-cover';
+export const photoThumbDateBadge = 'absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[9px] font-semibold text-center py-1';
+export const photoThumbSkeleton = 'shrink-0 w-20 h-20 rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse';
+
+// Full-screen swipeable "browse history" viewer chrome — shared by the
+// progress-photo and gym-photo history viewers. StoryViewer/PastDayModal
+// keep their own established chrome since they predate this and have
+// slightly different needs (auto-dismiss, friend list, etc).
+export const historyViewerOverlay = '!bg-black/95 !backdrop-blur-none !z-50';
+export const historyViewerContent = 'fixed inset-0 top-0 left-0 translate-x-0 translate-y-0 w-full max-w-none !z-50 rounded-none border-0 bg-transparent p-0 shadow-none flex flex-col';
+export const historyViewerHeaderBar = 'absolute top-0 left-0 right-0 p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent z-20';
+export const historyViewerImageArea = 'relative flex-1 bg-black';
+export function historyViewerArrowButton(side: 'left' | 'right') {
+  return cn('absolute top-1/2 -translate-y-1/2 z-20', side === 'left' ? 'left-3' : 'right-3', iconCircleButton('light'));
+}

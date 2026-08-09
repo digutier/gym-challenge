@@ -117,3 +117,9 @@ export interface ProgressEntry {
   note: string | null;
   weightKg: number | null;
 }
+
+export interface GymHistoryEntry {
+  date: string;
+  photoUrl: string;
+  timestamp: string;
+}

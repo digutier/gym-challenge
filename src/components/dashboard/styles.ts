@@ -1,5 +1,9 @@
 import { cn } from '@/lib/utils';
-import { surfaceSubtle, ringToday, pillTabsList, pillTabTrigger, fieldInput, errorBox, iconCircleButton } from '@/components/styles/shared';
+import {
+  surfaceSubtle, ringToday, pillTabsList, pillTabTrigger, fieldInput, errorBox, iconCircleButton,
+  photoThumbStrip, photoThumbButton, photoThumbImage, photoThumbDateBadge, photoThumbSkeleton,
+  historyViewerOverlay, historyViewerContent, historyViewerHeaderBar, historyViewerImageArea, historyViewerArrowButton,
+} from '@/components/styles/shared';
 
 // ─── HomeTab ─────────────────────────────────────────────────────────────
 
@@ -91,21 +95,20 @@ export const progressPhotoSlot = {
 };
 
 export const progressHistoryGallery = {
-  scrollRow: 'flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1',
-  thumbButton: 'relative shrink-0 w-20 h-20 rounded-2xl overflow-hidden snap-start disabled:opacity-100',
-  thumbImage: 'object-cover',
-  thumbDateBadge: 'absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[9px] font-semibold text-center py-1',
-  skeletonRow: 'shrink-0 w-20 h-20 rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse',
+  scrollRow: photoThumbStrip,
+  thumbButton: photoThumbButton,
+  thumbImage: photoThumbImage,
+  thumbDateBadge: photoThumbDateBadge,
+  skeletonRow: photoThumbSkeleton,
 };
 
 export const progressHistoryViewer = {
-  overlayClassName: '!bg-black/95 !backdrop-blur-none !z-50',
-  contentClassName: 'fixed inset-0 top-0 left-0 translate-x-0 translate-y-0 w-full max-w-none !z-50 rounded-none border-0 bg-transparent p-0 shadow-none flex flex-col',
-  headerBar: 'absolute top-0 left-0 right-0 p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent z-20',
+  overlayClassName: historyViewerOverlay,
+  contentClassName: historyViewerContent,
+  headerBar: historyViewerHeaderBar,
   closeButton: iconCircleButton('light'),
-  imageArea: 'relative flex-1 bg-black',
-  arrowButton: (side: 'left' | 'right') =>
-    cn('absolute top-1/2 -translate-y-1/2 z-20', side === 'left' ? 'left-3' : 'right-3', iconCircleButton('light')),
+  imageArea: historyViewerImageArea,
+  arrowButton: historyViewerArrowButton,
   infoPanel: 'px-5 pt-4 pb-6 bg-black flex flex-col gap-3',
   infoWeightRow: 'flex items-center gap-2',
   infoWeightValue: 'text-white text-lg font-bold',

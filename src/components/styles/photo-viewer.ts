@@ -1,5 +1,8 @@
 import { cn } from '@/lib/utils';
-import { iconCircleButton, ringToday } from '@/components/styles/shared';
+import {
+  iconCircleButton, ringToday,
+  historyViewerOverlay, historyViewerContent, historyViewerHeaderBar, historyViewerImageArea, historyViewerArrowButton,
+} from '@/components/styles/shared';
 
 export const storyViewer = {
   overlayClassName: (zIndexClassName: string) => `!bg-black/95 !backdrop-blur-none ${zIndexClassName}`,
@@ -50,4 +53,13 @@ export const pastDayModal = {
   friendName: 'text-white/80 text-xs font-medium truncate max-w-[60px]',
   emptyDayCard: 'bg-white/5 rounded-2xl p-6 text-center border border-white/10',
   emptyDayText: 'text-white/60 text-sm',
+};
+
+export const gymHistoryViewer = {
+  overlayClassName: historyViewerOverlay,
+  contentClassName: historyViewerContent,
+  headerBar: historyViewerHeaderBar,
+  closeButton: iconCircleButton('light'),
+  imageArea: historyViewerImageArea,
+  arrowButton: historyViewerArrowButton,
 };

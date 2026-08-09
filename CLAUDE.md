@@ -25,6 +25,7 @@ gym-challenge/
 │   │       ├── friends/respond/route.ts   # POST accept/decline request
 │   │       ├── friends/remove/route.ts    # POST remove friendship
 │   │       ├── users/search/route.ts   # Search users by email
+│   │       ├── gym-history/route.ts    # GET own gym_entries, newest first (hard auth)
 │   │       └── progress/               # Private body-progress photos — see Progress Photos below
 │   │           ├── route.ts            #   GET today's entry (signed photo URLs)
 │   │           ├── photo/route.ts      #   POST upload / DELETE remove one body-part photo
@@ -57,6 +58,8 @@ gym-challenge/
 │   │   ├── AddFriendModal.tsx          # Add friend by email
 │   │   ├── FriendsListModal.tsx        # Friends list + remove
 │   │   ├── NotificationsModal.tsx      # Pending friend requests
+│   │   ├── GymHistoryModal.tsx         # Own gym-photo history gallery (from ProfileTab)
+│   │   ├── GymHistoryViewer.tsx        # Full-screen swipeable viewer for the above
 │   │   ├── ServiceWorkerRegister.tsx   # PWA service worker (+ ServiceWorkerRegister.styles.ts)
 │   │   └── ui/                         # shadcn/ui base components (Button, Card, Dialog, AlertDialog,
 │   │                                   #   Tabs, Input, Textarea, Heading, Text)
@@ -65,7 +68,8 @@ gym-challenge/
 │   │   ├── useDashboardStats.ts        # Week entries + ranking fetch/refresh
 │   │   ├── useFriendRequests.ts        # Pending requests + friends fetch/refresh
 │   │   ├── useProgressEntry.ts         # Today's progress entry fetch/upload/delete/save
-│   │   └── useProgressHistory.ts       # Last N days of progress entries fetch/refresh
+│   │   ├── useProgressHistory.ts       # Last N days of progress entries fetch/refresh
+│   │   └── useGymHistory.ts            # Last N days of own gym_entries fetch/refresh
 │   ├── contexts/
 │   │   └── AuthContext.tsx             # Supabase session auth state (see Auth Model below)
 │   ├── lib/
@@ -170,6 +174,7 @@ Standard Supabase email/password session auth via `@supabase/ssr` — not token-
 - **Ranking**: GET `/api/all-stats` returns all users sorted by `daysThisWeek`
 - **Progress photos** (private, per-user only — see Auth Model): client compresses → POST to `/api/progress/photo` (FormData `{ part, photo }`) → stored in the **private** `progress-photos` bucket as `{user_id}/{date}/{part}.jpg` (`upsert: true`, no manual delete-then-upload needed since paths are deterministic) → upsert `progress_entries`. Photo columns store storage **paths**, never public URLs — every read re-signs each path (1h expiry) through `lib/progress.ts`: `toProgressEntry()` for single-day routes (`GET /api/progress`, `/api/progress/photo`, `/api/progress/details`), `toProgressEntries()` for the batch `GET /api/progress/history` (one `createSignedUrls()` call for the whole page, not N). Note/weight save separately via `POST /api/progress/details`.
 - **Progress history gallery**: `ProgressTab` renders `ProgressHistoryGallery` (horizontal scroll strip, newest first, `BODY_PARTS` order drives both the upload tabs and this) filtered client-side to the selected body part from one `/api/progress/history` fetch (`useProgressHistory`) — tapping a thumbnail opens `ProgressHistoryViewer`, a full-screen swipeable viewer (touch delta + arrow buttons) showing that day's note/weight below the photo.
+- **Gym photo history**: same gallery/viewer shape as above, but for `gym_entries` (public bucket, no signing needed) — opened from `ProfileTab`'s "Historial de fotos" button as `GymHistoryModal` (a centered card, unlike Progreso's inline tab section) → `GymHistoryViewer`. The thumbnail-strip and full-screen-viewer chrome (`photoThumb*`/`historyViewer*` in `components/styles/shared.ts`) is shared between the progress and gym history UIs — reuse those before adding a new gallery/viewer style block.
 
 ## Git Conventions
 

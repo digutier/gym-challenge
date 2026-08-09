@@ -7,6 +7,7 @@ import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
 import FriendsListModal from './FriendsListModal';
 import PastDayModal from './PastDayModal';
+import GymHistoryModal from './GymHistoryModal';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -44,6 +45,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [showGymHistory, setShowGymHistory] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -229,6 +231,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 ranking={ranking}
                 friendsCount={friends.length}
                 pendingRequestsCount={pendingRequests.length}
+                onShowGymHistory={() => setShowGymHistory(true)}
                 onShowFriendsList={() => { fetchPendingRequests(); setShowFriendsList(true); }}
                 onShowAddFriend={() => setShowAddFriend(true)}
                 onShowNotifications={() => setShowNotifications(true)}
@@ -355,6 +358,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
       </AlertDialog>
 
       {/* Modals */}
+      {showGymHistory && <GymHistoryModal onClose={() => setShowGymHistory(false)} />}
       {showAddFriend && <AddFriendModal onClose={() => setShowAddFriend(false)} />}
       {showFriendsList && (
         <FriendsListModal

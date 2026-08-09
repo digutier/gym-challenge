@@ -1,4 +1,4 @@
-import { Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
+import { Images, Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
 import { User, UserStats } from '@/types';
 import { capDays } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ interface ProfileTabProps {
   ranking: UserStats[];
   friendsCount: number;
   pendingRequestsCount: number;
+  onShowGymHistory: () => void;
   onShowFriendsList: () => void;
   onShowAddFriend: () => void;
   onShowNotifications: () => void;
@@ -23,6 +24,7 @@ export default function ProfileTab({
   ranking,
   friendsCount,
   pendingRequestsCount,
+  onShowGymHistory,
   onShowFriendsList,
   onShowAddFriend,
   onShowNotifications,
@@ -66,6 +68,14 @@ export default function ProfileTab({
       )}
 
       <div className={styles.menuList}>
+        <Button
+          onClick={onShowGymHistory}
+          className={styles.menuButton}
+        >
+          <Images className="w-5 h-5 text-[#7f0df2]" />
+          <Text as="span" size="sm" weight="semibold">Historial de fotos</Text>
+        </Button>
+
         <Button
           onClick={onShowFriendsList}
           className={styles.menuButton}

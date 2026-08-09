@@ -1,5 +1,8 @@
 import { cn } from '@/lib/utils';
-import { surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox } from '@/components/styles/shared';
+import {
+  surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox,
+  photoThumbStrip, photoThumbButton, photoThumbImage, photoThumbDateBadge, photoThumbSkeleton,
+} from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
 export const modalHeaderRow = 'flex items-center justify-between';
@@ -33,4 +36,12 @@ export const friendsListModal = {
   confirmButtonRow: 'flex gap-3 mt-1',
   confirmCancelButton: cn(cancelButton, 'disabled:opacity-50'),
   confirmDeleteButton: 'flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2',
+};
+
+export const gymHistoryModal = {
+  scrollRow: photoThumbStrip,
+  thumbButton: photoThumbButton,
+  thumbImage: photoThumbImage,
+  thumbDateBadge: photoThumbDateBadge,
+  skeletonRow: photoThumbSkeleton,
 };
