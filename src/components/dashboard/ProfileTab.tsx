@@ -1,12 +1,18 @@
-import { Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
+import { Images, Users, UserPlus, Bell, User as UserIcon } from 'lucide-react';
 import { User, UserStats } from '@/types';
 import { capDays } from '@/lib/stats';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { profileTab as styles } from './styles';
 
 interface ProfileTabProps {
   user: User;
   ranking: UserStats[];
   friendsCount: number;
   pendingRequestsCount: number;
+  onShowGymHistory: () => void;
   onShowFriendsList: () => void;
   onShowAddFriend: () => void;
   onShowNotifications: () => void;
@@ -18,6 +24,7 @@ export default function ProfileTab({
   ranking,
   friendsCount,
   pendingRequestsCount,
+  onShowGymHistory,
   onShowFriendsList,
   onShowAddFriend,
   onShowNotifications,
@@ -26,74 +33,88 @@ export default function ProfileTab({
   const myStats = ranking.find(u => u.id === user.id);
 
   return (
-    <div className="flex flex-col gap-5 px-4 pb-6 pt-4 lg:max-w-[640px] lg:mx-auto lg:w-full lg:px-6">
-      <div className="flex flex-col items-center gap-3 pt-4">
-        <div className="bg-[rgba(127,13,242,0.2)] border-2 border-[rgba(127,13,242,0.5)] rounded-full size-20 flex items-center justify-center text-4xl">
+    <div className={styles.root}>
+      <div className={styles.header}>
+        <div className={styles.avatar}>
           {user.avatar}
         </div>
-        <div className="text-center">
-          <h3 className="text-[#f1f5f9] text-xl font-bold">{user.name}</h3>
-          <p className="text-[#94a3b8] text-sm">Tu perfil</p>
+        <div className={styles.headerTextWrap}>
+          <Heading as="h3" size="xl">{user.name}</Heading>
+          <Text size="sm" color="secondary">Tu perfil</Text>
         </div>
       </div>
 
       {myStats && (
-        <div className="grid grid-cols-3 gap-3">
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#7f0df2] text-2xl font-black">{capDays(myStats.daysThisWeek)}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Esta sem.</p>
-          </div>
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#f1f5f9] text-2xl font-black">{myStats.monthlyDays}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Este mes</p>
-          </div>
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-3 text-center">
-            <p className="text-[#f1f5f9] text-2xl font-black">{myStats.totalDays}</p>
-            <p className="text-[#64748b] text-xs mt-0.5">Total 2026</p>
-          </div>
+        <div className={styles.statsGrid}>
+          <Card className={styles.statCard}>
+            <CardContent className={styles.statCardContent}>
+              <Text size="2xl" color="accent" weight="black">{capDays(myStats.daysThisWeek)}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Esta sem.</Text>
+            </CardContent>
+          </Card>
+          <Card className={styles.statCard}>
+            <CardContent className={styles.statCardContent}>
+              <Text size="2xl" weight="black">{myStats.monthlyDays}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Este mes</Text>
+            </CardContent>
+          </Card>
+          <Card className={styles.statCard}>
+            <CardContent className={styles.statCardContent}>
+              <Text size="2xl" weight="black">{myStats.totalDays}</Text>
+              <Text size="xs" color="muted" className="mt-0.5">Total 2026</Text>
+            </CardContent>
+          </Card>
         </div>
       )}
 
-      <div className="flex flex-col gap-3">
-        <button
+      <div className={styles.menuList}>
+        <Button
+          onClick={onShowGymHistory}
+          className={styles.menuButton}
+        >
+          <Images className="w-5 h-5 text-[#7f0df2]" />
+          <Text as="span" size="sm" weight="semibold">Historial de fotos</Text>
+        </Button>
+
+        <Button
           onClick={onShowFriendsList}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className={styles.menuButton}
         >
           <Users className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Mis amigos</span>
+          <Text as="span" size="sm" weight="semibold">Mis amigos</Text>
           {friendsCount > 0 && (
-            <span className="ml-auto text-[#64748b] text-xs font-semibold">{friendsCount}</span>
+            <Text as="span" size="xs" color="muted" weight="semibold" className="ml-auto">{friendsCount}</Text>
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onShowAddFriend}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className={styles.menuButton}
         >
           <UserPlus className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Agregar amigo</span>
-        </button>
+          <Text as="span" size="sm" weight="semibold">Agregar amigo</Text>
+        </Button>
 
-        <button
+        <Button
           onClick={onShowNotifications}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left relative"
+          className={styles.menuButtonRelative}
         >
           <Bell className="w-5 h-5 text-[#7f0df2]" />
-          <span className="text-[#f1f5f9] text-sm font-semibold">Solicitudes recibidas</span>
+          <Text as="span" size="sm" weight="semibold">Solicitudes recibidas</Text>
           {pendingRequestsCount > 0 && (
-            <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+            <span className={styles.notificationBadge}>
               {pendingRequestsCount}
             </span>
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onLogout}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className={styles.menuButton}
         >
           <UserIcon className="w-5 h-5 text-red-400" />
-          <span className="text-red-400 text-sm font-semibold">Cerrar sesión</span>
-        </button>
+          <Text as="span" size="sm" color="danger" weight="semibold">Cerrar sesión</Text>
+        </Button>
       </div>
     </div>
   );

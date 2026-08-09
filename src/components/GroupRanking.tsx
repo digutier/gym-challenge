@@ -5,6 +5,9 @@ import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import PodiumAvatar from './PodiumAvatar';
 import StoryViewer from './StoryViewer';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { groupRanking as styles } from '@/components/styles/ranking';
 
 interface GroupRankingProps {
   users: UserStats[];
@@ -52,8 +55,8 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
     <>
       {/* Podium */}
       {sortedUsers.length > 0 && (
-        <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl px-4 pt-4 pb-6">
-          <div className="flex items-end justify-center gap-4">
+        <div className={styles.podiumCard}>
+          <div className={styles.podiumRow}>
             {/* 2nd */}
             {second ? (
               <PodiumAvatar
@@ -66,7 +69,7 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
                 onAvatarClick={handleAvatarClick}
               />
             ) : (
-              <div className="flex-1" />
+              <div className={styles.podiumSpacer} />
             )}
             {/* 1st */}
             {first && (
@@ -92,7 +95,7 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
                 onAvatarClick={handleAvatarClick}
               />
             ) : (
-              <div className="flex-1" />
+              <div className={styles.podiumSpacer} />
             )}
           </div>
         </div>
@@ -100,7 +103,7 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
 
       {/* Rest of the list (4th+) */}
       {rest.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className={styles.restList}>
           {rest.map((u, i) => {
             const isMe = u.id === currentUserId;
             const hasPhoto = hasTodayPhoto(u);
@@ -111,27 +114,27 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
             return (
               <div
                 key={u.id}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
+                className={styles.restRow(isMe)}
               >
-                <span className="text-[#64748b] text-sm font-bold w-5 text-center">{pos}</span>
-                <button
+                <Text as="span" size="sm" color="muted" weight="bold" className="w-5 text-center">{pos}</Text>
+                <Button
                   onClick={() => handleAvatarClick(u)}
                   disabled={!hasPhoto}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] text-xl shrink-0 ${hasPhoto ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
+                  className={styles.restAvatarButton(hasPhoto)}
                 >
                   {u.avatar}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-                    {u.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
-                  </p>
-                  <p className="text-[#64748b] text-[11px]">{u.totalDays} total histórico</p>
+                </Button>
+                <div className={styles.restNameWrap}>
+                  <Text size="sm" weight="semibold" color={isMe ? 'accent' : 'primary'} className="truncate">
+                    {u.name}{isMe && <Text as="span" size="10px" className="opacity-60 ml-1">(tú)</Text>}
+                  </Text>
+                  <Text size="11px" color="muted">{u.totalDays} total histórico</Text>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className={`text-lg font-black leading-none ${reachedGoal ? 'text-emerald-400' : 'text-[#f1f5f9]'}`}>
+                <div className={styles.restMetricWrap}>
+                  <Text size="lg" weight="black" color={reachedGoal ? 'success' : 'primary'} className="leading-none">
                     {metric}
-                  </p>
-                  <p className="text-[#64748b] text-[10px]">{period === 'week' ? `/ ${WEEKLY_GOAL}` : 'días'}</p>
+                  </Text>
+                  <Text size="10px" color="muted">{period === 'week' ? `/ ${WEEKLY_GOAL}` : 'días'}</Text>
                 </div>
               </div>
             );

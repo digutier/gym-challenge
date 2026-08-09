@@ -5,6 +5,7 @@ import { Camera, Loader2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { compressImage } from '@/lib/image';
 import { EntryData } from '@/types';
+import { photoUpload as styles } from './PhotoUpload.styles';
 
 interface PhotoUploadProps {
   onUploadComplete: (entryData?: EntryData) => void;
@@ -82,28 +83,28 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
   // FAB variant (bottom nav camera button)
   if (variant === 'fab') {
     return (
-      <div className="flex flex-col items-center">
+      <div className={styles.fabWrap}>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           capture="environment"
           onChange={handleFileChange}
-          className="hidden"
+          className={styles.hiddenInput}
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="relative bg-[#7f0df2] rounded-full size-[68px] flex items-center justify-center shadow-[0px_0px_0px_5px_#191022,0px_12px_20px_-4px_rgba(127,13,242,0.5),0px_6px_8px_-4px_rgba(127,13,242,0.4)] active:scale-95 transition-transform"
+          className={styles.fabButton}
         >
           {isUploading ? (
             <Loader2 className="w-6 h-6 text-white animate-spin" />
           ) : (
             <Camera className="w-6 h-6 text-white" />
           )}
-        </button>
+        </Button>
         {error && (
-          <p className="text-red-400 text-[10px] mt-1 text-center max-w-[80px]">{error}</p>
+          <p className={styles.fabError}>{error}</p>
         )}
       </div>
     );
@@ -112,26 +113,26 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
   // Retake FAB variant (round purple button overlaid on the photo card)
   if (variant === 'retake-fab') {
     return (
-      <div className="flex flex-col items-center">
+      <div className={styles.fabWrap}>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           capture="environment"
           onChange={handleFileChange}
-          className="hidden"
+          className={styles.hiddenInput}
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="bg-[#7f0df2] rounded-full size-14 flex items-center justify-center shadow-[0px_4px_24px_rgba(127,13,242,0.5)] active:scale-95 transition-transform"
+          className={styles.retakeFabButton}
         >
           {isUploading ? (
             <Loader2 className="w-5 h-5 text-white animate-spin" />
           ) : (
             <RotateCcw className="w-5 h-5 text-white" />
           )}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -139,19 +140,19 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
   // CTA variant (hero card "Take Daily Photo" white button)
   if (variant === 'cta') {
     return (
-      <div className="w-full flex flex-col">
+      <div className={styles.ctaWrap}>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           capture="environment"
           onChange={handleFileChange}
-          className="hidden"
+          className={styles.hiddenInput}
         />
-        <button
+        <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="w-full flex items-center justify-center gap-2 bg-white py-4 rounded-3xl font-bold text-[#7f0df2] text-base shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] active:scale-[0.98] transition-transform"
+          className={styles.ctaButton}
         >
           {isUploading ? (
             <>
@@ -164,10 +165,10 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
               <span className="text-[#7f0df2]">→</span>
             </>
           )}
-        </button>
+        </Button>
         {error && (
-          <div className="mt-2 px-3 py-1.5 bg-red-500/20 border border-red-500/40 rounded-xl">
-            <p className="text-red-200 text-xs">{error}</p>
+          <div className={styles.ctaErrorBox}>
+            <p className={styles.ctaErrorText}>{error}</p>
           </div>
         )}
       </div>
@@ -177,65 +178,56 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
   // Default loading spinner (original behavior)
   if (isUploading) {
     return (
-      <div className="flex flex-col items-center justify-center !py-12">
-        <div className="relative">
-          <div className="!w-24 !h-24 !rounded-full !bg-white/20 flex items-center justify-center">
-            <Loader2 className="!w-12 !h-12 !text-white animate-spin" />
+      <div className={styles.loadingWrap}>
+        <div className={styles.loadingCircleWrap}>
+          <div className={styles.loadingCircle}>
+            <Loader2 className="w-12 h-12 text-white animate-spin" />
           </div>
-          <div className="absolute inset-0 !rounded-full !border-4 !border-white/30 !border-t-white animate-spin"
+          <div className={styles.loadingRing}
                style={{ animationDuration: '1.5s' }} />
         </div>
-        <p className="!text-white/80 !mt-4 !font-medium">Subiendo foto...</p>
+        <p className={styles.loadingText}>Subiendo foto...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={styles.defaultWrap}>
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         capture="environment"
         onChange={handleFileChange}
-        className="hidden"
+        className={styles.hiddenInput}
       />
 
       {isRetake ? (
         <Button
           onClick={triggerFileInput}
           size="lg"
-          className="!rounded-full !px-3 !py-5 !text-base !font-bold !gap-3
-                     !bg-gradient-to-r !from-violet-500 !to-purple-600
-                     hover:!from-violet-600 hover:!to-purple-700
-                     !text-white !shadow-xl !shadow-purple-500/40
-                     hover:!scale-105 active:!scale-95 !transition-all"
+          className={styles.retakeButton}
         >
-          <Camera className="!w-5 !h-5" />
+          <Camera className="w-5 h-5" />
           Retomar
         </Button>
       ) : (
-        <button
+        <Button
           onClick={triggerFileInput}
-          className="group relative !w-40 !h-40
-                   !bg-gradient-to-br !from-emerald-400 !to-cyan-500
-                   !rounded-full !shadow-2xl !shadow-emerald-500/30
-                   flex flex-col items-center justify-center !gap-2
-                   !transition-all !duration-300 hover:!scale-110 active:!scale-95
-                   hover:!shadow-emerald-500/50"
+          className={styles.defaultButton}
         >
-          <Camera className="!w-12 !h-12 !text-white group-hover:!scale-110 !transition-transform" />
-          <span className="!text-white !font-bold !text-lg">
+          <Camera className={styles.defaultIcon} />
+          <span className={styles.defaultLabel}>
             Tomar Foto
           </span>
 
-          <div className="absolute inset-0 !rounded-full !bg-emerald-400 animate-ping !opacity-20" />
-        </button>
+          <div className={styles.defaultPing} />
+        </Button>
       )}
 
       {error && (
-        <div className="!mt-4 !px-4 !py-2 !bg-red-500/20 !border !border-red-500/40 !rounded-xl">
-          <p className="!text-red-200 !text-sm">{error}</p>
+        <div className={styles.defaultErrorBox}>
+          <p className={styles.defaultErrorText}>{error}</p>
         </div>
       )}
     </div>

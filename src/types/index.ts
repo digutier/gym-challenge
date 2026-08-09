@@ -103,3 +103,23 @@ export interface ProfileRow {
 }
 
 export type AcceptedProfileRow = ProfileRow | ProfileRow[] | null;
+
+export interface ProgressPhotos {
+  back: string | null;
+  front: string | null;
+  arms: string | null;
+  legs: string | null;
+}
+
+export interface ProgressEntry {
+  date: string;
+  photos: ProgressPhotos; // signed URLs, ready to render — never raw storage paths
+  note: string | null;
+  weightKg: number | null;
+}
+
+export interface GymHistoryEntry {
+  date: string;
+  photoUrl: string;
+  timestamp: string;
+}

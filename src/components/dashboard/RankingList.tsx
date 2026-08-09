@@ -1,6 +1,9 @@
 import { UserStats } from '@/types';
 import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import { formatTimeChile } from '@/lib/date';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { rankingList as styles } from './styles';
 
 interface RankingListProps {
   ranking: UserStats[];
@@ -13,7 +16,7 @@ const rankIcon = (rank: number) => {
   if (rank === 1) return '🏆';
   if (rank === 2) return '🥈';
   if (rank === 3) return '🥉';
-  return <span className="text-[#64748b] text-xs font-bold w-6 text-center">{rank}</span>;
+  return <Text as="span" size="xs" color="muted" weight="bold" className="w-6 text-center">{rank}</Text>;
 };
 
 export default function RankingList({ ranking, loading, currentUserId, onAvatarClick }: RankingListProps) {
@@ -37,13 +40,13 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
   return (
     <>
       {loading ? (
-        <div className="flex flex-col gap-3">
+        <div className={styles.skeletonWrap}>
           {[1, 2, 3].map(i => (
-            <div key={i} className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl h-[74px] animate-pulse" />
+            <div key={i} className={styles.skeletonRow} />
           ))}
         </div>
       ) : friendActivity.length > 0 ? (
-        <div className="flex flex-col gap-3">
+        <div className={styles.listWrap}>
           {friendActivity.map((friend, idx) => {
             const isMe = friend.id === currentUserId;
             const hasPhoto = !!friend.todayPhotoUrl;
@@ -52,44 +55,44 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
             return (
               <div
                 key={friend.id}
-                className={`backdrop-blur-[5px] flex items-center gap-3 p-[13px] rounded-3xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
+                className={styles.row(isMe)}
               >
-                <div className="w-7 flex items-center justify-center shrink-0 text-lg leading-none">
+                <div className={styles.rankIconWrap}>
                   {rankIcon(rank)}
                 </div>
-                <button
+                <Button
                   onClick={() => {
                     if (hasPhoto && !isMe) { onAvatarClick(friend); }
                   }}
                   disabled={!hasPhoto || isMe}
-                  className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
+                  className={styles.avatarButton(hasPhoto && !isMe)}
                 >
                   {friend.avatar}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate ${isMe ? 'text-[#7f0df2]' : 'text-[#f1f5f9]'}`}>
-                    {friend.name}{isMe && <span className="text-[10px] opacity-60 ml-1">(tú)</span>}
-                  </p>
+                </Button>
+                <div className={styles.nameTextWrap}>
+                  <Text size="sm" weight="bold" color={isMe ? 'accent' : 'primary'} className="truncate">
+                    {friend.name}{isMe && <Text as="span" size="10px" className="opacity-60 ml-1">(tú)</Text>}
+                  </Text>
                   {hasPhoto && friend.todayPhotoTimestamp && (
-                    <p className="text-emerald-400 text-xs truncate">
+                    <Text size="xs" color="success" className="truncate">
                       Fue al gym hoy {formatTimeChile(friend.todayPhotoTimestamp)} hrs
-                    </p>
+                    </Text>
                   )}
                 </div>
-                <div className="text-right shrink-0">
-                  <p className={`text-lg font-black leading-none ${metric >= WEEKLY_GOAL ? 'text-emerald-400' : 'text-[#f1f5f9]'}`}>
+                <div className={styles.metricWrap}>
+                  <Text size="lg" weight="black" color={metric >= WEEKLY_GOAL ? 'success' : 'primary'} className="leading-none">
                     {metric}
-                  </p>
-                  <p className="text-[#64748b] text-[10px]">/ {WEEKLY_GOAL}</p>
+                  </Text>
+                  <Text size="10px" color="muted">/ {WEEKLY_GOAL}</Text>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <p className="text-[#64748b] text-sm text-center py-6">
+        <Text size="sm" color="muted" className="text-center py-6">
           Agrega amigos para ver su actividad aquí.
-        </p>
+        </Text>
       )}
     </>
   );

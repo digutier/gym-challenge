@@ -7,6 +7,10 @@ import StoryViewer from '../StoryViewer';
 import RankingList from './RankingList';
 import { User, EntryData, WeekEntry, UserStats } from '@/types';
 import { WEEKLY_GOAL } from '@/lib/stats';
+import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { homeTab as styles } from './styles';
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
@@ -74,163 +78,168 @@ export default function HomeTab({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 lg:gap-6 lg:max-w-[1280px] lg:w-full lg:mx-auto lg:px-6 lg:py-2">
+    <div className={styles.root}>
       {/* Left column: hero card + week grid + ranking (mobile) */}
-      <div className="flex flex-col gap-4 pb-6 flex-1 lg:pb-2 min-w-0">
+      <div className={styles.leftColumn}>
       {/* Hero card */}
       {hasEntryToday && entry ? (
-        <div className="relative overflow-hidden rounded-3xl mx-4 lg:mx-0 lg:h-[500px] shadow-[0px_20px_25px_-5px_rgba(127,13,242,0.35)] bg-black">
+        <div className={styles.heroCard}>
+          {/* Intentionally not next/image: intrinsic aspect-ratio sizing on
+              mobile vs absolute fill on desktop, with object-fit also
+              branching on photo orientation — too much layout risk to
+              restructure without visual verification. See StoryViewer/
+              PastDayModal for the migrated pattern. */}
           <img
             src={photoUrl}
             alt="Foto del gym"
             onLoad={handleImageLoad}
-            className={`w-full lg:absolute lg:inset-0 lg:h-full lg:w-full lg:object-contain ${isHorizontal ? 'max-h-64 object-contain' : 'aspect-[3/4] object-cover'}`}
+            className={styles.heroImage(isHorizontal)}
           />
 
           {/* Delete FAB — top left */}
-          <button
+          <Button
             onClick={onRequestDelete}
-            className="absolute top-4 left-4 z-10 rounded-full size-10 flex items-center justify-center bg-black/60 backdrop-blur-md active:scale-95 transition-transform"
+            className={styles.deleteFab}
           >
             <Trash2 className="w-4 h-4 text-white" />
-          </button>
+          </Button>
 
           {/* PHOTO UPLOADED badge */}
-          <div className="absolute top-4 right-2 flex items-center gap-2 bg-black/75 backdrop-blur-md px-4 py-2 rounded-full z-10">
-            <div className="bg-[#7f0df2] rounded-full size-5 flex items-center justify-center shrink-0">
+          <div className={styles.uploadedBadge}>
+            <div className={styles.uploadedBadgeIcon}>
               <Check className="w-3 h-3 text-white" strokeWidth={3} />
             </div>
-            <span className="text-white text-xs font-bold tracking-widest uppercase whitespace-nowrap">¡Hoy!</span>
+            <span className={styles.uploadedBadgeText}>¡Hoy!</span>
           </div>
 
           {/* Bottom gradient overlay — text left, button right, no overlap */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent px-5 pt-20 pb-5 flex items-end justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-3xl font-black italic leading-tight uppercase">
+          <div className={styles.heroBottomOverlay}>
+            <div className={styles.heroBottomTextWrap}>
+              <p className={styles.heroTitle}>
                 ¡Bien hecho, {user.name}!
               </p>
-              <div className="flex items-center gap-2 mt-2">
-                <Zap className="w-5 h-5 text-[#7f0df2] fill-[#7f0df2] shrink-0" />
-                <span className="text-white/90 text-base font-semibold">{getWeekMotivation(currentWeekActiveDays)}</span>
+              <div className={styles.heroMotivationRow}>
+                <Zap className={styles.heroMotivationIcon} />
+                <span className={styles.heroMotivationText}>{getWeekMotivation(currentWeekActiveDays)}</span>
               </div>
             </div>
             {/* Cambiar foto — solo visible en desktop (en mobile lo maneja el FAB) */}
-            <button
+            <Button
               onClick={onRequestOverwrite}
-              className="hidden lg:flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 text-white text-sm font-semibold px-4 py-2.5 rounded-2xl hover:bg-white/25 active:scale-95 transition-all shrink-0"
+              className={styles.changePhotoButton}
             >
               <Camera className="w-4 h-4" />
               Cambiar
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
         <div
-          className="mx-4 lg:mx-0 relative overflow-hidden flex flex-col gap-4 items-start p-6 rounded-3xl shadow-[0px_20px_25px_-5px_rgba(127,13,242,0.2),0px_8px_10px_-6px_rgba(127,13,242,0.2)]"
-          style={{ background: 'linear-gradient(151deg, rgb(127,13,242) 0%, rgba(127,13,242,0.8) 50%, rgb(79,70,229) 100%)' }}
+          className={styles.ctaCard}
+          style={styles.ctaCardBackground}
         >
-          <div className="absolute bg-white/10 blur-[32px] -right-12 -top-12 rounded-full size-48 pointer-events-none" />
+          <div className={styles.ctaGlow} />
 
-          <div className="flex items-start justify-between w-full relative">
-            <div className="flex flex-col gap-1 flex-1 pr-4">
-              <h2 className="text-white text-2xl font-bold leading-tight">¡Anda al GYM CTM!</h2>
-              <p className="text-white/80 text-sm leading-5">Captura tu ida del día.</p>
+          <div className={styles.ctaHeaderRow}>
+            <div className={styles.ctaTextWrap}>
+              <h2 className={styles.ctaTitle}>¡Anda al GYM CTM!</h2>
+              <p className={styles.ctaSubtitle}>Captura tu ida del día.</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0">
+            <div className={styles.ctaIconWrap}>
               <Camera className="w-6 h-6 text-white" />
             </div>
           </div>
 
-          <div className="w-full relative">
+          <div className={styles.ctaButtonWrap}>
             <PhotoUpload onUploadComplete={onUploadComplete} variant="cta" />
           </div>
         </div>
       )}
 
       {/* This Week */}
-      <div className="flex flex-col gap-4 px-4 lg:px-0 pt-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[#f1f5f9] text-lg font-bold">{isCurrentWeek ? 'Esta semana' : weekLabel}</h3>
-          <span className="text-[#7f0df2] text-xs font-semibold tracking-[1.2px] uppercase">
+      <div className={styles.weekSection}>
+        <div className={styles.weekHeaderRow}>
+          <Heading as="h3" size="lg">{isCurrentWeek ? 'Esta semana' : weekLabel}</Heading>
+          <Text as="span" size="xs" color="accent" weight="semibold" className="tracking-[1.2px] uppercase">
             {cappedActiveDays}/{WEEKLY_GOAL} Idas al GYM 💪
-          </span>
+          </Text>
         </div>
 
         {!loading && weekEntries.length > 0 ? (
           <>
-            <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-between px-4 py-4 rounded-3xl">
+            <div className={styles.weekGridContainer}>
               {weekEntries.map((dayEntry, i) => {
                 const isToday = dayEntry.date === today;
                 const isPast = dayEntry.date < today;
                 const isFuture = dayEntry.date > today;
 
                 return (
-                  <button
+                  <Button
                     key={dayEntry.date}
                     onClick={() => isPast && onSelectDate(dayEntry.date)}
                     disabled={!isPast}
-                    className="flex flex-col items-center gap-2"
+                    className={styles.dayButton}
                   >
-                    <span className={`text-[10px] font-bold uppercase ${isToday ? 'text-[#7f0df2]' : 'text-[#64748b]'}`}>
+                    <Text as="span" size="10px" weight="bold" color={isToday ? 'accent' : 'muted'} className="uppercase">
                       {DAY_LABELS[i]}
-                    </span>
+                    </Text>
                     {isFuture || (isToday && !dayEntry.registered) ? (
-                      <div className="border-2 border-dashed border-[#334155] rounded-full size-9" />
+                      <div className={styles.dayCircleFuture} />
                     ) : isToday && dayEntry.registered ? (
-                      <div className="relative bg-[#7f0df2] rounded-full size-9 flex items-center justify-center shadow-[0px_0px_0px_4px_rgba(127,13,242,0.2)]">
+                      <div className={styles.dayCircleTodayDone}>
                         <Check className="w-[14px] h-[14px] text-white" strokeWidth={3} />
                       </div>
                     ) : dayEntry.registered ? (
-                      <div className="bg-[rgba(127,13,242,0.2)] rounded-full size-9 flex items-center justify-center">
+                      <div className={styles.dayCirclePastDone}>
                         <Check className="w-[14px] h-[14px] text-[#7f0df2]" strokeWidth={3} />
                       </div>
                     ) : (
-                      <div className="bg-[#1e293b] rounded-full size-9 flex items-center justify-center">
+                      <div className={styles.dayCircleMissed}>
                         <XIcon className="w-[14px] h-[14px] text-[#64748b]" strokeWidth={2.5} />
                       </div>
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
             {/* Week navigation */}
-            <div className="flex items-center justify-between -mt-1">
-              <button
+            <div className={styles.weekNavRow}>
+              <Button
                 onClick={onWeekPrev}
                 disabled={!canGoPrev}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoPrev ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
+                className={styles.weekNavButton(canGoPrev)}
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 Anterior
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={onWeekNext}
                 disabled={!canGoNext}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoNext ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
+                className={styles.weekNavButton(canGoNext)}
               >
                 Siguiente
                 <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
           </>
         ) : loading ? (
-          <div className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl h-20 animate-pulse" />
+          <div className={styles.weekGridSkeleton} />
         ) : null}
       </div>
 
       {/* Ranking Semanal — sólo visible en mobile */}
-      <div className="lg:hidden flex flex-col gap-4 px-4">
-        <h3 className="text-[#f1f5f9] text-lg font-bold">Ranking Semanal</h3>
+      <div className={styles.rankingSectionMobile}>
+        <Heading as="h3" size="lg">Ranking Semanal</Heading>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 
       </div>{/* /left column */}
 
       {/* Right column: ranking semanal — sólo visible en desktop (lg+) */}
-      <div className="hidden lg:flex flex-col gap-4 w-[280px] shrink-0 pb-6">
-        <h3 className="text-[#f1f5f9] text-base font-bold">Ranking Semanal</h3>
+      <div className={styles.rankingSectionDesktop}>
+        <Heading as="h3" size="base">Ranking Semanal</Heading>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 

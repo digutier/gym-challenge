@@ -34,16 +34,24 @@ export function getTodayDate(): string {
   return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 }
 
+const MONTH_NAMES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
 /**
  * Obtiene el nombre del mes actual en español con primera letra mayúscula (hora de Chile)
  */
 export function getCurrentMonthName(): string {
-  const months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
   const chileDate = getChileDate();
-  return months[chileDate.getMonth()];
+  return MONTH_NAMES[chileDate.getMonth()];
+}
+
+/**
+ * Nombre de mes en español a partir de su índice (0 = enero)
+ */
+export function getMonthName(monthIndex: number): string {
+  return MONTH_NAMES[monthIndex];
 }
 
 /**
@@ -165,6 +173,15 @@ export function formatDate(dateStr: string): string {
     day: 'numeric',
     month: 'long',
   });
+}
+
+/**
+ * Formatea una fecha corta para badges (ej: "12 ago")
+ */
+export function formatShortDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T12:00:00');
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${date.getDate()} ${months[date.getMonth()]}`;
 }
 
 /**

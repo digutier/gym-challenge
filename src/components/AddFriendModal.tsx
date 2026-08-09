@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { addFriendModal as styles } from '@/components/styles/modals';
 
 interface AddFriendModalProps {
   onClose: () => void;
@@ -42,27 +47,24 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[#1e1130] border border-[rgba(255,255,255,0.08)] rounded-3xl p-6 w-full max-w-sm flex flex-col gap-5 shadow-2xl">
-
-        {/* Header */}
-        <div className="flex flex-col gap-1">
-          <p className="text-[#f1f5f9] text-lg font-bold">Agregar amigo</p>
-          <p className="text-[#94a3b8] text-sm">Invita a tu amigo registrado por email</p>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Agregar amigo</DialogTitle>
+          <DialogDescription>Invita a tu amigo registrado por email</DialogDescription>
+        </DialogHeader>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[#64748b] text-[11px] font-semibold uppercase tracking-widest">
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.fieldWrap}>
+            <Text as="label" size="11px" color="muted" weight="semibold" className="uppercase tracking-widest">
               Email del amigo
-            </label>
-            <input
+            </Text>
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-2xl text-[#f1f5f9] placeholder:text-[#334155] outline-none focus:border-[#7f0df2] focus:ring-1 focus:ring-[#7f0df2] transition-all text-sm"
+              className={styles.emailInput}
               placeholder="amigo@email.com"
               required
               autoFocus
@@ -70,29 +72,29 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
           </div>
 
           {error && (
-            <div className="px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl">
-              <p className="text-red-400 text-xs">{error}</p>
+            <div className={styles.errorBox}>
+              <Text size="xs" color="danger">{error}</Text>
             </div>
           )}
 
           {success && (
-            <div className="px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-              <p className="text-emerald-400 text-xs">{success}</p>
+            <div className={styles.successBox}>
+              <Text size="xs" color="success">{success}</Text>
             </div>
           )}
 
-          <div className="flex gap-3 mt-1">
-            <button
+          <div className={styles.buttonRow}>
+            <Button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
+              className={styles.cancelButton}
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+              className={styles.submitButton}
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -102,10 +104,10 @@ export default function AddFriendModal({ onClose }: AddFriendModalProps) {
                   Enviar
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
