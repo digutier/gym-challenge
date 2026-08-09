@@ -3,6 +3,7 @@ import { capDays, WEEKLY_GOAL } from '@/lib/stats';
 import { formatTimeChile } from '@/lib/date';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { rankingList as styles } from './styles';
 
 interface RankingListProps {
   ranking: UserStats[];
@@ -39,13 +40,13 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
   return (
     <>
       {loading ? (
-        <div className="flex flex-col gap-3">
+        <div className={styles.skeletonWrap}>
           {[1, 2, 3].map(i => (
-            <div key={i} className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-3xl h-[74px] animate-pulse" />
+            <div key={i} className={styles.skeletonRow} />
           ))}
         </div>
       ) : friendActivity.length > 0 ? (
-        <div className="flex flex-col gap-3">
+        <div className={styles.listWrap}>
           {friendActivity.map((friend, idx) => {
             const isMe = friend.id === currentUserId;
             const hasPhoto = !!friend.todayPhotoUrl;
@@ -54,9 +55,9 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
             return (
               <div
                 key={friend.id}
-                className={`backdrop-blur-[5px] flex items-center gap-3 p-[13px] rounded-3xl ${isMe ? 'bg-[rgba(127,13,242,0.15)] ring-1 ring-[rgba(127,13,242,0.4)]' : 'bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]'}`}
+                className={styles.row(isMe)}
               >
-                <div className="w-7 flex items-center justify-center shrink-0 text-lg leading-none">
+                <div className={styles.rankIconWrap}>
                   {rankIcon(rank)}
                 </div>
                 <Button
@@ -64,11 +65,11 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                     if (hasPhoto && !isMe) { onAvatarClick(friend); }
                   }}
                   disabled={!hasPhoto || isMe}
-                  className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] disabled:opacity-100 ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
+                  className={styles.avatarButton(hasPhoto && !isMe)}
                 >
                   {friend.avatar}
                 </Button>
-                <div className="flex-1 min-w-0">
+                <div className={styles.nameTextWrap}>
                   <Text size="sm" weight="bold" color={isMe ? 'accent' : 'primary'} className="truncate">
                     {friend.name}{isMe && <Text as="span" size="10px" className="opacity-60 ml-1">(tú)</Text>}
                   </Text>
@@ -78,7 +79,7 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                     </Text>
                   )}
                 </div>
-                <div className="text-right shrink-0">
+                <div className={styles.metricWrap}>
                   <Text size="lg" weight="black" color={metric >= WEEKLY_GOAL ? 'success' : 'primary'} className="leading-none">
                     {metric}
                   </Text>
