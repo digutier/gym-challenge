@@ -1,0 +1,17 @@
+export const authScreen = {
+  root: 'min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center p-4',
+  card: 'bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full',
+  header: 'text-center mb-8',
+  headerEmoji: 'text-6xl mb-4',
+  headerTitle: 'text-3xl font-bold text-gray-800 mb-2',
+  headerSubtitle: 'text-gray-600',
+  form: 'space-y-4',
+  fieldLabel: 'block text-sm font-medium text-gray-700 mb-1',
+  input: 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none text-gray-900',
+  passwordHint: 'text-xs text-gray-500 mt-1',
+  errorBox: 'bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm',
+  successBox: 'bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm',
+  submitButton: 'w-full bg-gradient-to-r from-violet-500 to-purple-600 text-white py-3 rounded-xl font-semibold text-lg hover:scale-105 transition-transform active:scale-95 disabled:opacity-50 disabled:scale-100 h-14',
+  toggleWrap: 'mt-6 text-center',
+  toggleButton: 'text-violet-600 hover:text-violet-700 text-sm font-medium',
+};

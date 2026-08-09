@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { serviceWorkerRegister as styles } from './ServiceWorkerRegister.styles';
 
 export default function ServiceWorkerRegister() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -78,15 +79,15 @@ export default function ServiceWorkerRegister() {
   }
 
   return (
-    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[90%] w-auto animate-[slideUp_0.4s_ease-out]">
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm">🎉 Nueva versión disponible</p>
-        <p className="text-white/70 text-xs">Actualiza para ver los últimos cambios</p>
+    <div className={styles.toast}>
+      <div className={styles.textWrap}>
+        <p className={styles.title}>🎉 Nueva versión disponible</p>
+        <p className={styles.subtitle}>Actualiza para ver los últimos cambios</p>
       </div>
-      
+
       <Button
         onClick={applyUpdate}
-        className="flex items-center gap-2 bg-white text-purple-600 px-4 py-2 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-transform shadow-lg flex-shrink-0"
+        className={styles.updateButton}
       >
         <RefreshCw className="w-4 h-4" />
         Actualizar
@@ -94,7 +95,7 @@ export default function ServiceWorkerRegister() {
 
       <Button
         onClick={() => setUpdateAvailable(false)}
-        className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors flex-shrink-0"
+        className={styles.dismissButton}
       >
         <X className="w-4 h-4" />
       </Button>
