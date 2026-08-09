@@ -28,14 +28,17 @@ gym-challenge/
 │   │       └── progress/               # Private body-progress photos — see Progress Photos below
 │   │           ├── route.ts            #   GET today's entry (signed photo URLs)
 │   │           ├── photo/route.ts      #   POST upload / DELETE remove one body-part photo
-│   │           └── details/route.ts    #   POST save note + weight
+│   │           ├── details/route.ts    #   POST save note + weight
+│   │           └── history/route.ts    #   GET last N days (batch-signed), newest first
 │   ├── components/
 │   │   ├── AuthScreen.tsx              # Login/signup screen (+ AuthScreen.styles.ts)
 │   │   ├── Dashboard.tsx               # Dashboard shell: nav, modals, tab routing
 │   │   ├── dashboard/
 │   │   │   ├── HomeTab.tsx             # Home tab: hero card, week grid, mobile/desktop ranking
-│   │   │   ├── ProgressTab.tsx         # Progreso tab: body-part photo capture + note + weight
+│   │   │   ├── ProgressTab.tsx         # Progreso tab: body-part photo capture + note + weight + history
 │   │   │   ├── ProgressPhotoSlot.tsx   # Single body-part photo box (empty/loading/preview states)
+│   │   │   ├── ProgressHistoryGallery.tsx  # Horizontal scroll strip of past days for one body part
+│   │   │   ├── ProgressHistoryViewer.tsx   # Full-screen swipeable viewer (photo + note + weight)
 │   │   │   ├── FeedTab.tsx             # Feed tab: period-selectable global ranking
 │   │   │   ├── ProfileTab.tsx          # Profile tab: stats + friends/logout actions
 │   │   │   ├── RankingList.tsx         # Shared top-5 weekly ranking list (mobile + desktop)
@@ -61,7 +64,8 @@ gym-challenge/
 │   │   ├── useWeekNavigation.ts        # Selected week state + prev/next/label derivation
 │   │   ├── useDashboardStats.ts        # Week entries + ranking fetch/refresh
 │   │   ├── useFriendRequests.ts        # Pending requests + friends fetch/refresh
-│   │   └── useProgressEntry.ts         # Today's progress entry fetch/upload/delete/save
+│   │   ├── useProgressEntry.ts         # Today's progress entry fetch/upload/delete/save
+│   │   └── useProgressHistory.ts       # Last N days of progress entries fetch/refresh
 │   ├── contexts/
 │   │   └── AuthContext.tsx             # Supabase session auth state (see Auth Model below)
 │   ├── lib/
@@ -164,7 +168,8 @@ Standard Supabase email/password session auth via `@supabase/ssr` — not token-
 - **Photo upload**: Client compresses → POST to `/api/upload` with FormData → stored in Supabase Storage as `{user_id}/{date}.jpg` → upsert `gym_entries`
 - **Check registration**: GET `/api/user-stats?token=` returns today's entry status
 - **Ranking**: GET `/api/all-stats` returns all users sorted by `daysThisWeek`
-- **Progress photos** (private, per-user only — see Auth Model): client compresses → POST to `/api/progress/photo` (FormData `{ part, photo }`) → stored in the **private** `progress-photos` bucket as `{user_id}/{date}/{part}.jpg` (`upsert: true`, no manual delete-then-upload needed since paths are deterministic) → upsert `progress_entries`. Photo columns store storage **paths**, never public URLs — every read (`GET /api/progress`, and both `/api/progress/photo` responses) re-signs each path via `createSignedUrl()` (1h expiry) through `lib/progress.ts`'s `toProgressEntry()`. Note/weight save separately via `POST /api/progress/details`.
+- **Progress photos** (private, per-user only — see Auth Model): client compresses → POST to `/api/progress/photo` (FormData `{ part, photo }`) → stored in the **private** `progress-photos` bucket as `{user_id}/{date}/{part}.jpg` (`upsert: true`, no manual delete-then-upload needed since paths are deterministic) → upsert `progress_entries`. Photo columns store storage **paths**, never public URLs — every read re-signs each path (1h expiry) through `lib/progress.ts`: `toProgressEntry()` for single-day routes (`GET /api/progress`, `/api/progress/photo`, `/api/progress/details`), `toProgressEntries()` for the batch `GET /api/progress/history` (one `createSignedUrls()` call for the whole page, not N). Note/weight save separately via `POST /api/progress/details`.
+- **Progress history gallery**: `ProgressTab` renders `ProgressHistoryGallery` (horizontal scroll strip, newest first, `BODY_PARTS` order drives both the upload tabs and this) filtered client-side to the selected body part from one `/api/progress/history` fetch (`useProgressHistory`) — tapping a thumbnail opens `ProgressHistoryViewer`, a full-screen swipeable viewer (touch delta + arrow buttons) showing that day's note/weight below the photo.
 
 ## Git Conventions
 

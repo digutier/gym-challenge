@@ -168,6 +168,15 @@ export function formatDate(dateStr: string): string {
 }
 
 /**
+ * Formatea una fecha corta para badges (ej: "12 ago")
+ */
+export function formatShortDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T12:00:00');
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${date.getDate()} ${months[date.getMonth()]}`;
+}
+
+/**
  * Formatea un timestamp ISO a hora chilena (ej: "14:30")
  */
 export function formatTimeChile(timestamp: string): string {

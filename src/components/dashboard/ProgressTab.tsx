@@ -7,17 +7,40 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
 import ProgressPhotoSlot from './ProgressPhotoSlot';
+import ProgressHistoryGallery from './ProgressHistoryGallery';
+import ProgressHistoryViewer from './ProgressHistoryViewer';
 import { useProgressEntry } from '@/hooks/useProgressEntry';
+import { useProgressHistory } from '@/hooks/useProgressHistory';
 import { BODY_PARTS, BODY_PART_LABELS, BodyPart, PROGRESS_NOTE_MAX_LENGTH } from '@/lib/constants';
 import { progressTab as styles } from './styles';
 
 export default function ProgressTab() {
   const { entry, loading, uploadingPart, savingDetails, error, uploadPhoto, deletePhoto, saveDetails } = useProgressEntry();
-  const [selectedPart, setSelectedPart] = useState<BodyPart>('back');
+  const { entries: historyEntries, loading: historyLoading, refresh: refreshHistory } = useProgressHistory();
+  const [selectedPart, setSelectedPart] = useState<BodyPart>(BODY_PARTS[0]);
   const [note, setNote] = useState('');
   const [weight, setWeight] = useState('');
   const [savedFlash, setSavedFlash] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
+  const handlePartChange = (value: string) => {
+    setSelectedPart(value as BodyPart);
+    setViewerIndex(null);
+  };
+
+  const handleUploadPhoto = async (file: Blob) => {
+    await uploadPhoto(selectedPart, file);
+    refreshHistory();
+  };
+
+  const handleDeletePhoto = async () => {
+    await deletePhoto(selectedPart);
+    refreshHistory();
+  };
+
+  const partHistoryEntries = historyEntries.filter((e) => e.photos[selectedPart]);
 
   // Sync local drafts once the entry loads from the server. Guarded on
   // `loading` (not `entry`) so it only runs once per fetch, not on every
@@ -43,7 +66,7 @@ export default function ProgressTab() {
 
   return (
     <div className={styles.root}>
-      <Tabs value={selectedPart} onValueChange={(v) => setSelectedPart(v as BodyPart)}>
+      <Tabs value={selectedPart} onValueChange={handlePartChange}>
         <TabsList className={styles.partTabsList}>
           {BODY_PARTS.map((part) => (
             <TabsTrigger key={part} value={part} className={styles.partTabTrigger}>
@@ -58,8 +81,8 @@ export default function ProgressTab() {
           key={selectedPart}
           photoUrl={entry.photos[selectedPart]}
           uploading={uploadingPart === selectedPart}
-          onUpload={(file) => uploadPhoto(selectedPart, file)}
-          onDelete={() => deletePhoto(selectedPart)}
+          onUpload={handleUploadPhoto}
+          onDelete={handleDeletePhoto}
         />
       </div>
 
@@ -112,6 +135,26 @@ export default function ProgressTab() {
 
       {savedFlash && (
         <p className={styles.saveHint}>¡Guardado!</p>
+      )}
+
+      <div className={styles.historySection}>
+        <Heading as="h3" size="lg">Historial</Heading>
+        <ProgressHistoryGallery
+          entries={partHistoryEntries}
+          part={selectedPart}
+          loading={historyLoading}
+          onSelect={setViewerIndex}
+        />
+      </div>
+
+      {viewerIndex !== null && (
+        <ProgressHistoryViewer
+          entries={partHistoryEntries}
+          part={selectedPart}
+          index={viewerIndex}
+          onClose={() => setViewerIndex(null)}
+          onNavigate={setViewerIndex}
+        />
       )}
     </div>
   );
