@@ -77,6 +77,9 @@ export default function ProgressTab() {
       </Tabs>
 
       <div className={styles.photoSectionWrap}>
+        <Text as="label" size="11px" color="muted" weight="semibold" className="uppercase tracking-widest">
+          Foto del día
+        </Text>
         <ProgressPhotoSlot
           key={selectedPart}
           photoUrl={entry.photos[selectedPart]}
