@@ -36,3 +36,17 @@ export const ringToday = 'ring-[3px] ring-emerald-400';
 // Bordered, transparent "Cancelar"-style button — identical across every
 // confirm dialog in the app.
 export const cancelButton = 'flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold';
+
+// Pill-style Tabs selector (period toggle in FeedTab, body-part toggle in
+// ProgressTab) — same look, different item counts.
+export const pillTabsList = 'bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-2xl p-1 gap-1';
+export const pillTabTrigger = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-[#64748b] data-[state=active]:bg-[#7f0df2] data-[state=active]:text-white data-[state=active]:shadow-[0px_2px_8px_rgba(127,13,242,0.4)]';
+
+// Dark-themed form field (input/textarea) — the app's one non-AuthScreen
+// text-entry look, reused by AddFriendModal's email field and ProgressTab's
+// note/weight fields.
+export const fieldInput = 'w-full px-4 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-2xl text-[#f1f5f9] placeholder:text-[#334155] outline-none focus:border-[#7f0df2] focus:ring-1 focus:ring-[#7f0df2] transition-all text-sm';
+
+// Inline error/success message boxes — identical across every form in the app.
+export const errorBox = 'px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl';
+export const successBox = 'px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl';

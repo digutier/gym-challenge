@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { surfaceSubtleAlt, iconCircleButton, cancelButton } from '@/components/styles/shared';
+import { surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox } from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
 export const modalHeaderRow = 'flex items-center justify-between';
@@ -13,9 +13,9 @@ export const modalRowTextWrap = 'flex-1 min-w-0';
 export const addFriendModal = {
   form: 'flex flex-col gap-3',
   fieldWrap: 'flex flex-col gap-1.5',
-  emailInput: 'w-full px-4 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-2xl text-[#f1f5f9] placeholder:text-[#334155] outline-none focus:border-[#7f0df2] focus:ring-1 focus:ring-[#7f0df2] transition-all text-sm',
-  errorBox: 'px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl',
-  successBox: 'px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl',
+  emailInput: fieldInput,
+  errorBox,
+  successBox,
   buttonRow: 'flex gap-3 mt-1',
   cancelButton,
   submitButton: 'flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)] disabled:opacity-50 flex items-center justify-center gap-2',

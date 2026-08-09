@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Home, User, Trophy, Loader2, CalendarDays } from 'lucide-react';
+import { Home, User, Trophy, Loader2, TrendingUp } from 'lucide-react';
 import PhotoUpload, { PhotoUploadHandle } from './PhotoUpload';
 import AddFriendModal from './AddFriendModal';
 import NotificationsModal from './NotificationsModal';
@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import HomeTab from './dashboard/HomeTab';
-import WorkoutsTab from './dashboard/WorkoutsTab';
+import ProgressTab from './dashboard/ProgressTab';
 import FeedTab from './dashboard/FeedTab';
 import ProfileTab from './dashboard/ProfileTab';
 import { EntryData, User as UserType } from '@/types';
@@ -29,7 +29,7 @@ import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
 import { appRoot, sidebar, mainArea, mobileTopNav, desktopTopBar, main, mobileBottomNav, confirmDialogs } from '@/components/styles/shell';
 
-type Tab = 'home' | 'workouts' | 'feed' | 'profile';
+type Tab = 'home' | 'progress' | 'feed' | 'profile';
 
 interface DashboardProps {
   user: UserType;
@@ -96,7 +96,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
   const TAB_LABELS: Record<Tab, string> = {
     home: 'Dashboard',
-    workouts: 'Registros',
+    progress: 'Progreso',
     feed: 'Ranking Global',
     profile: 'Mi Perfil',
   };
@@ -129,7 +129,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
             {(
               [
                 { tab: 'home' as Tab, icon: <Home className="w-[18px] h-[18px]" />, label: 'Inicio' },
-                { tab: 'workouts' as Tab, icon: <CalendarDays className="w-[18px] h-[18px]" />, label: 'Registros' },
+                { tab: 'progress' as Tab, icon: <TrendingUp className="w-[18px] h-[18px]" />, label: 'Progreso' },
                 { tab: 'feed' as Tab, icon: <Trophy className="w-[18px] h-[18px]" />, label: 'Ranking' },
                 { tab: 'profile' as Tab, icon: <User className="w-[18px] h-[18px]" />, label: 'Perfil' },
               ] as const
@@ -217,8 +217,8 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 currentUserId={user.id}
               />
             </TabsContent>
-            <TabsContent value="workouts">
-              <WorkoutsTab />
+            <TabsContent value="progress">
+              <ProgressTab />
             </TabsContent>
             <TabsContent value="feed">
               <FeedTab ranking={ranking} loading={loading} currentUserId={user.id} />
@@ -266,10 +266,10 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 <Text as="span" size="12px" weight="bold" color={activeTab === 'home' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Inicio</Text>
               </TabsTrigger>
 
-              {/* Workouts */}
-              <TabsTrigger value="workouts" className={mobileBottomNav.trigger}>
-                <CalendarDays className={mobileBottomNav.icon(activeTab === 'workouts')} />
-                <Text as="span" size="12px" weight="bold" color={activeTab === 'workouts' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Registros</Text>
+              {/* Progreso */}
+              <TabsTrigger value="progress" className={mobileBottomNav.trigger}>
+                <TrendingUp className={mobileBottomNav.icon(activeTab === 'progress')} />
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'progress' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Progreso</Text>
               </TabsTrigger>
 
               {/* Spacer for FAB column */}

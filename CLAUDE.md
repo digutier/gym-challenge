@@ -24,40 +24,55 @@ gym-challenge/
 │   │       ├── friends/request/route.ts   # POST send friend request by email
 │   │       ├── friends/respond/route.ts   # POST accept/decline request
 │   │       ├── friends/remove/route.ts    # POST remove friendship
-│   │       └── users/search/route.ts   # Search users by email
+│   │       ├── users/search/route.ts   # Search users by email
+│   │       └── progress/               # Private body-progress photos — see Progress Photos below
+│   │           ├── route.ts            #   GET today's entry (signed photo URLs)
+│   │           ├── photo/route.ts      #   POST upload / DELETE remove one body-part photo
+│   │           └── details/route.ts    #   POST save note + weight
 │   ├── components/
-│   │   ├── AuthScreen.tsx              # Login/signup screen
+│   │   ├── AuthScreen.tsx              # Login/signup screen (+ AuthScreen.styles.ts)
 │   │   ├── Dashboard.tsx               # Dashboard shell: nav, modals, tab routing
 │   │   ├── dashboard/
 │   │   │   ├── HomeTab.tsx             # Home tab: hero card, week grid, mobile/desktop ranking
-│   │   │   ├── WorkoutsTab.tsx         # Workouts tab (placeholder)
+│   │   │   ├── ProgressTab.tsx         # Progreso tab: body-part photo capture + note + weight
+│   │   │   ├── ProgressPhotoSlot.tsx   # Single body-part photo box (empty/loading/preview states)
 │   │   │   ├── FeedTab.tsx             # Feed tab: period-selectable global ranking
 │   │   │   ├── ProfileTab.tsx          # Profile tab: stats + friends/logout actions
-│   │   │   └── RankingList.tsx         # Shared top-5 weekly ranking list (mobile + desktop)
+│   │   │   ├── RankingList.tsx         # Shared top-5 weekly ranking list (mobile + desktop)
+│   │   │   └── styles.ts               # Tailwind classNames for every file above (see Styling below)
+│   │   ├── styles/                     # Cross-cutting style groups for components with no own folder
+│   │   │   ├── shared.ts               #   Reusable fragments (surfaces, icon-circle button, pill tabs, form fields)
+│   │   │   ├── modals.ts               #   AddFriendModal / NotificationsModal / FriendsListModal
+│   │   │   ├── ranking.ts              #   GroupRanking / PodiumAvatar
+│   │   │   ├── photo-viewer.ts         #   StoryViewer / PastDayModal
+│   │   │   └── shell.ts                #   Dashboard.tsx sidebar/nav/top-bar/confirm-dialogs
 │   │   ├── GroupRanking.tsx            # Podium + list ranking display (used by FeedTab)
 │   │   ├── PodiumAvatar.tsx            # Single podium avatar (rank 1-3)
 │   │   ├── StoryViewer.tsx             # Shared Instagram-style photo story overlay
 │   │   ├── PastDayModal.tsx            # Modal for past day photos
-│   │   ├── PhotoUpload.tsx             # Camera/upload component
+│   │   ├── PhotoUpload.tsx             # Camera/upload component (+ PhotoUpload.styles.ts)
 │   │   ├── AddFriendModal.tsx          # Add friend by email
 │   │   ├── FriendsListModal.tsx        # Friends list + remove
 │   │   ├── NotificationsModal.tsx      # Pending friend requests
-│   │   ├── ServiceWorkerRegister.tsx   # PWA service worker
-│   │   └── ui/                         # shadcn/ui base components (Card currently unused, kept for future use)
+│   │   ├── ServiceWorkerRegister.tsx   # PWA service worker (+ ServiceWorkerRegister.styles.ts)
+│   │   └── ui/                         # shadcn/ui base components (Button, Card, Dialog, AlertDialog,
+│   │                                   #   Tabs, Input, Textarea, Heading, Text)
 │   ├── hooks/
 │   │   ├── useWeekNavigation.ts        # Selected week state + prev/next/label derivation
 │   │   ├── useDashboardStats.ts        # Week entries + ranking fetch/refresh
-│   │   └── useFriendRequests.ts        # Pending requests + friends fetch/refresh
+│   │   ├── useFriendRequests.ts        # Pending requests + friends fetch/refresh
+│   │   └── useProgressEntry.ts         # Today's progress entry fetch/upload/delete/save
 │   ├── contexts/
 │   │   └── AuthContext.tsx             # Supabase session auth state (see Auth Model below)
 │   ├── lib/
 │   │   ├── supabase.ts                 # Supabase clients (browser session + service-role)
 │   │   ├── supabase-server.ts          # Supabase server/SSR session client
 │   │   ├── api-auth.ts                 # Shared API route auth helpers (see Auth Model)
-│   │   ├── constants.ts                # STORAGE_BUCKET
+│   │   ├── constants.ts                # STORAGE_BUCKET, PROGRESS_STORAGE_BUCKET, BODY_PARTS, etc.
 │   │   ├── date.ts                     # Chile-timezone date/week helpers
 │   │   ├── stats.ts                    # WEEKLY_GOAL, capDays, capped-total calculations
 │   │   ├── image.ts                    # Client-side image compression
+│   │   ├── progress.ts                 # Shared progress_entries row → ProgressEntry (signed URLs) mapper
 │   │   └── utils.ts                    # cn() class-merge helper only
 │   └── types/
 │       └── index.ts                    # TypeScript types
@@ -66,7 +81,8 @@ gym-challenge/
 │   └── sw.js                           # Service worker
 └── supabase/
     ├── schema.sql                      # Legacy schema (users/token table — superseded, see below)
-    └── friendships.sql                 # friendships table DDL
+    ├── friendships.sql                 # friendships table DDL
+    └── progress_entries.sql            # progress_entries table DDL + private bucket instructions
 ```
 
 ## Database Schema (Supabase)
@@ -81,7 +97,14 @@ The app queries `profiles` and `friendships` (not the legacy `users` table `sche
 --   See supabase/friendships.sql.
 -- gym_entries: id, user_id (FK), date (DATE), photo_url, created_at, updated_at
 -- Constraint: UNIQUE(user_id, date) — one entry per user per day
--- Storage bucket: "gym-photos" (public)
+-- Storage bucket: "gym-photos" (public — shared with friends via all-stats/day-stats/public-dashboard)
+
+-- progress_entries: id, user_id (FK profiles), date (DATE),
+--   back_photo_path / front_photo_path / arms_photo_path / legs_photo_path (all nullable),
+--   note (TEXT, ≤300 chars), weight_kg (NUMERIC), created_at, updated_at
+-- Constraint: UNIQUE(user_id, date) — one entry per user per day, same shape as gym_entries
+-- Storage bucket: "progress-photos" (PRIVATE — see Progress Photos below)
+-- See supabase/progress_entries.sql.
 ```
 
 ## Auth Model
@@ -97,6 +120,7 @@ Standard Supabase email/password session auth via `@supabase/ssr` — not token-
   - `user-stats/route.ts` combines both: no auth check at all when `?userId=` is supplied, hard auth only when it's omitted.
   - `users/search/route.ts` is a deliberate exception — it inlines its own session check and uses the session client directly for its query/RPC, since its dependency on RLS couldn't be verified before touching it.
 - Mutating DB writes go through `getServiceSupabase()` (service-role, bypasses RLS) in most routes; a few (`upload`, `page.tsx`'s direct `gym_entries` read) use the session-scoped client instead.
+- `progress/*` routes are hard-auth only (`requireAuth()`), never `getOptionalUserId()` — there is no legitimate logged-out or friend view of progress photos. No friend-facing route (`all-stats`, `day-stats`, `public-dashboard`) may ever query `progress_entries`.
 
 ## Code Conventions
 
@@ -126,6 +150,8 @@ Standard Supabase email/password session auth via `@supabase/ssr` — not token-
 - Color palette: indigo-to-purple gradients (primary), green (success), white cards with `rounded-3xl shadow-2xl`
 - Buttons: gradient bg, `rounded-2xl`, `hover:scale-105 active:scale-95 transition-all`
 - shadcn/ui components live in `src/components/ui/`
+- Layout/container `className` strings don't live inline in JSX — they're extracted into a `styles.ts` (or co-located `ComponentName.styles.ts`), grouped per directory/visual-family (see the `dashboard/styles.ts` and `components/styles/*.ts` entries in Project Structure). Plain exported `const` strings for static classes; small exported functions using `cn()` for classes that depend on props/state. Genuinely-repeated fragments (surfaces, icon-circle buttons, pill tabs, form fields, rings) live in `components/styles/shared.ts` and get composed with `cn()` at each call site — check there before inlining a new "reusable-looking" class string.
+- `Text`/`Heading` (`ui/text.tsx`/`ui/heading.tsx`) own color/size/weight — don't hand-roll `text-*`/`font-*` combos outside them except on the light-theme `AuthScreen` and white-on-photo overlays (`StoryViewer`/`PastDayModal`/`HomeTab` hero), which are deliberately excluded.
 
 ### API Routes
 - Always authenticate via the `lib/api-auth.ts` helpers before any operation — see Auth Model above for which variant to use
@@ -138,6 +164,7 @@ Standard Supabase email/password session auth via `@supabase/ssr` — not token-
 - **Photo upload**: Client compresses → POST to `/api/upload` with FormData → stored in Supabase Storage as `{user_id}/{date}.jpg` → upsert `gym_entries`
 - **Check registration**: GET `/api/user-stats?token=` returns today's entry status
 - **Ranking**: GET `/api/all-stats` returns all users sorted by `daysThisWeek`
+- **Progress photos** (private, per-user only — see Auth Model): client compresses → POST to `/api/progress/photo` (FormData `{ part, photo }`) → stored in the **private** `progress-photos` bucket as `{user_id}/{date}/{part}.jpg` (`upsert: true`, no manual delete-then-upload needed since paths are deterministic) → upsert `progress_entries`. Photo columns store storage **paths**, never public URLs — every read (`GET /api/progress`, and both `/api/progress/photo` responses) re-signs each path via `createSignedUrl()` (1h expiry) through `lib/progress.ts`'s `toProgressEntry()`. Note/weight save separately via `POST /api/progress/details`.
 
 ## Git Conventions
 

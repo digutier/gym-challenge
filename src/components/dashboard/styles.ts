@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { surfaceSubtle, ringToday } from '@/components/styles/shared';
+import { surfaceSubtle, ringToday, pillTabsList, pillTabTrigger, fieldInput, errorBox } from '@/components/styles/shared';
 
 // ─── HomeTab ─────────────────────────────────────────────────────────────
 
@@ -58,13 +58,35 @@ export const homeTab = {
   rankingSectionDesktop: 'hidden lg:flex flex-col gap-4 w-[280px] shrink-0 pb-6',
 };
 
-// ─── WorkoutsTab ─────────────────────────────────────────────────────────
+// ─── ProgressTab ─────────────────────────────────────────────────────────
 
-export const workoutsTab = {
-  root: 'flex flex-col items-center justify-center gap-4 px-6 lg:max-w-[800px] lg:mx-auto lg:w-full',
-  rootMinHeight: { minHeight: 'calc(100dvh - 160px)' },
-  iconWrap: 'bg-[rgba(127,13,242,0.1)] rounded-full p-6',
-  textWrap: 'text-center',
+export const progressTab = {
+  root: 'flex flex-col gap-5 px-4 pb-6 pt-4 lg:max-w-[640px] lg:mx-auto lg:w-full lg:px-6',
+  partTabsList: pillTabsList,
+  partTabTrigger: pillTabTrigger,
+  photoSectionWrap: 'flex flex-col gap-3',
+  noteSection: 'flex flex-col gap-2',
+  noteLabelRow: 'flex items-center justify-between',
+  noteCounter: (overLimit: boolean) => (overLimit ? 'text-red-400' : 'text-[#64748b]'),
+  noteTextarea: cn(fieldInput, 'min-h-[100px]'),
+  weightSection: 'flex flex-col gap-2',
+  weightRow: 'flex items-center gap-3',
+  weightInput: cn(fieldInput, 'w-28'),
+  weightUnit: 'text-sm text-[#64748b] font-semibold',
+  saveButton: 'w-full py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)] disabled:opacity-50 flex items-center justify-center gap-2',
+  saveHint: 'text-xs text-emerald-400 text-center',
+  errorBox,
+};
+
+export const progressPhotoSlot = {
+  box: 'relative aspect-[3/4] rounded-3xl overflow-hidden bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]',
+  emptyButton: 'w-full h-full flex flex-col items-center justify-center gap-2 text-[#64748b] disabled:opacity-100',
+  emptyIcon: 'w-8 h-8',
+  loadingOverlay: 'absolute inset-0 flex items-center justify-center bg-black/40 z-10',
+  photoImage: (loading: boolean) => cn('object-cover', loading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'),
+  actionsRow: 'absolute bottom-0 left-0 right-0 flex items-center gap-2 p-3 bg-gradient-to-t from-black/70 to-transparent',
+  retakeButton: 'flex-1 flex items-center justify-center gap-1.5 bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-semibold py-2 rounded-xl active:scale-95 transition-all disabled:opacity-50',
+  deleteButton: 'w-9 h-9 rounded-xl bg-red-500/80 backdrop-blur-md flex items-center justify-center active:scale-95 transition-all disabled:opacity-50',
 };
 
 // ─── FeedTab ─────────────────────────────────────────────────────────────
@@ -73,8 +95,8 @@ export const feedTab = {
   root: 'flex flex-col gap-4 px-4 pb-6 pt-4 lg:max-w-[800px] lg:mx-auto lg:w-full lg:px-6',
   headerRow: 'flex items-center justify-between',
   titleRow: 'flex items-center gap-2',
-  periodTabsList: 'bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] rounded-2xl p-1 gap-1',
-  periodTabTrigger: 'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-[#64748b] data-[state=active]:bg-[#7f0df2] data-[state=active]:text-white data-[state=active]:shadow-[0px_2px_8px_rgba(127,13,242,0.4)]',
+  periodTabsList: pillTabsList,
+  periodTabTrigger: pillTabTrigger,
   skeletonWrap: 'flex flex-col gap-3',
   skeletonRow: 'bg-[rgba(255,255,255,0.03)] rounded-3xl h-16 animate-pulse',
 };
