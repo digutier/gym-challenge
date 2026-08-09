@@ -56,12 +56,12 @@ export default function AuthScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center !p-4">
-      <div className="bg-white !rounded-3xl shadow-2xl !p-8 max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
         {/* Header */}
-        <div className="text-center !mb-8">
-          <div className="!text-6xl !mb-4">🏋️</div>
-          <h1 className="!text-3xl !font-bold text-gray-800 !mb-2">
+        <div className="text-center mb-8">
+          <div className="text-6xl mb-4">🏋️</div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Gym Challenge
           </h1>
           <p className="text-gray-600">
@@ -70,17 +70,17 @@ export default function AuthScreen() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="!space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label className="block !text-sm !font-medium text-gray-700 !mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Nombre
               </label>
               <Input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full !px-4 !py-3 !border !border-gray-300 !rounded-xl focus:!ring-2 focus:!ring-violet-500 focus:!border-transparent outline-none text-gray-900"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none text-gray-900"
                 placeholder="Tu nombre"
                 required
                 minLength={2}
@@ -89,47 +89,47 @@ export default function AuthScreen() {
           )}
 
           <div>
-            <label className="block !text-sm !font-medium text-gray-700 !mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full !px-4 !py-3 !border !border-gray-300 !rounded-xl focus:!ring-2 focus:!ring-violet-500 focus:!border-transparent outline-none text-gray-900"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none text-gray-900"
               placeholder="tu@email.com"
               required
             />
           </div>
 
           <div>
-            <label className="block !text-sm !font-medium text-gray-700 !mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Contraseña
             </label>
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full !px-4 !py-3 !border !border-gray-300 !rounded-xl focus:!ring-2 focus:!ring-violet-500 focus:!border-transparent outline-none text-gray-900"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none text-gray-900"
               placeholder="••••••••"
               required
               minLength={6}
             />
             {mode === 'signup' && (
-              <p className="!text-xs text-gray-500 !mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Mínimo 6 caracteres
               </p>
             )}
           </div>
 
           {error && (
-            <div className="!bg-red-50 !border !border-red-200 text-red-700 !px-4 !py-3 !rounded-xl !text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="!bg-emerald-50 !border !border-emerald-200 text-emerald-700 !px-4 !py-3 !rounded-xl !text-sm">
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm">
               {success}
             </div>
           )}
@@ -137,10 +137,10 @@ export default function AuthScreen() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full !bg-gradient-to-r !from-violet-500 !to-purple-600 !text-white !py-3 !rounded-xl !font-semibold !text-lg hover:!scale-105 transition-transform active:!scale-95 disabled:!opacity-50 disabled:!scale-100 !h-14"
+            className="w-full bg-gradient-to-r from-violet-500 to-purple-600 text-white py-3 rounded-xl font-semibold text-lg hover:scale-105 transition-transform active:scale-95 disabled:opacity-50 disabled:scale-100 h-14"
           >
             {loading ? (
-              <Loader2 className="!w-5 !h-5 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : mode === 'login' ? (
               'Iniciar Sesión'
             ) : (
@@ -150,7 +150,7 @@ export default function AuthScreen() {
         </form>
 
         {/* Toggle mode */}
-        <div className="!mt-6 text-center">
+        <div className="mt-6 text-center">
           <Button
             type="button"
             onClick={() => {
@@ -158,7 +158,7 @@ export default function AuthScreen() {
               setError('');
               setSuccess('');
             }}
-            className="text-violet-600 hover:text-violet-700 !text-sm !font-medium"
+            className="text-violet-600 hover:text-violet-700 text-sm font-medium"
           >
             {mode === 'login'
               ? '¿No tienes cuenta? Regístrate'

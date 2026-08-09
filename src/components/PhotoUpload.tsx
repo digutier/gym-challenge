@@ -177,15 +177,15 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
   // Default loading spinner (original behavior)
   if (isUploading) {
     return (
-      <div className="flex flex-col items-center justify-center !py-12">
+      <div className="flex flex-col items-center justify-center py-12">
         <div className="relative">
-          <div className="!w-24 !h-24 !rounded-full !bg-white/20 flex items-center justify-center">
-            <Loader2 className="!w-12 !h-12 !text-white animate-spin" />
+          <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center">
+            <Loader2 className="w-12 h-12 text-white animate-spin" />
           </div>
-          <div className="absolute inset-0 !rounded-full !border-4 !border-white/30 !border-t-white animate-spin"
+          <div className="absolute inset-0 rounded-full border-4 border-white/30 border-t-white animate-spin"
                style={{ animationDuration: '1.5s' }} />
         </div>
-        <p className="!text-white/80 !mt-4 !font-medium">Subiendo foto...</p>
+        <p className="text-white/80 mt-4 font-medium">Subiendo foto...</p>
       </div>
     );
   }
@@ -205,37 +205,37 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
         <Button
           onClick={triggerFileInput}
           size="lg"
-          className="!rounded-full !px-3 !py-5 !text-base !font-bold !gap-3
-                     !bg-gradient-to-r !from-violet-500 !to-purple-600
-                     hover:!from-violet-600 hover:!to-purple-700
-                     !text-white !shadow-xl !shadow-purple-500/40
-                     hover:!scale-105 active:!scale-95 !transition-all"
+          className="rounded-full px-3 py-5 text-base font-bold gap-3
+                     bg-gradient-to-r from-violet-500 to-purple-600
+                     hover:from-violet-600 hover:to-purple-700
+                     text-white shadow-xl shadow-purple-500/40
+                     hover:scale-105 active:scale-95 transition-all"
         >
-          <Camera className="!w-5 !h-5" />
+          <Camera className="w-5 h-5" />
           Retomar
         </Button>
       ) : (
         <Button
           onClick={triggerFileInput}
-          className="group relative !w-40 !h-40
-                   !bg-gradient-to-br !from-emerald-400 !to-cyan-500
-                   !rounded-full !shadow-2xl !shadow-emerald-500/30
-                   flex flex-col items-center justify-center !gap-2
-                   !transition-all !duration-300 hover:!scale-110 active:!scale-95
-                   hover:!shadow-emerald-500/50"
+          className="group relative w-40 h-40
+                   bg-gradient-to-br from-emerald-400 to-cyan-500
+                   rounded-full shadow-2xl shadow-emerald-500/30
+                   flex flex-col items-center justify-center gap-2
+                   transition-all duration-300 hover:scale-110 active:scale-95
+                   hover:shadow-emerald-500/50"
         >
-          <Camera className="!w-12 !h-12 !text-white group-hover:!scale-110 !transition-transform" />
-          <span className="!text-white !font-bold !text-lg">
+          <Camera className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+          <span className="text-white font-bold text-lg">
             Tomar Foto
           </span>
 
-          <div className="absolute inset-0 !rounded-full !bg-emerald-400 animate-ping !opacity-20" />
+          <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-20" />
         </Button>
       )}
 
       {error && (
-        <div className="!mt-4 !px-4 !py-2 !bg-red-500/20 !border !border-red-500/40 !rounded-xl">
-          <p className="!text-red-200 !text-sm">{error}</p>
+        <div className="mt-4 px-4 py-2 bg-red-500/20 border border-red-500/40 rounded-xl">
+          <p className="text-red-200 text-sm">{error}</p>
         </div>
       )}
     </div>
