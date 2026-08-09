@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox,
-  photoThumbStrip, photoThumbButton, photoThumbImage, photoThumbDateBadge, photoThumbSkeleton,
+  photoThumbImage, photoThumbDateBadge,
 } from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
@@ -39,9 +39,12 @@ export const friendsListModal = {
 };
 
 export const gymHistoryModal = {
-  scrollRow: photoThumbStrip,
-  thumbButton: photoThumbButton,
+  // Vertical-scrolling 4-column grid — unlike ProgressHistoryGallery's
+  // horizontal strip, this modal has room to spare vertically, so a grid
+  // makes far better use of the screen for a photo-heavy history.
+  grid: 'grid grid-cols-4 gap-2 max-h-[60vh] overflow-y-auto pr-1',
+  thumbButton: 'relative aspect-square rounded-2xl overflow-hidden disabled:opacity-100',
   thumbImage: photoThumbImage,
   thumbDateBadge: photoThumbDateBadge,
-  skeletonRow: photoThumbSkeleton,
+  skeletonCell: 'aspect-square rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse',
 };

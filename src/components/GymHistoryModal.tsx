@@ -49,16 +49,16 @@ export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
               </div>
             </div>
           ) : (
-            <div className={styles.scrollRow}>
+            <div className={styles.grid}>
               {loading
-                ? [1, 2, 3].map((i) => <div key={i} className={styles.skeletonRow} />)
+                ? Array.from({ length: 8 }, (_, i) => <div key={i} className={styles.skeletonCell} />)
                 : entries.map((entry, index) => (
                   <Button key={entry.date} onClick={() => setViewerIndex(index)} className={styles.thumbButton}>
                     <Image
                       src={entry.photoUrl}
                       alt={`Foto del gym del ${entry.date}`}
                       fill
-                      sizes="80px"
+                      sizes="(min-width: 1024px) 100px, 25vw"
                       className={styles.thumbImage}
                     />
                     <div className={styles.thumbDateBadge}>{formatShortDate(entry.date)}</div>
