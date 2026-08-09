@@ -67,7 +67,7 @@ export default function ProfileTab({
       <div className="flex flex-col gap-3">
         <Button
           onClick={onShowFriendsList}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-start gap-3 p-4 rounded-2xl text-left"
         >
           <Users className="w-5 h-5 text-[#7f0df2]" />
           <Text as="span" size="sm" weight="semibold">Mis amigos</Text>
@@ -78,7 +78,7 @@ export default function ProfileTab({
 
         <Button
           onClick={onShowAddFriend}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-start gap-3 p-4 rounded-2xl text-left"
         >
           <UserPlus className="w-5 h-5 text-[#7f0df2]" />
           <Text as="span" size="sm" weight="semibold">Agregar amigo</Text>
@@ -86,7 +86,7 @@ export default function ProfileTab({
 
         <Button
           onClick={onShowNotifications}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left relative"
+          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-start gap-3 p-4 rounded-2xl text-left relative"
         >
           <Bell className="w-5 h-5 text-[#7f0df2]" />
           <Text as="span" size="sm" weight="semibold">Solicitudes recibidas</Text>
@@ -99,7 +99,7 @@ export default function ProfileTab({
 
         <Button
           onClick={onLogout}
-          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center gap-3 p-4 rounded-2xl text-left"
+          className="backdrop-blur-[5px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] flex items-center justify-start gap-3 p-4 rounded-2xl text-left"
         >
           <UserIcon className="w-5 h-5 text-red-400" />
           <Text as="span" size="sm" color="danger" weight="semibold">Cerrar sesión</Text>
