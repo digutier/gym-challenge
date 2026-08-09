@@ -177,7 +177,7 @@ export default function HomeTab({
                     key={dayEntry.date}
                     onClick={() => isPast && onSelectDate(dayEntry.date)}
                     disabled={!isPast}
-                    className="flex flex-col items-center gap-2"
+                    className="flex flex-col items-center gap-2 disabled:opacity-100"
                   >
                     <Text as="span" size="10px" weight="bold" color={isToday ? 'accent' : 'muted'} className="uppercase">
                       {DAY_LABELS[i]}
@@ -207,7 +207,7 @@ export default function HomeTab({
               <Button
                 onClick={onWeekPrev}
                 disabled={!canGoPrev}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoPrev ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
+                className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-100 ${canGoPrev ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 Anterior
@@ -216,7 +216,7 @@ export default function HomeTab({
               <Button
                 onClick={onWeekNext}
                 disabled={!canGoNext}
-                className={`flex items-center gap-1 text-xs transition-colors ${canGoNext ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
+                className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-100 ${canGoNext ? 'text-[#94a3b8] hover:text-[#f1f5f9]' : 'text-[#334155] cursor-not-allowed'}`}
               >
                 Siguiente
                 <ChevronRight className="w-3.5 h-3.5" />

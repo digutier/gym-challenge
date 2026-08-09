@@ -94,7 +94,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
         <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="relative bg-[#7f0df2] rounded-full size-[68px] flex items-center justify-center shadow-[0px_0px_0px_5px_#191022,0px_12px_20px_-4px_rgba(127,13,242,0.5),0px_6px_8px_-4px_rgba(127,13,242,0.4)] active:scale-95 transition-transform"
+          className="relative bg-[#7f0df2] rounded-full size-[68px] flex items-center justify-center shadow-[0px_0px_0px_5px_#191022,0px_12px_20px_-4px_rgba(127,13,242,0.5),0px_6px_8px_-4px_rgba(127,13,242,0.4)] active:scale-95 transition-transform disabled:opacity-100"
         >
           {isUploading ? (
             <Loader2 className="w-6 h-6 text-white animate-spin" />
@@ -124,7 +124,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
         <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="bg-[#7f0df2] rounded-full size-14 flex items-center justify-center shadow-[0px_4px_24px_rgba(127,13,242,0.5)] active:scale-95 transition-transform"
+          className="bg-[#7f0df2] rounded-full size-14 flex items-center justify-center shadow-[0px_4px_24px_rgba(127,13,242,0.5)] active:scale-95 transition-transform disabled:opacity-100"
         >
           {isUploading ? (
             <Loader2 className="w-5 h-5 text-white animate-spin" />
@@ -151,7 +151,7 @@ const PhotoUpload = forwardRef<PhotoUploadHandle, PhotoUploadProps>(function Pho
         <Button
           onClick={triggerFileInput}
           disabled={isUploading}
-          className="w-full flex items-center justify-center gap-2 bg-white py-4 rounded-3xl font-bold text-[#7f0df2] text-base shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] active:scale-[0.98] transition-transform"
+          className="w-full flex items-center justify-center gap-2 bg-white py-4 rounded-3xl font-bold text-[#7f0df2] text-base shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] active:scale-[0.98] transition-transform disabled:opacity-100"
         >
           {isUploading ? (
             <>

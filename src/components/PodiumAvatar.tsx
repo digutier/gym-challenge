@@ -50,7 +50,7 @@ export default function PodiumAvatar({
         <Button
           onClick={() => onAvatarClick(u)}
           disabled={!hasPhoto}
-          className={`${avatarSize} rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] ring-[4px] ${ringColors[rank]} ${hasPhoto ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
+          className={`${avatarSize} rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] ring-[4px] ${ringColors[rank]} disabled:opacity-100 ${hasPhoto ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
           style={rank === 1 ? { animation: 'goldGlow 2s ease-in-out infinite' } : undefined}
         >
           <span>{u.avatar}</span>

@@ -119,7 +119,7 @@ export default function GroupRanking({ users, currentUserId, period = 'week' }: 
                 <Button
                   onClick={() => handleAvatarClick(u)}
                   disabled={!hasPhoto}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] text-xl shrink-0 ${hasPhoto ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(127,13,242,0.15)] text-xl shrink-0 disabled:opacity-100 ${hasPhoto ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
                 >
                   {u.avatar}
                 </Button>

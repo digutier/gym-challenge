@@ -64,7 +64,7 @@ export default function RankingList({ ranking, loading, currentUserId, onAvatarC
                     if (hasPhoto && !isMe) { onAvatarClick(friend); }
                   }}
                   disabled={!hasPhoto || isMe}
-                  className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
+                  className={`size-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-[rgba(127,13,242,0.15)] disabled:opacity-100 ${hasPhoto && !isMe ? 'ring-[3px] ring-emerald-400 ring-offset-1 ring-offset-[#191022] cursor-pointer active:scale-95 transition-transform' : ''}`}
                 >
                   {friend.avatar}
                 </Button>
