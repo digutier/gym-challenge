@@ -27,6 +27,7 @@ import { WEEKLY_GOAL } from '@/lib/stats';
 import { useWeekNavigation } from '@/hooks/useWeekNavigation';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
+import { appRoot, sidebar, mainArea, mobileTopNav, desktopTopBar, main, mobileBottomNav, confirmDialogs } from '@/components/styles/shell';
 
 type Tab = 'home' | 'workouts' | 'feed' | 'profile';
 
@@ -107,14 +108,14 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
       <Tabs
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as Tab)}
-        className="min-h-screen bg-[#191022] flex"
+        className={appRoot}
       >
 
         {/* ── DESKTOP SIDEBAR ── oculto en mobile, visible en lg+ */}
-        <aside className="hidden lg:flex flex-col w-[220px] min-h-screen fixed left-0 top-0 bottom-0 bg-[#110c1a] border-r border-[rgba(255,255,255,0.06)] z-20">
+        <aside className={sidebar.root}>
           {/* Logo */}
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-[rgba(255,255,255,0.06)]">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7f0df2] to-[#6366f1] flex items-center justify-center text-xl shrink-0">🏋️</div>
+          <div className={sidebar.logoRow}>
+            <div className={sidebar.logoIcon}>🏋️</div>
             <div>
               <Text size="sm" weight="bold" className="leading-tight">Gym Challenge</Text>
               <Text size="10px" color="accent" weight="semibold" className="tracking-wider uppercase">
@@ -124,7 +125,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           </div>
 
           {/* Nav items */}
-          <TabsList className="flex flex-col gap-1 p-3 flex-1">
+          <TabsList className={sidebar.navList}>
             {(
               [
                 { tab: 'home' as Tab, icon: <Home className="w-[18px] h-[18px]" />, label: 'Inicio' },
@@ -136,16 +137,12 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
-                  activeTab === tab
-                    ? 'bg-[rgba(127,13,242,0.15)] text-[#7f0df2]'
-                    : 'text-[#64748b] hover:text-[#94a3b8] hover:bg-[rgba(255,255,255,0.04)]'
-                }`}
+                className={sidebar.navTrigger(activeTab === tab)}
               >
                 {icon}
                 <span>{label}</span>
                 {tab === 'profile' && pendingRequests.length > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shrink-0">
+                  <span className={sidebar.navBadge}>
                     {pendingRequests.length}
                   </span>
                 )}
@@ -154,12 +151,12 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           </TabsList>
 
           {/* User pill */}
-          <div className="p-3 border-t border-[rgba(255,255,255,0.06)]">
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)]">
-              <div className="bg-[rgba(127,13,242,0.2)] border-2 border-[rgba(127,13,242,0.5)] rounded-full w-8 h-8 flex items-center justify-center text-base shrink-0">
+          <div className={sidebar.userPillWrap}>
+            <div className={sidebar.userPill}>
+              <div className={sidebar.userAvatar}>
                 {user.avatar}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className={sidebar.userTextWrap}>
                 <Text size="xs" weight="bold" className="truncate">{user.name}</Text>
                 <Text size="10px" color="muted">Gym Challenge</Text>
               </div>
@@ -168,12 +165,12 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
         </aside>
 
         {/* ── MAIN AREA ── full width en mobile, offset en lg+ */}
-        <div className="flex-1 flex flex-col lg:ml-[220px]">
+        <div className={mainArea.root}>
 
           {/* Mobile top nav — oculto en desktop */}
-          <nav className="lg:hidden backdrop-blur-[5px] bg-[rgba(25,16,34,0.8)] border-b border-[rgba(255,255,255,0.05)] flex items-center justify-between px-4 py-[17px] sticky top-0 z-30">
-            <div className="flex items-center gap-3">
-              <div className="bg-[rgba(127,13,242,0.2)] border-2 border-[rgba(127,13,242,0.5)] rounded-full size-10 flex items-center justify-center text-xl overflow-hidden">
+          <nav className={mobileTopNav.root}>
+            <div className={mobileTopNav.brandRow}>
+              <div className={mobileTopNav.avatar}>
                 {user.avatar}
               </div>
               <Text size="sm" weight="bold" className="leading-tight">Gym Challenge</Text>
@@ -181,20 +178,20 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           </nav>
 
           {/* Desktop top bar — oculto en mobile */}
-          <div className="hidden lg:flex items-center gap-3 px-6 h-14 border-b border-[rgba(255,255,255,0.06)] sticky top-0 bg-[rgba(17,12,26,0.85)] backdrop-blur-[5px] z-10">
+          <div className={desktopTopBar.root}>
             <Heading as="h1" size="base">{TAB_LABELS[activeTab]}</Heading>
             {activeTab === 'home' && isCurrentWeek && (
-              <Text as="span" size="10px" weight="bold" color="accent" className="bg-[rgba(127,13,242,0.12)] px-3 py-1 rounded-full tracking-wider uppercase">
+              <Text as="span" size="10px" weight="bold" color="accent" className={desktopTopBar.weekBadge}>
                 Esta semana
               </Text>
             )}
-            <Text as="span" size="xs" color="muted" className="ml-auto capitalize">
+            <Text as="span" size="xs" color="muted" className={desktopTopBar.dateText}>
               {new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' })}
             </Text>
           </div>
 
           {/* Main content */}
-          <main className="flex-1 overflow-y-auto pb-[90px] lg:pb-6 pt-4">
+          <main className={main.root}>
             <TabsContent value="home">
               <HomeTab
                 user={user}
@@ -242,12 +239,12 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
 
           {/* Mobile bottom nav — oculto en desktop */}
           <nav
-            className="lg:hidden fixed bottom-0 left-0 right-0 h-[90px] backdrop-blur-[5px] bg-[rgba(25,16,34,0.9)] border-t border-[#1e293b] z-10"
+            className={mobileBottomNav.root}
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
-            <TabsList className="relative flex items-center justify-around h-full px-2">
+            <TabsList className={mobileBottomNav.list}>
               {/* Camera FAB — absolutely centered, floats above the nav */}
-              <div className="absolute left-1/2 -translate-x-1/2 -top-5 z-10">
+              <div className={mobileBottomNav.fabWrap}>
                 <PhotoUpload
                   ref={fabRef}
                   onUploadComplete={handleUploadComplete}
@@ -264,35 +261,35 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
               </div>
 
               {/* Home */}
-              <TabsTrigger value="home" className="flex flex-col items-center gap-1 flex-1">
-                <Home className={`w-[22px] h-[22px] ${activeTab === 'home' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <Text as="span" size="12px" weight="bold" color={activeTab === 'home' ? 'accent' : 'muted'} className="text-center leading-tight">Inicio</Text>
+              <TabsTrigger value="home" className={mobileBottomNav.trigger}>
+                <Home className={mobileBottomNav.icon(activeTab === 'home')} />
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'home' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Inicio</Text>
               </TabsTrigger>
 
               {/* Workouts */}
-              <TabsTrigger value="workouts" className="flex flex-col items-center gap-1 flex-1">
-                <CalendarDays className={`w-[22px] h-[22px] ${activeTab === 'workouts' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <Text as="span" size="12px" weight="bold" color={activeTab === 'workouts' ? 'accent' : 'muted'} className="text-center leading-tight">Registros</Text>
+              <TabsTrigger value="workouts" className={mobileBottomNav.trigger}>
+                <CalendarDays className={mobileBottomNav.icon(activeTab === 'workouts')} />
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'workouts' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Registros</Text>
               </TabsTrigger>
 
               {/* Spacer for FAB column */}
-              <div className="flex-1" />
+              <div className={mobileBottomNav.spacer} />
 
               {/* Feed */}
-              <TabsTrigger value="feed" className="flex flex-col items-center gap-1 flex-1">
-                <Trophy className={`w-[22px] h-[22px] ${activeTab === 'feed' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
-                <Text as="span" size="12px" weight="bold" color={activeTab === 'feed' ? 'accent' : 'muted'} className="text-center leading-tight">Ranking</Text>
+              <TabsTrigger value="feed" className={mobileBottomNav.trigger}>
+                <Trophy className={mobileBottomNav.icon(activeTab === 'feed')} />
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'feed' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Ranking</Text>
               </TabsTrigger>
 
               {/* Profile */}
-              <TabsTrigger value="profile" className="flex flex-col items-center gap-1 flex-1">
-                <div className="relative">
-                  <User className={`w-[22px] h-[22px] ${activeTab === 'profile' ? 'text-[#7f0df2]' : 'text-[#64748b]'}`} />
+              <TabsTrigger value="profile" className={mobileBottomNav.trigger}>
+                <div className={mobileBottomNav.profileIconWrap}>
+                  <User className={mobileBottomNav.icon(activeTab === 'profile')} />
                   {pendingRequests.length > 0 && (
-                    <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                    <span className={mobileBottomNav.profileDot} />
                   )}
                 </div>
-                <Text as="span" size="12px" weight="bold" color={activeTab === 'profile' ? 'accent' : 'muted'} className="text-center leading-tight">Perfil</Text>
+                <Text as="span" size="12px" weight="bold" color={activeTab === 'profile' ? 'accent' : 'muted'} className={mobileBottomNav.label}>Perfil</Text>
               </TabsTrigger>
 
             </TabsList>
@@ -311,18 +308,18 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           <AlertDialogDescription className="text-[#94a3b8] text-sm">
             Esta acción es irreversible. ¿Seguro que quieres borrar tu foto de hoy?
           </AlertDialogDescription>
-          <div className="flex gap-3">
+          <div className={confirmDialogs.buttonRow}>
             <Button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={isDeleting}
-              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold disabled:opacity-50"
+              className={confirmDialogs.cancelButtonDisabled}
             >
               Cancelar
             </Button>
             <Button
               onClick={handleDeleteEntry}
               disabled={isDeleting}
-              className="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(239,68,68,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+              className={confirmDialogs.deleteConfirmButton}
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sí, eliminar'}
             </Button>
@@ -337,10 +334,10 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
           <AlertDialogDescription className="text-[#94a3b8] text-sm">
             ¿Seguro que quieres sobreescribir la foto de hoy?
           </AlertDialogDescription>
-          <div className="flex gap-3">
+          <div className={confirmDialogs.buttonRow}>
             <Button
               onClick={() => setShowOverwriteConfirm(false)}
-              className="flex-1 py-3 rounded-2xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-semibold"
+              className={confirmDialogs.cancelButton}
             >
               Cancelar
             </Button>
@@ -349,7 +346,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 setShowOverwriteConfirm(false);
                 fabRef.current?.open();
               }}
-              className="flex-1 py-3 rounded-2xl bg-[#7f0df2] text-white text-sm font-semibold shadow-[0px_4px_16px_rgba(127,13,242,0.4)]"
+              className={confirmDialogs.overwriteConfirmButton}
             >
               Sí, cambiar
             </Button>
