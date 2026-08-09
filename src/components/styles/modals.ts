@@ -39,10 +39,15 @@ export const friendsListModal = {
 };
 
 export const gymHistoryModal = {
-  // Vertical-scrolling 4-column grid — unlike ProgressHistoryGallery's
+  // Vertical-scrolling, grouped by year (big heading) → month (small
+  // subheading + count) → 4-column grid — unlike ProgressHistoryGallery's
   // horizontal strip, this modal has room to spare vertically, so a grid
   // makes far better use of the screen for a photo-heavy history.
-  grid: 'grid grid-cols-4 gap-2 max-h-[60vh] overflow-y-auto pr-1',
+  scrollWrap: 'flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1',
+  yearHeading: '-mb-1',
+  monthSectionWrap: 'flex flex-col gap-2',
+  monthHeaderRow: 'flex items-center justify-between',
+  grid: 'grid grid-cols-4 gap-2',
   thumbButton: 'relative aspect-square rounded-2xl overflow-hidden disabled:opacity-100',
   thumbImage: photoThumbImage,
   thumbDateBadge: photoThumbDateBadge,

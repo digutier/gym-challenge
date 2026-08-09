@@ -6,9 +6,11 @@ import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
 import GymHistoryViewer from './GymHistoryViewer';
 import { useGymHistory } from '@/hooks/useGymHistory';
-import { formatShortDate } from '@/lib/date';
+import { formatShortDate, getMonthName } from '@/lib/date';
+import { GymHistoryEntry } from '@/types';
 import {
   modalHeaderRow, modalHeaderTextWrap, modalCloseButton, modalEmptyState, gymHistoryModal as styles,
 } from '@/components/styles/modals';
@@ -17,10 +19,35 @@ interface GymHistoryModalProps {
   onClose: () => void;
 }
 
+interface MonthGroup {
+  year: number;
+  month: number;
+  items: { entry: GymHistoryEntry; index: number }[];
+}
+
+// entries arrives newest-first, so each (year, month) run is contiguous —
+// a single pass is enough, no need to bucket by key across the whole list.
+function groupByMonth(entries: GymHistoryEntry[]): MonthGroup[] {
+  const groups: MonthGroup[] = [];
+  entries.forEach((entry, index) => {
+    const d = new Date(entry.date + 'T12:00:00');
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const last = groups[groups.length - 1];
+    if (last && last.year === year && last.month === month) {
+      last.items.push({ entry, index });
+    } else {
+      groups.push({ year, month, items: [{ entry, index }] });
+    }
+  });
+  return groups;
+}
+
 export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
   const { entries, loading } = useGymHistory();
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const isEmpty = !loading && entries.length === 0;
+  const monthGroups = groupByMonth(entries);
 
   return (
     <>
@@ -48,22 +75,44 @@ export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
                 </Text>
               </div>
             </div>
-          ) : (
+          ) : loading ? (
             <div className={styles.grid}>
-              {loading
-                ? Array.from({ length: 8 }, (_, i) => <div key={i} className={styles.skeletonCell} />)
-                : entries.map((entry, index) => (
-                  <Button key={entry.date} onClick={() => setViewerIndex(index)} className={styles.thumbButton}>
-                    <Image
-                      src={entry.photoUrl}
-                      alt={`Foto del gym del ${entry.date}`}
-                      fill
-                      sizes="(min-width: 1024px) 100px, 25vw"
-                      className={styles.thumbImage}
-                    />
-                    <div className={styles.thumbDateBadge}>{formatShortDate(entry.date)}</div>
-                  </Button>
-                ))}
+              {Array.from({ length: 8 }, (_, i) => <div key={i} className={styles.skeletonCell} />)}
+            </div>
+          ) : (
+            <div className={styles.scrollWrap}>
+              {monthGroups.map((group, i) => {
+                const isNewYear = i === 0 || monthGroups[i - 1].year !== group.year;
+                return (
+                  <div key={`${group.year}-${group.month}`} className={styles.monthSectionWrap}>
+                    {isNewYear && (
+                      <Heading as="h4" size="xl" className={styles.yearHeading}>{group.year}</Heading>
+                    )}
+                    <div className={styles.monthHeaderRow}>
+                      <Text size="xs" weight="semibold" color="muted" className="uppercase tracking-widest">
+                        {getMonthName(group.month)}
+                      </Text>
+                      <Text size="xs" color="muted">
+                        {group.items.length} foto{group.items.length > 1 ? 's' : ''}
+                      </Text>
+                    </div>
+                    <div className={styles.grid}>
+                      {group.items.map(({ entry, index }) => (
+                        <Button key={entry.date} onClick={() => setViewerIndex(index)} className={styles.thumbButton}>
+                          <Image
+                            src={entry.photoUrl}
+                            alt={`Foto del gym del ${entry.date}`}
+                            fill
+                            sizes="(min-width: 1024px) 100px, 25vw"
+                            className={styles.thumbImage}
+                          />
+                          <div className={styles.thumbDateBadge}>{formatShortDate(entry.date)}</div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </DialogContent>
