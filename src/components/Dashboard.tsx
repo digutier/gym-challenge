@@ -217,6 +217,7 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 onUploadComplete={handleUploadComplete}
                 ranking={ranking}
                 currentUserId={user.id}
+                onShowGymHistory={() => setShowGymHistory(true)}
               />
             </TabsContent>
             <TabsContent value="progress">
@@ -231,7 +232,6 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
                 ranking={ranking}
                 friendsCount={friends.length}
                 pendingRequestsCount={pendingRequests.length}
-                onShowGymHistory={() => setShowGymHistory(true)}
                 onShowFriendsList={() => { fetchPendingRequests(); setShowFriendsList(true); }}
                 onShowAddFriend={() => setShowAddFriend(true)}
                 onShowNotifications={() => setShowNotifications(true)}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Camera, Check, X as XIcon, ChevronLeft, ChevronRight, Trash2, Zap } from 'lucide-react';
+import { Camera, Check, X as XIcon, ChevronLeft, ChevronRight, Trash2, Zap, Images } from 'lucide-react';
 import PhotoUpload from '../PhotoUpload';
 import StoryViewer from '../StoryViewer';
 import RankingList from './RankingList';
@@ -44,6 +44,7 @@ interface HomeTabProps {
   onUploadComplete: (entryData?: EntryData) => void;
   ranking: UserStats[];
   currentUserId: string;
+  onShowGymHistory: () => void;
 }
 
 export default function HomeTab({
@@ -68,6 +69,7 @@ export default function HomeTab({
   onUploadComplete,
   ranking,
   currentUserId,
+  onShowGymHistory,
 }: HomeTabProps) {
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [homeStoryUser, setHomeStoryUser] = useState<UserStats | null>(null);
@@ -231,7 +233,13 @@ export default function HomeTab({
 
       {/* Ranking Semanal — sólo visible en mobile */}
       <div className={styles.rankingSectionMobile}>
-        <Heading as="h3" size="lg">Ranking Semanal</Heading>
+        <div className={styles.rankingHeaderWrap}>
+          <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
+            <Images className="w-3.5 h-3.5" />
+            Historial de fotos
+          </Button>
+          <Heading as="h3" size="lg">Ranking Semanal</Heading>
+        </div>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 
@@ -239,7 +247,13 @@ export default function HomeTab({
 
       {/* Right column: ranking semanal — sólo visible en desktop (lg+) */}
       <div className={styles.rankingSectionDesktop}>
-        <Heading as="h3" size="base">Ranking Semanal</Heading>
+        <div className={styles.rankingHeaderWrap}>
+          <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
+            <Images className="w-3.5 h-3.5" />
+            Historial de fotos
+          </Button>
+          <Heading as="h3" size="base">Ranking Semanal</Heading>
+        </div>
         <RankingList ranking={ranking} loading={loading} currentUserId={currentUserId} onAvatarClick={setHomeStoryUser} />
       </div>
 
