@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
@@ -76,16 +76,17 @@ export default function GymHistoryModal({ currentUserId, friends, onClose }: Gym
           </div>
 
           {friends.length > 0 && (
-            <Tabs value={selectedUserId} onValueChange={handleUserChange}>
-              <TabsList className={styles.userTabsList}>
-                <TabsTrigger value={currentUserId} className={styles.userTabTrigger}>Tú</TabsTrigger>
+            <Select value={selectedUserId} onValueChange={handleUserChange}>
+              <SelectTrigger className={styles.userSelectTrigger}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={currentUserId}>Tú</SelectItem>
                 {friends.map((friend) => (
-                  <TabsTrigger key={friend.id} value={friend.id} className={styles.userTabTrigger}>
-                    {friend.name}
-                  </TabsTrigger>
+                  <SelectItem key={friend.id} value={friend.id}>{friend.name}</SelectItem>
                 ))}
-              </TabsList>
-            </Tabs>
+              </SelectContent>
+            </Select>
           )}
 
           {isEmpty ? (

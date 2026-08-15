@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox,
-  photoThumbImage, photoThumbDateBadge, pillTabsList, pillTabTrigger,
+  photoThumbImage, photoThumbDateBadge,
 } from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
@@ -43,8 +43,7 @@ export const gymHistoryModal = {
   // subheading + count) → 4-column grid — unlike ProgressHistoryGallery's
   // horizontal strip, this modal has room to spare vertically, so a grid
   // makes far better use of the screen for a photo-heavy history.
-  userTabsList: cn(pillTabsList, 'overflow-x-auto flex-nowrap'),
-  userTabTrigger: cn(pillTabTrigger, 'flex-none px-4'),
+  userSelectTrigger: 'self-start min-w-[160px]',
   scrollWrap: 'flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1',
   yearHeading: '-mb-1',
   monthSectionWrap: 'flex flex-col gap-2',
