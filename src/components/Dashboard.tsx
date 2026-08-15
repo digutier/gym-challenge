@@ -358,7 +358,13 @@ export default function Dashboard({ user, entry, onPhotoUpload, onEntryDelete, o
       </AlertDialog>
 
       {/* Modals */}
-      {showGymHistory && <GymHistoryModal onClose={() => setShowGymHistory(false)} />}
+      {showGymHistory && (
+        <GymHistoryModal
+          currentUserId={user.id}
+          friends={friends}
+          onClose={() => setShowGymHistory(false)}
+        />
+      )}
       {showAddFriend && <AddFriendModal onClose={() => setShowAddFriend(false)} />}
       {showFriendsList && (
         <FriendsListModal

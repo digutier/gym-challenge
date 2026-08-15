@@ -12,9 +12,10 @@ export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth();
     if ('error' in auth) return auth.error;
-    const { userId } = auth;
+    const { userId: currentUserId } = auth;
 
     const { searchParams } = new URL(request.url);
+    const targetUserId = searchParams.get('userId') || currentUserId;
     const requestedLimit = Number(searchParams.get('limit'));
     const limit = Number.isFinite(requestedLimit) && requestedLimit > 0
       ? Math.min(requestedLimit, MAX_LIMIT)
@@ -22,10 +23,29 @@ export async function GET(request: NextRequest) {
 
     const serviceSupabase = getServiceSupabase();
 
+    // Viewing a friend's history is allowed (gym photos are already shared
+    // with friends via all-stats/day-stats) — but only an accepted friend,
+    // never an arbitrary userId.
+    if (targetUserId !== currentUserId) {
+      const { data: friendships } = await serviceSupabase
+        .from('friendships')
+        .select('requester_id, recipient_id')
+        .or(`recipient_id.eq.${currentUserId},requester_id.eq.${currentUserId}`)
+        .eq('status', 'accepted');
+
+      const friendIds = (friendships || []).map((f: { requester_id: string; recipient_id: string }) =>
+        f.requester_id === currentUserId ? f.recipient_id : f.requester_id
+      );
+
+      if (!friendIds.includes(targetUserId)) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+      }
+    }
+
     const { data: rows, error } = await serviceSupabase
       .from('gym_entries')
       .select('date, photo_url, created_at, updated_at')
-      .eq('user_id', userId)
+      .eq('user_id', targetUserId)
       .order('date', { ascending: false })
       .limit(limit);
 

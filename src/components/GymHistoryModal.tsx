@@ -4,18 +4,21 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import GymHistoryViewer from './GymHistoryViewer';
 import { useGymHistory } from '@/hooks/useGymHistory';
 import { formatShortDate, getMonthName } from '@/lib/date';
-import { GymHistoryEntry } from '@/types';
+import { GymHistoryEntry, Friend } from '@/types';
 import {
   modalHeaderRow, modalHeaderTextWrap, modalCloseButton, modalEmptyState, gymHistoryModal as styles,
 } from '@/components/styles/modals';
 
 interface GymHistoryModalProps {
+  currentUserId: string;
+  friends: Friend[];
   onClose: () => void;
 }
 
@@ -43,11 +46,18 @@ function groupByMonth(entries: GymHistoryEntry[]): MonthGroup[] {
   return groups;
 }
 
-export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
-  const { entries, loading } = useGymHistory();
+export default function GymHistoryModal({ currentUserId, friends, onClose }: GymHistoryModalProps) {
+  const [selectedUserId, setSelectedUserId] = useState(currentUserId);
+  const { entries, loading } = useGymHistory(selectedUserId === currentUserId ? undefined : selectedUserId);
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const isEmpty = !loading && entries.length === 0;
   const monthGroups = groupByMonth(entries);
+  const isOwnHistory = selectedUserId === currentUserId;
+
+  const handleUserChange = (value: string) => {
+    setSelectedUserId(value);
+    setViewerIndex(null);
+  };
 
   return (
     <>
@@ -57,7 +67,7 @@ export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
             <div className={modalHeaderTextWrap}>
               <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Historial de idas al gym</DialogTitle>
               <DialogDescription className="text-[#64748b] text-sm">
-                {loading ? 'Cargando...' : isEmpty ? 'Aún no tienes fotos' : `${entries.length} día${entries.length > 1 ? 's' : ''} registrado${entries.length > 1 ? 's' : ''}`}
+                {loading ? 'Cargando...' : isEmpty ? 'Aún no hay fotos' : `${entries.length} día${entries.length > 1 ? 's' : ''} registrado${entries.length > 1 ? 's' : ''}`}
               </DialogDescription>
             </div>
             <Button onClick={onClose} className={modalCloseButton}>
@@ -65,13 +75,28 @@ export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
             </Button>
           </div>
 
+          {friends.length > 0 && (
+            <Tabs value={selectedUserId} onValueChange={handleUserChange}>
+              <TabsList className={styles.userTabsList}>
+                <TabsTrigger value={currentUserId} className={styles.userTabTrigger}>Tú</TabsTrigger>
+                {friends.map((friend) => (
+                  <TabsTrigger key={friend.id} value={friend.id} className={styles.userTabTrigger}>
+                    {friend.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          )}
+
           {isEmpty ? (
             <div className={modalEmptyState}>
               <span className="text-5xl">📸</span>
               <div>
                 <Text size="sm" weight="semibold">Sin fotos aún</Text>
                 <Text size="xs" color="muted" className="mt-1 leading-relaxed">
-                  Cuando registres tu primera ida al gym, aparecerá aquí.
+                  {isOwnHistory
+                    ? 'Cuando registres tu primera ida al gym, aparecerá aquí.'
+                    : 'Cuando registre su primera ida al gym, aparecerá aquí.'}
                 </Text>
               </div>
             </div>
