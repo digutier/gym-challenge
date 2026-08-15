@@ -55,7 +55,7 @@ export default function GymHistoryModal({ onClose }: GymHistoryModalProps) {
         <DialogContent>
           <div className={modalHeaderRow}>
             <div className={modalHeaderTextWrap}>
-              <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Historial de fotos</DialogTitle>
+              <DialogTitle className="text-[#f1f5f9] text-lg font-bold">Historial de idas al gym</DialogTitle>
               <DialogDescription className="text-[#64748b] text-sm">
                 {loading ? 'Cargando...' : isEmpty ? 'Aún no tienes fotos' : `${entries.length} día${entries.length > 1 ? 's' : ''} registrado${entries.length > 1 ? 's' : ''}`}
               </DialogDescription>

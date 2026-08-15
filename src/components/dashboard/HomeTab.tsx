@@ -236,7 +236,7 @@ export default function HomeTab({
         <div className={styles.rankingHeaderWrap}>
           <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
             <Images className="w-3.5 h-3.5" />
-            Historial de fotos
+            Historial de idas al gym
           </Button>
           <Heading as="h3" size="lg">Ranking Semanal</Heading>
         </div>
@@ -250,7 +250,7 @@ export default function HomeTab({
         <div className={styles.rankingHeaderWrap}>
           <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
             <Images className="w-3.5 h-3.5" />
-            Historial de fotos
+            Historial de idas al gym
           </Button>
           <Heading as="h3" size="base">Ranking Semanal</Heading>
         </div>
