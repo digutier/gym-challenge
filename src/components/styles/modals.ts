@@ -40,9 +40,9 @@ export const friendsListModal = {
 
 export const gymHistoryModal = {
   // Vertical-scrolling, grouped by year (big heading) → month (small
-  // subheading + count) → 4-column grid — unlike ProgressHistoryGallery's
-  // horizontal strip, this modal has room to spare vertically, so a grid
-  // makes far better use of the screen for a photo-heavy history.
+  // subheading + count) → fixed 4-column grid — a modal card has less
+  // width to work with than ProgressHistoryGallery's full-width tab page,
+  // which instead uses a flexible auto-fill grid (see dashboard/styles.ts).
   userSelectTrigger: 'self-start min-w-[160px]',
   scrollWrap: 'flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1',
   yearHeading: '-mb-1',

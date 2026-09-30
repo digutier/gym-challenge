@@ -61,7 +61,11 @@ export const homeTab = {
   rankingSectionMobile: 'lg:hidden flex flex-col gap-4 px-4',
   rankingSectionDesktop: 'hidden lg:flex flex-col gap-4 w-[280px] shrink-0 pb-6',
   rankingHeaderWrap: 'flex flex-col gap-2',
-  gymHistoryButton: 'flex items-center gap-1.5 self-start text-xs font-semibold text-[#94a3b8] hover:text-[#f1f5f9] transition-colors',
+  // `group` + group-hover on the icon/label below — layout/interaction
+  // only, Text owns the typography (size/weight/color) per convention.
+  gymHistoryButton: 'group flex items-center gap-1.5 self-start',
+  gymHistoryButtonIcon: 'w-3.5 h-3.5 text-[#94a3b8] group-hover:text-[#f1f5f9] transition-colors',
+  gymHistoryButtonLabel: 'group-hover:text-[#f1f5f9] transition-colors',
 };
 
 // ─── ProgressTab ─────────────────────────────────────────────────────────

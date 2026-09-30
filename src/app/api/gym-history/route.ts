@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-auth';
 import { getServiceSupabase } from '@/lib/supabase';
+import { getAcceptedFriendIds } from '@/lib/friends';
 import { GymHistoryEntry } from '@/types';
 
 // One row per day at most, so even years of daily use stay small — this
@@ -27,17 +28,14 @@ export async function GET(request: NextRequest) {
     // with friends via all-stats/day-stats) — but only an accepted friend,
     // never an arbitrary userId.
     if (targetUserId !== currentUserId) {
-      const { data: friendships } = await serviceSupabase
-        .from('friendships')
-        .select('requester_id, recipient_id')
-        .or(`recipient_id.eq.${currentUserId},requester_id.eq.${currentUserId}`)
-        .eq('status', 'accepted');
+      const friendResult = await getAcceptedFriendIds(serviceSupabase, currentUserId);
 
-      const friendIds = (friendships || []).map((f: { requester_id: string; recipient_id: string }) =>
-        f.requester_id === currentUserId ? f.recipient_id : f.requester_id
-      );
+      if ('error' in friendResult) {
+        console.error('Error verificando amistad:', friendResult.error);
+        return NextResponse.json({ error: 'Error al verificar amistad' }, { status: 500 });
+      }
 
-      if (!friendIds.includes(targetUserId)) {
+      if (!friendResult.friendIds.includes(targetUserId)) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
       }
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
 import { getOptionalUserId } from '@/lib/api-auth';
+import { getAcceptedFriendIds } from '@/lib/friends';
 
 // GET: Obtener estadísticas de un día específico (fotos de todos los usuarios)
 export async function GET(request: NextRequest) {
@@ -31,16 +32,10 @@ export async function GET(request: NextRequest) {
     // Si está autenticado, filtrar por amigos aceptados + sí mismo
     let allowedUserIds: string[] | null = null;
     if (currentUserId) {
-      const { data: friendships } = await supabase
-        .from('friendships')
-        .select('requester_id, recipient_id')
-        .or(`recipient_id.eq.${currentUserId},requester_id.eq.${currentUserId}`)
-        .eq('status', 'accepted');
-
-      const friendIds = (friendships || []).map((f: { requester_id: string; recipient_id: string }) =>
-        f.requester_id === currentUserId ? f.recipient_id : f.requester_id
-      );
-      allowedUserIds = [currentUserId, ...friendIds];
+      const friendResult = await getAcceptedFriendIds(supabase, currentUserId);
+      // Soft-auth/public route — degrade to "just self" on a friendship
+      // lookup error rather than failing the whole public dashboard.
+      allowedUserIds = [currentUserId, ...(friendResult.friendIds ?? [])];
     }
 
     // Obtener usuarios (filtrados si autenticado)

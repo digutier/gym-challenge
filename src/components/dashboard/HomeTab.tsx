@@ -235,8 +235,10 @@ export default function HomeTab({
       <div className={styles.rankingSectionMobile}>
         <div className={styles.rankingHeaderWrap}>
           <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
-            <Images className="w-3.5 h-3.5" />
-            Historial de idas al gym
+            <Images className={styles.gymHistoryButtonIcon} />
+            <Text as="span" size="xs" weight="semibold" color="secondary" className={styles.gymHistoryButtonLabel}>
+              Historial de idas al gym
+            </Text>
           </Button>
           <Heading as="h3" size="lg">Ranking Semanal</Heading>
         </div>
@@ -249,8 +251,10 @@ export default function HomeTab({
       <div className={styles.rankingSectionDesktop}>
         <div className={styles.rankingHeaderWrap}>
           <Button onClick={onShowGymHistory} className={styles.gymHistoryButton}>
-            <Images className="w-3.5 h-3.5" />
-            Historial de idas al gym
+            <Images className={styles.gymHistoryButtonIcon} />
+            <Text as="span" size="xs" weight="semibold" color="secondary" className={styles.gymHistoryButtonLabel}>
+              Historial de idas al gym
+            </Text>
           </Button>
           <Heading as="h3" size="base">Ranking Semanal</Heading>
         </div>
