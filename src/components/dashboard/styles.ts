@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   surfaceSubtle, ringToday, pillTabsList, pillTabTrigger, fieldInput, errorBox, iconCircleButton,
-  photoThumbStrip, photoThumbButton, photoThumbImage, photoThumbDateBadge, photoThumbSkeleton,
+  photoThumbImage, photoThumbDateBadge, photoGridThumbButton, photoGridSkeletonCell,
   historyViewerOverlay, historyViewerContent, historyViewerHeaderBar, historyViewerImageArea, historyViewerArrowButton,
 } from '@/components/styles/shared';
 
@@ -97,11 +97,17 @@ export const progressPhotoSlot = {
 };
 
 export const progressHistoryGallery = {
-  scrollRow: photoThumbStrip,
-  thumbButton: photoThumbButton,
+  // Flexible-column wrapping grid instead of a horizontal scroll strip —
+  // a flex row here forced the whole page to scroll horizontally past ~4
+  // thumbnails (flex children ignore their container's overflow-x-auto
+  // without min-width:0 threaded through every ancestor; a grid with 1fr
+  // tracks can't do that, it wraps instead). Column count is responsive
+  // to viewport width (auto-fill), not a fixed number per row.
+  grid: 'grid gap-2 grid-cols-[repeat(auto-fill,minmax(72px,1fr))]',
+  thumbButton: photoGridThumbButton,
   thumbImage: photoThumbImage,
   thumbDateBadge: photoThumbDateBadge,
-  skeletonRow: photoThumbSkeleton,
+  skeletonCell: photoGridSkeletonCell,
 };
 
 export const progressHistoryViewer = {

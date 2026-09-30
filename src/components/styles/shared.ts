@@ -51,13 +51,17 @@ export const fieldInput = 'w-full px-4 py-3 bg-[rgba(255,255,255,0.05)] border b
 export const errorBox = 'px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-2xl';
 export const successBox = 'px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl';
 
-// Square thumbnail-in-a-horizontal-strip pattern — shared by the progress
-// and gym photo history galleries.
-export const photoThumbStrip = 'flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1';
-export const photoThumbButton = 'relative shrink-0 w-20 h-20 rounded-2xl overflow-hidden snap-start disabled:opacity-100';
+// Square thumbnail image/badge — shared by every photo history gallery,
+// regardless of whether the container is a horizontal strip or a grid.
 export const photoThumbImage = 'object-cover';
 export const photoThumbDateBadge = 'absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[9px] font-semibold text-center py-1';
-export const photoThumbSkeleton = 'shrink-0 w-20 h-20 rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse';
+
+// Square thumbnail in a wrapping grid (GymHistoryModal's fixed 4-column
+// grid, ProgressHistoryGallery's flexible auto-fill grid) — aspect-square
+// sizes itself off the grid track instead of a fixed w/h, so it works
+// whether the column count is fixed or responsive.
+export const photoGridThumbButton = 'relative aspect-square rounded-2xl overflow-hidden disabled:opacity-100';
+export const photoGridSkeletonCell = 'aspect-square rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse';
 
 // Full-screen swipeable "browse history" viewer chrome — shared by the
 // progress-photo and gym-photo history viewers. StoryViewer/PastDayModal

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox,
-  photoThumbImage, photoThumbDateBadge,
+  photoThumbImage, photoThumbDateBadge, photoGridThumbButton, photoGridSkeletonCell,
 } from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
@@ -49,8 +49,8 @@ export const gymHistoryModal = {
   monthSectionWrap: 'flex flex-col gap-2',
   monthHeaderRow: 'flex items-center justify-between',
   grid: 'grid grid-cols-4 gap-2',
-  thumbButton: 'relative aspect-square rounded-2xl overflow-hidden disabled:opacity-100',
+  thumbButton: photoGridThumbButton,
   thumbImage: photoThumbImage,
   thumbDateBadge: photoThumbDateBadge,
-  skeletonCell: 'aspect-square rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse',
+  skeletonCell: photoGridSkeletonCell,
 };
