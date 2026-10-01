@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   surfaceSubtleAlt, iconCircleButton, cancelButton, fieldInput, errorBox, successBox,
-  photoThumbImage, photoThumbDateBadge,
+  photoThumbImage, photoThumbDateBadge, photoGridThumbButton, photoGridSkeletonCell,
 } from '@/components/styles/shared';
 
 // Shared across AddFriendModal / NotificationsModal / FriendsListModal header rows.
@@ -40,16 +40,17 @@ export const friendsListModal = {
 
 export const gymHistoryModal = {
   // Vertical-scrolling, grouped by year (big heading) → month (small
-  // subheading + count) → 4-column grid — unlike ProgressHistoryGallery's
-  // horizontal strip, this modal has room to spare vertically, so a grid
-  // makes far better use of the screen for a photo-heavy history.
+  // subheading + count) → fixed 4-column grid — a modal card has less
+  // width to work with than ProgressHistoryGallery's full-width tab page,
+  // which instead uses a flexible auto-fill grid (see dashboard/styles.ts).
+  userSelectTrigger: 'self-start min-w-[160px]',
   scrollWrap: 'flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1',
   yearHeading: '-mb-1',
   monthSectionWrap: 'flex flex-col gap-2',
   monthHeaderRow: 'flex items-center justify-between',
   grid: 'grid grid-cols-4 gap-2',
-  thumbButton: 'relative aspect-square rounded-2xl overflow-hidden disabled:opacity-100',
+  thumbButton: photoGridThumbButton,
   thumbImage: photoThumbImage,
   thumbDateBadge: photoThumbDateBadge,
-  skeletonCell: 'aspect-square rounded-2xl bg-[rgba(255,255,255,0.03)] animate-pulse',
+  skeletonCell: photoGridSkeletonCell,
 };

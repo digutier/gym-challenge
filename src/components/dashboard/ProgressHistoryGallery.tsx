@@ -16,9 +16,9 @@ interface ProgressHistoryGalleryProps {
 export default function ProgressHistoryGallery({ entries, part, loading, onSelect }: ProgressHistoryGalleryProps) {
   if (loading) {
     return (
-      <div className={styles.scrollRow}>
-        {[1, 2, 3].map((i) => (
-          <div key={i} className={styles.skeletonRow} />
+      <div className={styles.grid}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className={styles.skeletonCell} />
         ))}
       </div>
     );
@@ -33,14 +33,14 @@ export default function ProgressHistoryGallery({ entries, part, loading, onSelec
   }
 
   return (
-    <div className={styles.scrollRow}>
+    <div className={styles.grid}>
       {entries.map((entry, index) => (
         <Button key={entry.date} onClick={() => onSelect(index)} className={styles.thumbButton}>
           <Image
             src={entry.photos[part]!}
             alt={`Foto de ${BODY_PART_LABELS[part].toLowerCase()} del ${entry.date}`}
             fill
-            sizes="80px"
+            sizes="(min-width: 1024px) 100px, 25vw"
             className={styles.thumbImage}
           />
           <div className={styles.thumbDateBadge}>{formatShortDate(entry.date)}</div>
